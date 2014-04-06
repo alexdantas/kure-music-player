@@ -38,17 +38,21 @@
             android:label="@string/menu_main_music"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            >
-        </activity>
-        
+            />       
         
         <activity
             android:name=".activities.ArtistMenuActivity"
             android:label="@string/menu_music_artists"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"            
-            >
-        </activity>	
+            />	
+            
+        <activity
+            android:name=".activities.AlbumMenuActivity"
+            android:label="@string/menu_music_albums"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"            
+            />
         
         <activity
             android:name=".MainActivity"

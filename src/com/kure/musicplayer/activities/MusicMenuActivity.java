@@ -50,7 +50,7 @@ implements OnItemClickListener {
 		items.add(getString(R.string.menu_music_playlists));
 		items.add(getString(R.string.menu_music_artists));		
 		items.add(getString(R.string.menu_music_albums));
-		items.add(getString(R.string.menu_music_genres));
+		items.add(getString(R.string.menu_music_years));
 		items.add(getString(R.string.menu_music_songs));
 		
 		// List to be populated with items
@@ -89,12 +89,12 @@ implements OnItemClickListener {
 			startActivity(new Intent(this, ArtistMenuActivity.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_albums)) {
-			
+			startActivity(new Intent(this, AlbumMenuActivity.class));
 		}		
 		else if (currentItem == getString(R.string.menu_music_songs)) {
 			startActivity(new Intent(this, MainActivity.class));
 		}
-		else if (currentItem == getString(R.string.menu_music_genres)) {
+		else if (currentItem == getString(R.string.menu_music_years)) {
 			
 		}
 		else {

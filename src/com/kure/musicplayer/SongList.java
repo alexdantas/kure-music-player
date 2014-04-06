@@ -8,6 +8,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.provider.MediaStore.MediaColumns;
 
 /**
  * Global interface to all the songs this app can see.
@@ -93,39 +95,49 @@ public class SongList {
 				        android.provider.MediaStore.Audio.Media.INTERNAL_CONTENT_URI:
 				        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 		
-		// Pointer to database results when querying a resolver
-		Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+		// Columns I'll retrieve from the song table
+		String[] columns = {
+				android.provider.MediaStore.Audio.Media._ID,
+				android.provider.MediaStore.Audio.Media.TITLE,
+				android.provider.MediaStore.Audio.Media.ARTIST,
+				android.provider.MediaStore.Audio.Media.ALBUM,
+				android.provider.MediaStore.Audio.Media.YEAR
+		};
+		
+		// Limiter that will only get rows with music files
+		// It's a SQL "WHERE" clause.
+		final String musicsOnly = MediaStore.Audio.Media.IS_MUSIC + "=1";
+		
+		// Thing that'll go through the table getting the rows
+		Cursor musicCursor = musicResolver.query(musicUri, columns, musicsOnly, null, null);
 		
 		if (musicCursor != null && musicCursor.moveToFirst())
 		{
-			// Getting pre-defined columns from the system
-			// They're the data from all music found on the URI.
-			int titleColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.TITLE);
-			
-			int idColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media._ID);
-			
-			int artistColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.ARTIST);
-			
 			// Adding songs to the list
 			do {
-				long   thisId     = musicCursor.getLong(idColumn);
-				String thisTitle  = musicCursor.getString(titleColumn);
-				String thisArtist = musicCursor.getString(artistColumn);
+				// Creating a song from the values on the row
+				Song song = new Song(musicCursor.getInt(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID)),
+						             musicCursor.getString(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE)),
+						             musicCursor.getString(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST)),
+						             musicCursor.getString(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ALBUM)),
+						             musicCursor.getInt(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.YEAR)));
 				
-				songs.add(new Song(thisId, thisTitle, thisArtist));
+				songs.add(song);
 			}
 			while (musicCursor.moveToNext());
 		}
 		else
 		{
 			// What do I do if I can't find any songs?
-			songs.add(new Song(0, "No Songs Found", "On this Device"));
+			songs.add(new Song(0,
+					           "No Songs Found",
+					           "On this Device",
+					           "kMP",
+					           2014));
 		}
 		
 		// Finally, let's sort the song list alphabetically
+		// based on the song title.
 		Collections.sort(songs, new Comparator<Song>() {
 			public int compare(Song a, Song b)
 			{
@@ -155,7 +167,7 @@ public class SongList {
 		for (Song song : songs) {
 			String artist = song.getArtist();
 			
-			if (! artists.contains(artist))
+			if ((artist != null) && (! artists.contains(artist)))
 				artists.add(artist);
 		}
 		
@@ -164,4 +176,28 @@ public class SongList {
 		
 		return artists;
 	}
+	
+	/**
+	 * Returns an alphabetically sorted list with all the
+	 * albums of the scanned songs.
+	 * 
+	 * @note This method might take a while depending on how
+	 *       many songs you have.
+	 */
+	public ArrayList<String> getAlbums() {
+		
+		ArrayList<String> albums = new ArrayList<String>();
+		
+		for (Song song : songs) {
+			String album = song.getAlbum();
+			
+			if ((album != null) && (! albums.contains(album)))
+				albums.add(album);
+		}
+		
+		// Making them alphabetically sorted
+		Collections.sort(albums);
+		
+		return albums;
+	}	
 }

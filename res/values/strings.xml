@@ -15,6 +15,6 @@
     <string name="menu_music_artists">Artists</string>
     <string name="menu_music_albums">Albums</string>
     <string name="menu_music_songs">All Songs</string>
-    <string name="menu_music_genres">Genres</string>
+    <string name="menu_music_years">Years</string>
     
 </resources>
