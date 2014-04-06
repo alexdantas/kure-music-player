@@ -22,7 +22,7 @@ import com.kure.musicplayer.kMP;
  * 
  */
 public class MusicMenuActivity extends Activity
-	implements OnItemClickListener {
+implements OnItemClickListener {
 
 	/**
 	 * All the possible items the user can select on this menu.
@@ -86,7 +86,7 @@ public class MusicMenuActivity extends Activity
 			
 		}
 		else if (currentItem == getString(R.string.menu_music_artists)) {
-			
+			startActivity(new Intent(this, ArtistMenuActivity.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_albums)) {
 			

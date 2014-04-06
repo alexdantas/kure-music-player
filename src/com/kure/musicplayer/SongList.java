@@ -23,7 +23,7 @@ public class SongList {
 	 * Big list with all the songs on the device.
 	 */
 	public ArrayList<Song> songs;
-
+	
 	/**
 	 * Internal flag to tell if we've successfuly scanned
 	 * all songs on the device.
@@ -136,8 +136,32 @@ public class SongList {
 		scannedSongs = true;
 		scanningSongs = false;
 	}
-
+	
 	public void destroy() {
 		songs.clear();
+	}
+
+	/**
+	 * Returns an alphabetically sorted list with all the
+	 * artists of the scanned songs.
+	 * 
+	 * @note This method might take a while depending on how
+	 *       many songs you have.
+	 */
+	public ArrayList<String> getArtists() {
+		
+		ArrayList<String> artists = new ArrayList<String>();
+		
+		for (Song song : songs) {
+			String artist = song.getArtist();
+			
+			if (! artists.contains(artist))
+				artists.add(artist);
+		}
+		
+		// Making them alphabetically sorted
+		Collections.sort(artists);
+		
+		return artists;
 	}
 }

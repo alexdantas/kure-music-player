@@ -174,8 +174,8 @@ public class MainMenuActivity extends Activity
 			super.onPostExecute(result);
 			
 			Toast.makeText(MainMenuActivity.this,
-					       result,
-					       Toast.LENGTH_LONG).show();
+				       result,
+				       Toast.LENGTH_LONG).show();
 		}
 	}
 }
