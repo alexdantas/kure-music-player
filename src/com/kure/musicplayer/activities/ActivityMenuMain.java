@@ -26,7 +26,7 @@ import com.kure.musicplayer.kMP;
  * Thanks for providing a basic ListView navigation layout: 
  * http://stackoverflow.com/q/19476948
  */
-public class MainMenuActivity extends Activity
+public class ActivityMenuMain extends Activity
 	implements OnItemClickListener {
 
 	/**
@@ -88,7 +88,7 @@ public class MainMenuActivity extends Activity
 		String currentItem = listView.getItemAtPosition(position).toString();
 		
 		if (currentItem == getString(R.string.menu_main_music)) {
-			startActivity(new Intent(this, MusicMenuActivity.class));
+			startActivity(new Intent(this, ActivityMenuMusic.class));
 		}
 		else if (currentItem == getString(R.string.menu_main_settings)) {
 			
@@ -156,7 +156,7 @@ public class MainMenuActivity extends Activity
 			
 			try {
 				// Will scan all songs on the device
-				kMP.songs.scanSongs(MainMenuActivity.this);
+				kMP.songs.scanSongs(ActivityMenuMain.this);
 				return "Finished scanning songs";
 			}
 			catch (Exception e) {
@@ -173,7 +173,7 @@ public class MainMenuActivity extends Activity
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 			
-			Toast.makeText(MainMenuActivity.this,
+			Toast.makeText(ActivityMenuMain.this,
 				       result,
 				       Toast.LENGTH_LONG).show();
 		}

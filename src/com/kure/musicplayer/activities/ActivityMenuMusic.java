@@ -21,7 +21,7 @@ import com.kure.musicplayer.kMP;
  * and "All Songs".
  * 
  */
-public class MusicMenuActivity extends Activity
+public class ActivityMenuMusic extends Activity
 implements OnItemClickListener {
 
 	/**
@@ -86,10 +86,10 @@ implements OnItemClickListener {
 			
 		}
 		else if (currentItem == getString(R.string.menu_music_artists)) {
-			startActivity(new Intent(this, ArtistMenuActivity.class));
+			startActivity(new Intent(this, ActivityMenuArtist.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_albums)) {
-			startActivity(new Intent(this, AlbumMenuActivity.class));
+			startActivity(new Intent(this, ActivityMenuAlbum.class));
 		}		
 		else if (currentItem == getString(R.string.menu_music_songs)) {
 			startActivity(new Intent(this, MainActivity.class));

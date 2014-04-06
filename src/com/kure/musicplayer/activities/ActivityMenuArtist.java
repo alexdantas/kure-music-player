@@ -15,12 +15,12 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
- * Shows a menu with all the albums of all the artists
+ * Shows a menu with all the artists of the songs
  * on SongList, allowing the user to choose one of
  * them and going to a specific artist menu.
  *
  */
-public class AlbumMenuActivity extends Activity
+public class ActivityMenuArtist extends Activity
 	implements OnItemClickListener {
 
 	/**
@@ -43,12 +43,12 @@ public class AlbumMenuActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_menu_albums);
+		setContentView(R.layout.activity_menu_artists);
 		
 		// List to be populated with items
-		listView = (ListView)findViewById(R.id.activity_menu_albums_list);
+		listView = (ListView)findViewById(R.id.activity_menu_artists_list);
 		
-		items = kMP.songs.getAlbums();
+		items = kMP.songs.getArtists();
 		
 		// Adapter that will convert from Strings to List Items
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>
@@ -72,10 +72,10 @@ public class AlbumMenuActivity extends Activity
 		if (! kMP.songs.isInitialized())
 			return;
 		
-		String selectedAlbum= items.get(position);
+		String selectedArtist = items.get(position);
 		
 		Toast.makeText(this,
-				selectedAlbum,
+				selectedArtist,
 				Toast.LENGTH_LONG).show();		
 	}
 	
