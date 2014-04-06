@@ -2,7 +2,6 @@ package com.kure.musicplayer.activities;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,7 +25,7 @@ import com.kure.musicplayer.kMP;
  * Thanks for providing a basic ListView navigation layout: 
  * http://stackoverflow.com/q/19476948
  */
-public class ActivityMenuMain extends Activity
+public class ActivityMenuMain extends ActivityMaster
 	implements OnItemClickListener {
 
 	/**
@@ -42,12 +41,26 @@ public class ActivityMenuMain extends Activity
 	 * Look for it inside the res/layout xml files.
 	 */
 	ListView listView;
-		
+	
+	/**
+	 * ID we'll use when calling the settings window.
+	 * It'll say if the user changed theme or not.
+	 * 
+	 * @see onActivityResult()
+	 */
+	static final int USER_CHANGED_THEME = 1;
+	
 	/**
 	 * Called when the activity is created for the first time.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+		// We need to load the settings right before creating
+		// the first activity so that the user-selected theme
+		// will be applied to the first screen.
+		kMP.settings.load(this);
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 	
@@ -91,7 +104,15 @@ public class ActivityMenuMain extends Activity
 			startActivity(new Intent(this, ActivityMenuMusic.class));
 		}
 		else if (currentItem == getString(R.string.menu_main_settings)) {
-			startActivity(new Intent(this, ActivityMenuSettings.class));
+			
+			// Let's start the settings screen.
+			// While doing so, we need to know if the user have
+			// changed the theme.
+			// If he did, we'll refresh the screen.
+			// See `onActivityResult()`
+			Intent settingsIntent = new Intent(this, ActivityMenuSettings.class);
+			startActivityForResult(settingsIntent, USER_CHANGED_THEME);
+			
 		}
 		else if (currentItem == getString(R.string.menu_main_shuffle)) {
 			
@@ -131,6 +152,23 @@ public class ActivityMenuMain extends Activity
 	public void onBackPressed() {
 		// default behavior:
 		// finish();
+	}
+	
+	
+	/**
+	 * Called when a spawned Activity returns.
+	 * 
+	 * We'll use it to see if the user changed the theme on Settings
+	 * and if he did, let's redraw our Activity.
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if (requestCode == USER_CHANGED_THEME)
+			if (resultCode == RESULT_OK)
+				recreate();
 	}
 	
 	// HELPER METHODS

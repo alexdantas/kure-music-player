@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,7 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * them and going to a specific artist menu.
  *
  */
-public class ActivityMenuAlbum extends Activity
+public class ActivityMenuAlbum extends ActivityMaster
 	implements OnItemClickListener {
 
 	/**

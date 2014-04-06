@@ -30,7 +30,6 @@ public class kMP {
 
 		songs.setContent("external");
 		settings.load(c);
-		
 	}
 	
 	/**

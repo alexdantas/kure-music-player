@@ -1,20 +1,30 @@
+<!-- This default style sheet sucks -->
+
 <resources>
 
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    -->
+    <!-- From where we base our whole app theme -->
     <style name="AppBaseTheme" parent="android:Theme.Light">
-        <!--
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        -->
+    
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        
     </style>
 
+    
+    
+    <!-- Custom themes, people! -->
+    <style name="Theme.Light" parent="AppTheme">
+        <item name="android:textColor">#000000</item>
+    </style>
+    
+    <style name="Theme.Dark" parent="AppTheme">
+        <item name="android:textColor">#0000FF</item>
+    </style>
+    
+    <style name="Theme.Solarized" parent="AppTheme">
+	    <item name="android:textColor">#00FF00</item>	
+    </style>
+    
 </resources>

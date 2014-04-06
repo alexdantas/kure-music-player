@@ -7,6 +7,15 @@ import android.preference.PreferenceManager;
 /**
  * Interface to the application's settings.
  *
+ * Keep in mind that when we call `get()` we must supply a
+ * key that exists on `res/xml/preferences.xml`!
+ * 
+ * As a matter of fact, go look there now. 
+ * 
+ * Thanks a lot again, you great sources:
+ * - http://stackoverflow.com/a/3624358
+ * - http://android-elements.blogspot.com.br/2011/06/creating-android-preferences-screen.html
+ * 
  */
 public class Settings {
 
@@ -21,6 +30,13 @@ public class Settings {
 	 */
 	public void load(Context c) {
         preferences = PreferenceManager.getDefaultSharedPreferences(c);
+	}
+	
+	/**
+	 * Resets all settings to default.
+	 */
+	public void reset() {
+		preferences.edit().clear().commit();
 	}
 	
 	// QUERY METHODS

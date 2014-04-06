@@ -2,7 +2,6 @@ package com.kure.musicplayer.activities;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +20,7 @@ import com.kure.musicplayer.kMP;
  * and "All Songs".
  * 
  */
-public class ActivityMenuMusic extends Activity
+public class ActivityMenuMusic extends ActivityMaster
 implements OnItemClickListener {
 
 	/**
