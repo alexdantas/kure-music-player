@@ -17,9 +17,9 @@ import android.net.Uri;
 public class kMP {
 
 	/**
-	 * Big list of all songs on the device.
+	 * All the songs on the device.
 	 */
-	public static ArrayList<Song> songList;
+	public static SongList songs = new SongList();
 	
 	/**
 	 * Creates everything.
@@ -29,11 +29,7 @@ public class kMP {
 	 */
 	public static void initialize(Context c) {
 		
-
-		songList = new ArrayList<Song>();
-		
-		fillSongList(c);
-		sortSongListBy("Title");
+		songs.scanSongs(c);
 	}
 	
 	/**
@@ -43,75 +39,6 @@ public class kMP {
 	 * being destroyed.
 	 */
 	public static void destroy() {
-		
-	}
-	
-	/**
-	 * Fills the ListView with all the songs found on the device.
-	 */
-	public static void fillSongList(Context c) {
-		// This will ask for details on music files
-		ContentResolver musicResolver = c.getContentResolver();
-		
-		// This will contain the URI to music files.
-		// We're trying to get music from the SD card - EXTERNAL_CONTENT
-		Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		
-		// Pointer to database results when querying a resolver
-		Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
-		
-		if (musicCursor != null && musicCursor.moveToFirst())
-		{
-			// Getting pre-defined columns from the system
-			// They're the data from all music found on the URI.
-			int titleColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.TITLE);
-			
-			int idColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media._ID);
-			
-			int artistColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.ARTIST);
-			
-			// Adding songs to the list
-			do {
-				long   thisId     = musicCursor.getLong(idColumn);
-				String thisTitle  = musicCursor.getString(titleColumn);
-				String thisArtist = musicCursor.getString(artistColumn);
-				
-				songList.add(new Song(thisId, thisTitle, thisArtist));
-			}
-			while (musicCursor.moveToNext());
-		}
-		else
-		{
-			// What do I do if I can't find any songs?
-			songList.add(new Song(0, "No Songs Found", "On this Device"));
-		}
-	}
-	
-	/**
-	 * Sorts all the songs.
-	 * They can be sorted alphabetically by "Artist" or "Title".
-	 */
-	public static void sortSongListBy(String way) {
-		
-		if (way == "Artist")
-		{
-			Collections.sort(songList, new Comparator<Song>() {
-				public int compare(Song a, Song b)
-				{
-					return a.getArtist().compareTo(b.getArtist());
-				}
-			});
-		}
-		else {
-			Collections.sort(songList, new Comparator<Song>() {
-				public int compare(Song a, Song b)
-				{
-					return a.getTitle().compareTo(b.getTitle());
-				}
-			});
-		}
+		songs.destroy();
 	}
 }

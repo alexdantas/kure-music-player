@@ -71,7 +71,7 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 				
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
-		SongAdapter songAdapter = new SongAdapter(this, kMP.songList);
+		SongAdapter songAdapter = new SongAdapter(this, kMP.songs.songs);
 		songView.setAdapter(songAdapter);	
 		
 		setMusicController();
@@ -165,7 +165,7 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 			// Here's where we finally create the MusicService
 			// and set it's music list.
 			musicService = binder.getService();
-			musicService.setList(kMP.songList);
+			musicService.setList(kMP.songs.songs);
 			musicBound = true;
 		}; 
 		
