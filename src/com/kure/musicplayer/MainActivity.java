@@ -10,10 +10,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +34,7 @@ import com.kure.musicplayer.MusicService.MusicBinder;
  * 
  * It has a nice media control.
  */
-public class MainActivity extends Activity implements MediaPlayerControl{
+public class MainActivity extends Activity implements MediaPlayerControl {
 	
 	/**
 	 * Big list of all songs on the device.
@@ -77,6 +79,9 @@ public class MainActivity extends Activity implements MediaPlayerControl{
 		songView.setAdapter(songAdapter);	
 		
 		setMusicController();
+		
+		// Loading default settings
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 	}
 
 	/**
@@ -233,6 +238,7 @@ public class MainActivity extends Activity implements MediaPlayerControl{
 			break;
 			
 		case R.id.action_settings:
+			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
 		}
 		
@@ -401,7 +407,7 @@ public class MainActivity extends Activity implements MediaPlayerControl{
 		super.onPause();
 		
 		paused = true;
-		playbackPaused = true;
+		playbackPaused = true;		
 	}
 	@Override
 	protected void onResume() {
@@ -411,11 +417,11 @@ public class MainActivity extends Activity implements MediaPlayerControl{
 			// is shown when the user returns to the app
 			setMusicController();
 			paused = false;
-		}
+		}		
 	}
 	@Override
 	protected void onStop() {
-		musicController	.hide();
-		super.onStop();
+		musicController.hide();
+		super.onStop();		
 	}
 }

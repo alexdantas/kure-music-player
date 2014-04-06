@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="Sharing"
+        android:key="sharing">
+        
+        <CheckBoxPreference 
+            android:key="lastfm"
+            android:summary="(requires `Scrobble Droid` to be installed)"
+            android:title="Send details of played tracks to Last.fm" 
+            android:defaultValue="false"
+        />
+            
+    </PreferenceCategory>
+    
+</PreferenceScreen>

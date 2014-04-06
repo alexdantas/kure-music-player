@@ -8,12 +8,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -171,6 +173,9 @@ public class MusicService extends Service implements
 		
 		// Sets the notification to run on the foreground.
 		startForeground(NOTIFY_ID, notification);
+		
+		// Can only send to last.fm when prepared.
+		scrobbleCurrentSong();
 	}
 	
 	/**
@@ -193,7 +198,6 @@ public class MusicService extends Service implements
 			mp.reset();
 			next();
 		}
-		
 	}
 
 	@Override
@@ -253,6 +257,8 @@ public class MusicService extends Service implements
 
 	public void pausePlayer() {
 		player.pause();
+		
+		scrobbleCurrentSong();
 	}
 
 	public void seekTo(int position) {
@@ -261,9 +267,50 @@ public class MusicService extends Service implements
 
 	public void start() {
 		player.start();
+		
+		scrobbleCurrentSong();
 	}
 	
 	public void toggleShuffleMode() {
 		shuffleMode = !shuffleMode;
+	}
+	
+	
+	public long getCurrentSongId() {
+		Song currentSong = songs.get(currentSongPosition);
+		
+		return currentSong.getId(); 
+	}
+	
+	/**
+	 * Last.fm support!
+	 * 
+	 * We'll send our current song to ScrobbleDroid ONLY IF
+	 * the preference for it is enabled.
+	 * 
+	 * This needs to be called as often as possible - when pausing,
+	 * resuming, when the track is going to be changed, when the
+	 * track is changed...
+	 * 
+	 * @note To avoid concurrency issues, make sure to clal
+	 *       this method only when the music player is prepared!
+	 * @see onPrepared()
+	 */
+	private void scrobbleCurrentSong() {
+		// We'll check the settings first
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		boolean sendToLastFm = preferences.getBoolean("lastfm", false);
+		if (!sendToLastFm)
+			return;
+
+		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
+		
+		boolean isPlaying = isPlaying();
+		
+		scrobble.putExtra("playing", isPlaying);
+		scrobble.putExtra("id", getCurrentSongId());
+		
+		sendBroadcast(scrobble);
 	}
 }
