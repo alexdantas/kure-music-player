@@ -17,19 +17,30 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-        <activity
-            android:name="com.kure.musicplayer.MainActivity"
+       <activity
+            android:name=".activities.MainMenuActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
+            
+            <!-- This is how we know this is the main Activity to
+                 start first -->
+                 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
 
-        <service android:name="com.kure.musicplayer.MusicService"></service>
+        <service android:name=".MusicService"></service>
         
         <activity
             android:name=".SettingsActivity"

@@ -59,6 +59,11 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	private boolean paused = false;
 	private boolean playbackPaused = false;
 	
+	// THESE ARE THE METHODS THAT CONTROL THE ACTIVITY LIFECYCLE
+	
+	/**
+	 * Activity is being created for the first time.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -84,6 +89,74 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 	}
 
+	/**
+	 * Activity is about to become visible.
+	 * 
+	 * Makes the Service start whenever the Activity is shown.
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		if (playIntent == null) {
+			// Start the MusicService with our list of musics
+			playIntent = new Intent(this, MusicService.class);
+			bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+			startService(playIntent);
+		}
+	};	
+	
+	/**
+	 * Another Activity is taking focus.
+	 * (either from user going to another Activity or home)
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		paused = true;
+		playbackPaused = true;		
+	}
+	
+	/**
+	 * Activity has become visible.
+	 * 
+	 * @see onPause()
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (paused) {
+			// Ensure that the controller
+			// is shown when the user returns to the app
+			setMusicController();
+			paused = false;
+		}		
+	}
+	
+	/**
+	 * Activity is no longer visible.
+	 */
+	@Override
+	protected void onStop() {
+		musicController.hide();
+		super.onStop();		
+	}
+	
+	/**
+	 * Activity is about to be destroyed.
+	 */
+	@Override
+	protected void onDestroy() {
+		// Cleaning up everything
+		stopService(playIntent);
+		musicService = null;
+		
+		super.onDestroy();
+	}
+	
+	// END OF ACTIVITY LIFECYCLE METHODS
+	
 	/**
 	 * The actual connection to the MusicService.
 	 * We start it with an Intent.
@@ -111,21 +184,6 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		}
 		
 	};
-	
-	/**
-	 * Makes the Service start whenever the Activity gets started.
-	 */
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		if (playIntent == null) {
-			// Start the MusicService with our list of musics
-			playIntent = new Intent(this, MusicService.class);
-			bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-			startService(playIntent);
-		}
-	};	
 	
 	/**
 	 * Fills the ListView with all the songs found on the device.
@@ -262,15 +320,6 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		
 		musicController.show(0);
 	}
-	
-	@Override
-	protected void onDestroy() {
-		// Cleaning up everything
-		stopService(playIntent);
-		musicService = null;
-		
-		super.onDestroy();
-	}
 
 	
 	// These are the methods to implement for the MediaPlayerControl
@@ -400,28 +449,5 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		}
 		
 		musicController.show(0); //immediately
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		paused = true;
-		playbackPaused = true;		
-	}
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (paused) {
-			// Ensure that the controller
-			// is shown when the user returns to the app
-			setMusicController();
-			paused = false;
-		}		
-	}
-	@Override
-	protected void onStop() {
-		musicController.hide();
-		super.onStop();		
 	}
 }
