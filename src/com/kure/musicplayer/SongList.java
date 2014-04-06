@@ -9,7 +9,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.provider.MediaStore.MediaColumns;
 
 /**
  * Global interface to all the songs this app can see.

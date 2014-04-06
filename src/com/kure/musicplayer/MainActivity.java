@@ -212,7 +212,7 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 			break;
 			
 		case R.id.action_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
+			//
 			return true;
 		}
 		

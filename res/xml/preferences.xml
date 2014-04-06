@@ -2,17 +2,33 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory
+        android:title="Appearance"
+        android:key="appearance" 
+        >
+        
+        <ListPreference
+            android:key="themes"
+            android:title="@string/menu_settings_themes_title"
+            android:summary="@string/menu_settings_themes_subtitle"
+            android:entries="@array/themes" 
+            android:entryValues="@array/themes_values"
+            android:defaultValue="1"
+            />
+        
+    </PreferenceCategory>
+    
     <PreferenceCategory 
         android:title="Sharing"
         android:key="sharing">
         
         <CheckBoxPreference 
             android:key="lastfm"
-            android:summary="(requires `Scrobble Droid` to be installed)"
-            android:title="Send details of played tracks to Last.fm" 
+            android:title="@string/menu_settings_lastfm_title"
+            android:summary="@string/menu_settings_lastfm_subtitle"
             android:defaultValue="false"
         />
             
     </PreferenceCategory>
-    
+        
 </PreferenceScreen>

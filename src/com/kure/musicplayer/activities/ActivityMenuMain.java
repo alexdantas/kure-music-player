@@ -91,7 +91,7 @@ public class ActivityMenuMain extends Activity
 			startActivity(new Intent(this, ActivityMenuMusic.class));
 		}
 		else if (currentItem == getString(R.string.menu_main_settings)) {
-			
+			startActivity(new Intent(this, ActivityMenuSettings.class));
 		}
 		else if (currentItem == getString(R.string.menu_main_shuffle)) {
 			
