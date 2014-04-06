@@ -8,7 +8,8 @@ import android.widget.MediaController;
  * the music playback.
  * 
  * The actual code for changing the music resides
- * at MusicService.
+ * at MusicService, we're only changing the appearance
+ * of things.
  */
 public class MusicController extends MediaController {
 
@@ -20,7 +21,5 @@ public class MusicController extends MediaController {
 	 * We're overriding the parent's `hide` method, so we
 	 * can prevent the controls from hiding after 3 seconds.
 	 */
-	public void hide() {
-		
-	}
+	public void hide() { }
 }

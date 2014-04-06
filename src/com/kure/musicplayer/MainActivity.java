@@ -273,7 +273,7 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	}
 
 	
-	// These are the methods to implement for the MediaPlayerController.
+	// These are the methods to implement for the MediaPlayerControl
 	// They're called by the Android System.
 	
 	private MusicController musicController;

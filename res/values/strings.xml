@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Kure Music Player</string>
-    <string name="action_settings">Settings</string>
+    <string name="settings">Settings</string>
     <string name="shuffle">Shuffle</string>
     <string name="end">Quit</string>
     <string name="title_activity_mainn">MainActivity</string>
