@@ -22,9 +22,9 @@ public class kMP {
 	 * of the program.
 	 */
 	public static void initialize(Context c) {
-		
+
 		songs.setContent("external");
-		songs.scanSongs(c);
+
 	}
 	
 	/**

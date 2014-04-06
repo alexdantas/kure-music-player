@@ -4,12 +4,15 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
@@ -39,7 +42,7 @@ public class MainMenuActivity extends Activity
 	 * Look for it inside the res/layout xml files.
 	 */
 	ListView listView;
-	
+		
 	/**
 	 * Called when the activity is created for the first time.
 	 */
@@ -67,6 +70,11 @@ public class MainMenuActivity extends Activity
 		
 		// Initializing the main program logic.
 		kMP.initialize(this);
+		
+		// Loading all the songs from the device on a
+		// different thread.
+		// See right at the end of this class.
+		new ScanSongs().execute();
 	}
 
 	/**
@@ -103,5 +111,51 @@ public class MainMenuActivity extends Activity
 		// Need to clear all the items otherwise
 		// they'll keep adding up.
 		items.clear();
+	}
+	
+	// HELPER METHODS
+	
+	/**
+	 * Does an action on another Thread.
+	 * 
+	 * On this case, we'll scan the songs on the Android device
+	 * without blocking the main Thread.
+	 * 
+	 * It gives a nice pop-up when finishes.
+	 * 
+	 * Source:
+	 * http://answers.oreilly.com/topic/2699-how-to-handle-threads-in-android-and-what-you-need-to-watch-for/
+	 */
+	class ScanSongs extends AsyncTask<String, Integer, String> {
+
+		/**
+		 * The action we'll do in the background.
+		 */
+		@Override
+		protected String doInBackground(String... params) {
+			
+			try {
+				// Will scan all songs on the device
+				kMP.songs.scanSongs(MainMenuActivity.this);
+				return "Finished scanning songs";
+			}
+			catch (Exception e) {
+				Log.e("Couldn't execute background task", e.toString());
+				e.printStackTrace();
+				return "Failed to scan songs";
+			}
+		}
+		
+		/**
+		 * Called once the background processing is done.
+		 */
+		@Override
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+			
+			Toast.makeText(MainMenuActivity.this,
+					       result,
+					       Toast.LENGTH_LONG).show();
+		}
 	}
 }
