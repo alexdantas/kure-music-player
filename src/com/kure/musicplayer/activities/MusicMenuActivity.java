@@ -11,18 +11,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.kure.musicplayer.MainActivity;
 import com.kure.musicplayer.R;
 
 /**
- * First screen that the user sees - the Main Menu.
+ * Direct sub menu for the Main Menu, showing other
+ * sub menus related to Music, such as "Artists", "Albums"
+ * and "All Songs".
  * 
- * Must listen for clicks so we can change to the other
- * sub menus (Activities).
- * 
- * Thanks for providing a basic ListView navigation layout: 
- * http://stackoverflow.com/q/19476948
  */
-public class MainMenuActivity extends Activity
+public class MusicMenuActivity extends Activity
 	implements OnItemClickListener {
 
 	/**
@@ -30,7 +28,7 @@ public class MainMenuActivity extends Activity
 	 * 
 	 * Will be initialized with default values on `onCreate`.
 	 */
-	public static final ArrayList<String> items = new ArrayList<String>();
+	public static ArrayList<String> items = new ArrayList<String>();
 
 	/**
 	 * List that will be populated with all the items.
@@ -48,9 +46,11 @@ public class MainMenuActivity extends Activity
 		setContentView(R.layout.activity_main_menu);
 	
 		// Adding all possible items on the menu.
-		items.add(getString(R.string.menu_main_music));
-		items.add(getString(R.string.menu_main_settings));
-		items.add(getString(R.string.menu_main_shuffle));
+		items.add(getString(R.string.menu_music_playlists));
+		items.add(getString(R.string.menu_music_artists));		
+		items.add(getString(R.string.menu_music_albums));
+		items.add(getString(R.string.menu_music_genres));
+		items.add(getString(R.string.menu_music_songs));
 		
 		// List to be populated with items
 		listView = (ListView)findViewById(R.id.activity_main_menu_list);
@@ -75,15 +75,21 @@ public class MainMenuActivity extends Activity
 		// compares to all possible items.
 		String currentItem = listView.getItemAtPosition(position).toString();
 		
-		if (currentItem == getString(R.string.menu_main_music)) {
-			startActivity(new Intent(this, MusicMenuActivity.class));
-		}
-		else if (currentItem == getString(R.string.menu_main_settings)) {
+		if (currentItem == getString(R.string.menu_music_playlists)) {
 			
 		}
-		else if (currentItem == getString(R.string.menu_main_shuffle)) {
+		else if (currentItem == getString(R.string.menu_music_artists)) {
+			
+		}
+		else if (currentItem == getString(R.string.menu_music_albums)) {
 			
 		}		
+		else if (currentItem == getString(R.string.menu_music_songs)) {
+			startActivity(new Intent(this, MainActivity.class));
+		}
+		else if (currentItem == getString(R.string.menu_music_genres)) {
+			
+		}
 		else {
 			
 		}

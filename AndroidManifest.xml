@@ -34,6 +34,14 @@
         </activity>
         
         <activity
+            android:name=".activities.MusicMenuActivity"
+            android:label="@string/menu_main_music"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            >
+        </activity>
+        
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
