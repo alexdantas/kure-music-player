@@ -1,13 +1,7 @@
 package com.kure.musicplayer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
+
 
 /**
  * Big class that contains the main logic behind kure Music Player.
@@ -29,6 +23,7 @@ public class kMP {
 	 */
 	public static void initialize(Context c) {
 		
+		songs.setContent("external");
 		songs.scanSongs(c);
 	}
 	

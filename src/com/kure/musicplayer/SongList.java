@@ -32,6 +32,13 @@ public class SongList {
 	 */
 	private boolean scannedSongs;
 	
+	/**
+	 * Where we'll scan for songs.
+	 * 
+	 * It can be "internal" (for songs inside the phone) or
+	 * "external" (for songs on the SD card).
+	 */
+	private String songSource;
 	
 	/**
 	 * Default constructor, setting everything to default.
@@ -40,6 +47,8 @@ public class SongList {
 		songs = new ArrayList<Song>();
 		
 		scannedSongs = false;
+		
+		songSource = "internal";
 	}
 	
 	/**
@@ -49,6 +58,11 @@ public class SongList {
 	 */
 	public boolean isInitialized() {
 		return scannedSongs;
+	}
+	
+	public void setContent(String where) {
+		if (where == "internal" || where == "external")
+			songSource = where;
 	}
 	
 	/**
@@ -63,7 +77,9 @@ public class SongList {
 		
 		// This will contain the URI to music files.
 		// We're trying to get music from the SD card - EXTERNAL_CONTENT
-		Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+		Uri musicUri = ((songSource == "internal") ?
+				        android.provider.MediaStore.Audio.Media.INTERNAL_CONTENT_URI:
+				        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 		
 		// Pointer to database results when querying a resolver
 		Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -104,6 +120,8 @@ public class SongList {
 				return a.getTitle().compareTo(b.getTitle());
 			}
 		});
+		
+		scannedSongs = true;
 	}
 
 	public void destroy() {
