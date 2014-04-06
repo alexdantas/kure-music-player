@@ -16,6 +16,11 @@ public class kMP {
 	public static SongList songs = new SongList();
 	
 	/**
+	 * All the app's configurations/preferences/settings.
+	 */
+	public static Settings settings = new Settings();
+	
+	/**
 	 * Creates everything.
 	 * 
 	 * Must be called only once at the beginning
@@ -24,7 +29,8 @@ public class kMP {
 	public static void initialize(Context c) {
 
 		songs.setContent("external");
-
+		settings.load(c);
+		
 	}
 	
 	/**

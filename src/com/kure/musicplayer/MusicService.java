@@ -8,14 +8,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -297,13 +295,11 @@ public class MusicService extends Service implements
 	 * @see onPrepared()
 	 */
 	private void scrobbleCurrentSong() {
-		// We'll check the settings first
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		boolean sendToLastFm = preferences.getBoolean("lastfm", false);
-		if (!sendToLastFm)
+		// Only scrobbling if the user lets us
+		if (! kMP.settings.get("lastfm", false))
 			return;
-
+		
 		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
 		
 		boolean isPlaying = isPlaying();
