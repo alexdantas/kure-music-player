@@ -53,7 +53,7 @@ public class SongList {
 	public SongList() {
 		songs = new ArrayList<Song>();
 		
-		scannedSongs = false;
+		scannedSongs  = false;
 		scanningSongs = false;
 		
 		songSource = "internal";
@@ -112,14 +112,21 @@ public class SongList {
 		
 		if (musicCursor != null && musicCursor.moveToFirst())
 		{
-			// Adding songs to the list
+			// We'll use those to retrieve specific columns
+			int idColumn     = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+			int titleColumn  = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+			int artistColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
+			int albumColumn  = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ALBUM);
+			int yearColumn   = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.YEAR);
+
+			// Adding all songs to the list, one by row
 			do {
 				// Creating a song from the values on the row
-				Song song = new Song(musicCursor.getInt(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID)),
-						             musicCursor.getString(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE)),
-						             musicCursor.getString(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST)),
-						             musicCursor.getString(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ALBUM)),
-						             musicCursor.getInt(musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.YEAR)));
+				Song song = new Song(musicCursor.getInt(idColumn),
+						             musicCursor.getString(titleColumn),
+						             musicCursor.getString(artistColumn),
+						             musicCursor.getString(albumColumn),
+						             musicCursor.getInt(yearColumn));
 				
 				songs.add(song);
 			}
@@ -134,6 +141,7 @@ public class SongList {
 					           "kMP",
 					           2014));
 		}
+		musicCursor.close();
 		
 		// Finally, let's sort the song list alphabetically
 		// based on the song title.
