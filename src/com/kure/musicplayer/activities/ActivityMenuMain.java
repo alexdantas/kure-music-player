@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -59,17 +60,21 @@ public class ActivityMenuMain extends ActivityMaster
 		// We need to load the settings right before creating
 		// the first activity so that the user-selected theme
 		// will be applied to the first screen.
+		//
+		// Loading default settings at the first time the app;
+		// is loaded.
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		kMP.settings.load(this);
-		
+				
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 	
-		// Adding all possible items on the menu.
+		// Adding all possible items on the main menu.
 		items.add(getString(R.string.menu_main_music));
 		items.add(getString(R.string.menu_main_settings));
 		items.add(getString(R.string.menu_main_shuffle));
 		
-		// List to be populated with items
+		// ListView to be populated with the menu items
 		listView = (ListView)findViewById(R.id.activity_main_menu_list);
 		
 		// Adapter that will convert from Strings to List Items
@@ -79,15 +84,18 @@ public class ActivityMenuMain extends ActivityMaster
 		// Filling teh list with all the items
 		listView.setAdapter(adapter);
 		
+		// We'll get warned when the user clicks on an item.
 		listView.setOnItemClickListener(this);
 		
 		// Initializing the main program logic.
 		kMP.initialize(this);
 		
-		// Loading all the songs from the device on a
-		// different thread.
-		// See right at the end of this class.
-		new ScanSongs().execute();
+		// Loading all the songs from the device on a different thread.
+		// We'll only actually do it if they weren't loaded already
+		//
+		// See the implementation right at the end of this class.
+		if (! kMP.songs.isInitialized())
+			new ScanSongs().execute();
 	}
 
 	/**
@@ -183,6 +191,7 @@ public class ActivityMenuMain extends ActivityMaster
 		
 		kMP.startMusicService(this);
 	}
+	
 	// HELPER METHODS
 	
 	/**

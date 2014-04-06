@@ -31,12 +31,22 @@ public class MusicService extends Service implements
 	MediaPlayer.OnErrorListener,
 	MediaPlayer.OnCompletionListener {
 
+	/**
+	 * Android Media Player - we control it in here.
+	 */
 	private MediaPlayer player;
+	
+	/**
+	 * List of songs we're  currently playing.
+	 */
 	private ArrayList<Song> songs;
+	
+	/**
+	 * Index of the current song we're playing on the `songs` list.
+	 */
 	private int currentSongPosition;
 	
-	private final IBinder musicBind = new MusicBinder();
-	
+		
 	// We'll compose the text to be shown on the notification
 	// area based on those variables
 	private String currentSongTitle  = "";
@@ -47,10 +57,15 @@ public class MusicService extends Service implements
 	 */
 	private static final int NOTIFY_ID = 1;
 	
+	/**
+	 * Flag that indicates whether we're at Shuffle mode.
+	 */
 	private boolean shuffleMode = false;
-	private Random random;
 	
-	public boolean musicBound = false;
+	/**
+	 * Random number generator for the Shuffle Mode.
+	 */
+	private Random random;
 	
 	/**
 	 * Whenever we're created, reset the MusicPlayer.
@@ -88,30 +103,6 @@ public class MusicService extends Service implements
 	
 	public void setList(ArrayList<Song> theSongs) {
 		songs = theSongs;
-	}
-	
-	/**
-	 * Interaction between Activity and Service.
-	 */
-	public class MusicBinder extends Binder {
-		MusicService getService() {
-			return MusicService.this;
-		}
-	}
-	
-	@Override
-	public IBinder onBind(Intent intent) {
-		return musicBind;
-	}
-
-	/**
-	 * Stop the service when the user exists the app.
-	 */
-	@Override
-	public boolean onUnbind(Intent intent) {
-		player.stop();
-		player.release();
-		return false;
 	}
 	
 	/**
@@ -311,5 +302,47 @@ public class MusicService extends Service implements
 		scrobble.putExtra("id", getCurrentSongId());
 		
 		sendBroadcast(scrobble);
+	}
+	
+	// THESE ARE METHODS RELATED TO CONNECTING THE SERVICE
+	// TO THE ANDROID PLATFORM
+	// NOTHING TO DO WITH MUSIC-PLAYING
+	
+	/**
+	 * Tells if this service is bound to an Activity.
+	 */
+	public boolean musicBound = false;
+	
+	/**
+	 * Defines the interaction between an Activity and this Service.
+	 */
+	public class MusicBinder extends Binder {
+		MusicService getService() {
+			return MusicService.this;
+		}
+	}
+	
+	/**
+	 * Token for the interaction between an Activity and this Service.
+	 */
+	private final IBinder musicBind = new MusicBinder();
+
+	/**
+	 * Called when the Service is finally bound to the app.
+	 */
+	@Override
+	public IBinder onBind(Intent intent) {
+		return musicBind;
+	}
+
+	/**
+	 * Called when the Service is unbound - user quitting
+	 * the app or something.
+	 */
+	@Override
+	public boolean onUnbind(Intent intent) {
+		player.stop();
+		player.release();
+		return false;
 	}
 }

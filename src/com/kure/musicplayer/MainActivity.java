@@ -1,12 +1,7 @@
 package com.kure.musicplayer;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,21 +48,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		songView.setAdapter(songAdapter);	
 		
 		setMusicController();
-		
-		// Loading default settings
-		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 	}
 
-	/**
-	 * Activity is about to become visible.
-	 * 
-	 * Makes the Service start whenever the Activity is shown.
-	 */
-	@Override
-	protected void onStart() {
-		super.onStart();
-	};	
-	
 	/**
 	 * Another Activity is taking focus.
 	 * (either from user going to another Activity or home)
@@ -104,16 +86,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		musicController.hide();
 		super.onStop();		
 	}
-	
-	/**
-	 * Activity is about to be destroyed.
-	 */
-	@Override
-	protected void onDestroy() {
 
-		super.onDestroy();
-	}
-	
+
 	// END OF ACTIVITY LIFECYCLE METHODS
 		
 	/**

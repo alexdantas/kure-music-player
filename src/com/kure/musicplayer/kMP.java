@@ -69,7 +69,6 @@ public class kMP {
 			MusicBinder binder = (MusicBinder)service;
 			
 			// Here's where we finally create the MusicService
-			// and set it's music list.
 			musicService = binder.getService();
 			musicService.setList(kMP.songs.songs);
 			musicService.musicBound = true;
@@ -111,6 +110,9 @@ public class kMP {
 	 * Activity/Context c.
 	 */
 	public static void stopMusicService(Context c) {
+		if (musicServiceIntent == null)
+			return;
+		
 		c.stopService(musicServiceIntent);
 		musicServiceIntent = null;
 		
