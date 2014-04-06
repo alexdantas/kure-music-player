@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 import com.kure.musicplayer.MainActivity;
 import com.kure.musicplayer.R;
+import com.kure.musicplayer.kMP;
 
 /**
  * Direct sub menu for the Main Menu, showing other
@@ -71,6 +72,12 @@ public class MusicMenuActivity extends Activity
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+		// We can only handle the user choice from now on
+		// if we've successfuly scanned the songs from the
+		// device.
+		if (! kMP.songs.isInitialized())
+			return;
+		
 		// Gets the string value of the current item and
 		// compares to all possible items.
 		String currentItem = listView.getItemAtPosition(position).toString();

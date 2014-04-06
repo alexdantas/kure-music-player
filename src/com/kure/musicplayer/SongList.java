@@ -33,6 +33,12 @@ public class SongList {
 	private boolean scannedSongs;
 	
 	/**
+	 * Safety measure to avoid scanning songs twice on
+	 * different threads.
+	 */
+	private boolean scanningSongs;
+	
+	/**
 	 * Where we'll scan for songs.
 	 * 
 	 * It can be "internal" (for songs inside the phone) or
@@ -47,6 +53,7 @@ public class SongList {
 		songs = new ArrayList<Song>();
 		
 		scannedSongs = false;
+		scanningSongs = false;
 		
 		songSource = "internal";
 	}
@@ -71,6 +78,11 @@ public class SongList {
 	 * @param c The current Activity's Context.
 	 */
 	public void scanSongs(Context c) {
+		
+		// "Thread Safety"
+		if (scanningSongs)
+			return;
+		scanningSongs = true;
 		
 		// This will ask for details on music files
 		ContentResolver musicResolver = c.getContentResolver();
@@ -122,6 +134,7 @@ public class SongList {
 		});
 		
 		scannedSongs = true;
+		scanningSongs = false;
 	}
 
 	public void destroy() {

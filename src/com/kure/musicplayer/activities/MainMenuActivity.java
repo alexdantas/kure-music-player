@@ -95,6 +95,11 @@ public class MainMenuActivity extends Activity
 		}
 		else if (currentItem == getString(R.string.menu_main_shuffle)) {
 			
+			// Can only jump to shuffle all songs if we've
+			// scanned all the songs from the device.
+			if (kMP.songs.isInitialized()) {
+				
+			}
 		}		
 		else {
 			
@@ -111,6 +116,21 @@ public class MainMenuActivity extends Activity
 		// Need to clear all the items otherwise
 		// they'll keep adding up.
 		items.clear();
+	}
+
+	/**
+	 * We're overriding the default behavior for when the
+	 * user presses the back button.
+	 * 
+	 * This way, it'll not react at all.
+	 * 
+	 * TODO Improve on this - make it so that when doing this
+	 *      will just keep the app running on the background.
+	 */
+	@Override
+	public void onBackPressed() {
+		// default behavior:
+		// finish();
 	}
 	
 	// HELPER METHODS
