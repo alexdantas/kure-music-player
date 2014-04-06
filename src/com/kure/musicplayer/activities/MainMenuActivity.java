@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.kure.musicplayer.R;
+import com.kure.musicplayer.kMP;
 
 /**
  * First screen that the user sees - the Main Menu.
@@ -63,6 +64,9 @@ public class MainMenuActivity extends Activity
 		listView.setAdapter(adapter);
 		
 		listView.setOnItemClickListener(this);
+		
+		// Initializing the main program logic.
+		kMP.initialize();
 	}
 
 	/**
