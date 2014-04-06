@@ -36,11 +36,6 @@ import com.kure.musicplayer.MusicService.MusicBinder;
  */
 public class MainActivity extends Activity implements MediaPlayerControl {
 	
-	/**
-	 * Big list of all songs on the device.
-	 */
-	private ArrayList<Song> songList;
-	
 	private ListView songView;
 	
 	/**
@@ -73,14 +68,10 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		// Let's fill ourselves with all the songs
 		// available on the device.
 		songView = (ListView)findViewById(R.id.song_list);
-		songList = new ArrayList<Song>();
-		
-		fillSongList();
-		sortSongListBy("Title");
-		
+				
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
-		SongAdapter songAdapter = new SongAdapter(this, songList);
+		SongAdapter songAdapter = new SongAdapter(this, kMP.songList);
 		songView.setAdapter(songAdapter);	
 		
 		setMusicController();
@@ -174,7 +165,7 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 			// Here's where we finally create the MusicService
 			// and set it's music list.
 			musicService = binder.getService();
-			musicService.setList(songList);
+			musicService.setList(kMP.songList);
 			musicBound = true;
 		}; 
 		
@@ -185,74 +176,7 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		
 	};
 	
-	/**
-	 * Fills the ListView with all the songs found on the device.
-	 */
-	public void fillSongList() {
-		// This will ask for details on music files
-		ContentResolver musicResolver = getContentResolver();
-		
-		// This will contain the URI to music files.
-		// We're trying to get music from the SD card - EXTERNAL_CONTENT
-		Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		
-		// Pointer to database results when querying a resolver
-		Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
-		
-		if (musicCursor != null && musicCursor.moveToFirst())
-		{
-			// Getting pre-defined columns from the system
-			// They're the data from all music found on the URI.
-			int titleColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.TITLE);
-			
-			int idColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media._ID);
-			
-			int artistColumn = musicCursor.getColumnIndex
-					(android.provider.MediaStore.Audio.Media.ARTIST);
-			
-			// Adding songs to the list
-			do {
-				long   thisId     = musicCursor.getLong(idColumn);
-				String thisTitle  = musicCursor.getString(titleColumn);
-				String thisArtist = musicCursor.getString(artistColumn);
-				
-				songList.add(new Song(thisId, thisTitle, thisArtist));
-			}
-			while (musicCursor.moveToNext());
-		}
-		else
-		{
-			// What do I do if I can't find any songs?
-			songList.add(new Song(0, "No Songs Found", "On this Device"));
-		}
-	}
-	
-	/**
-	 * Sorts all the songs.
-	 * They can be sorted alphabetically by "Artist" or "Title".
-	 */
-	public void sortSongListBy(String way) {
-		
-		if (way == "Artist")
-		{
-			Collections.sort(songList, new Comparator<Song>() {
-				public int compare(Song a, Song b)
-				{
-					return a.getArtist().compareTo(b.getArtist());
-				}
-			});
-		}
-		else {
-			Collections.sort(songList, new Comparator<Song>() {
-				public int compare(Song a, Song b)
-				{
-					return a.getTitle().compareTo(b.getTitle());
-				}
-			});
-		}
-	}
+
 	
 	/**
 	 * Called when creating the top menu.

@@ -66,7 +66,7 @@ public class MainMenuActivity extends Activity
 		listView.setOnItemClickListener(this);
 		
 		// Initializing the main program logic.
-		kMP.initialize();
+		kMP.initialize(this);
 	}
 
 	/**
