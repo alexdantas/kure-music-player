@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -176,20 +177,6 @@ public class ActivityMenuMain extends ActivityMaster
 		
 		kMP.startMusicService(this);
 	}
-	
-	/**
-	 * Let's create the action bar (menu on the top).
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		
-		// Built based on the `res/menu/main.xml`
-		MenuInflater inflater= getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		
-		return super.onCreateOptionsMenu(menu);
-	}
-	
 	
 	// HELPER METHODS
 	

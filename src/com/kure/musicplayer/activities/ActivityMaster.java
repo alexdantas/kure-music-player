@@ -5,10 +5,17 @@ import com.kure.musicplayer.kMP;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 /**
  * Master Activity, from which every Activity other inherits.
+ * Contains things all other Activities have in common.
+ * 
  * This is needed so we can change the color theme at runtime.
+ * 
+ * Also, so every Activity can have the same Action Bar.
  * 
  * What we do is make each Activity keep track of which
  * theme it currently has.
@@ -88,6 +95,49 @@ public class ActivityMaster extends Activity {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Let's create the ActionBar (menu on the top).
+	 * 
+	 * @note If you don't want to have this action bar,
+	 *       simply override it on a child Activity.
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		// Built based on the `res/menu/main.xml`
+		MenuInflater inflater= getMenuInflater();
+		inflater.inflate(R.menu.action_bar, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	/**
+	 * This method gets called whenever the user clicks an
+	 * item on the ActionBar.
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch (item.getItemId()) {
+		
+		case R.id.action_bar_shuffle:
+			kMP.musicService.toggleShuffleMode();
+			return true;
+			
+		case R.id.action_bar_end:
+			
+			// This forces the system to kill the process, although
+			// it's not a nice way to do it.
+			//
+			// Later implement FinActivity:
+			// http://stackoverflow.com/a/4737595
+			System.exit(0);
+			break;
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 }
 

@@ -89,46 +89,6 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 
 
 	// END OF ACTIVITY LIFECYCLE METHODS
-		
-	/**
-	 * Called when creating the top menu.
-	 * It adds all the buttons on the `res/menu/main.xml` file.
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-	/**
-	 * This method gets called whenever the user clicks an
-	 * item on the top menu.
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		switch (item.getItemId()) {
-		
-		case R.id.action_shuffle:
-			kMP.musicService.toggleShuffleMode();
-			return true;
-			
-		case R.id.action_end:
-			
-			// This forces the system to kill the process, although
-			// it's not a nice way to do it.
-			//
-			// Later implement FinActivity:
-			// http://stackoverflow.com/a/4737595
-			System.exit(0);
-			break;
-		}
-		
-		return super.onOptionsItemSelected(item);
-	}
 	
 	/**
 	 * Gets called whenever the user touches the song on the View.
