@@ -2,6 +2,7 @@ package com.kure.musicplayer.activities;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -45,6 +46,12 @@ implements OnItemClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 	
+		// This enables the "Up" button on the top Action Bar
+		// Note that it returns to the parent Activity, specified
+		// on `AndroidManifest`
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		// Adding all possible items on the menu.
 		items.add(getString(R.string.menu_music_playlists));
 		items.add(getString(R.string.menu_music_artists));		

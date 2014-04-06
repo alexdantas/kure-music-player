@@ -117,7 +117,6 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 			return true;
 			
 		case R.id.action_end:
-		case R.id.action_end2:
 			
 			// This forces the system to kill the process, although
 			// it's not a nice way to do it.
@@ -126,10 +125,6 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 			// http://stackoverflow.com/a/4737595
 			System.exit(0);
 			break;
-			
-		case R.id.action_settings:
-			//
-			return true;
 		}
 		
 		return super.onOptionsItemSelected(item);

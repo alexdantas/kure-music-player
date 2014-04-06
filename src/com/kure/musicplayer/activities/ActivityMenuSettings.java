@@ -1,5 +1,6 @@
 package com.kure.musicplayer.activities;
 
+import android.app.ActionBar;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -57,8 +58,16 @@ public class ActivityMenuSettings extends PreferenceActivity
 		else if (theme.equals("solariezd"))
 			this.setTheme(R.style.Theme_Solarized);			
 		
+		// This enables the "Up" button on the top Action Bar
+		// Note that it returns to the parent Activity, specified
+		// on `AndroidManifest`
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		super.onCreate(savedInstanceState);
 		
+		// Populating the View with all the items from
+		// file `res/xml/preferences.xml`.
 		addPreferencesFromResource(R.xml.preferences);
 		
 		// We're asking to be notified when the user changes 

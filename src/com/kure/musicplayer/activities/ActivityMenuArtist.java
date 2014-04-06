@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,6 +44,12 @@ public class ActivityMenuArtist extends ActivityMaster
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_menu_artists);
+		
+		// This enables the "Up" button on the top Action Bar
+		// Note that it returns to the parent Activity, specified
+		// on `AndroidManifest`
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		// List to be populated with items
 		listView = (ListView)findViewById(R.id.activity_menu_artists_list);

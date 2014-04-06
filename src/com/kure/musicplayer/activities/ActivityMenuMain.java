@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -164,23 +166,6 @@ public class ActivityMenuMain extends ActivityMaster
 		// finish();
 	}
 	
-	
-	/**
-	 * Called when a spawned Activity returns.
-	 * 
-	 * We'll use it to see if the user changed the theme on Settings
-	 * and if he did, let's redraw our Activity.
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		if (requestCode == USER_CHANGED_THEME)
-			if (resultCode == RESULT_OK)
-				recreate();
-	}
-	
 	/**
 	 * Activity is about to become visible - let's start the music
 	 * service.
@@ -191,6 +176,20 @@ public class ActivityMenuMain extends ActivityMaster
 		
 		kMP.startMusicService(this);
 	}
+	
+	/**
+	 * Let's create the action bar (menu on the top).
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		// Built based on the `res/menu/main.xml`
+		MenuInflater inflater= getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
 	
 	// HELPER METHODS
 	

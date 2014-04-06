@@ -38,13 +38,23 @@
             android:label="@string/menu_main_music"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
+            android:parentActivityName=".activities.ActivityMenuMain"
             />       
+        
+        <activity
+            android:name=".activities.ActivityMenuSettings"
+            android:label="@string/settings"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activities.ActivityMenuMain"
+            />
         
         <activity
             android:name=".activities.ActivityMenuArtist"
             android:label="@string/menu_music_artists"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"            
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activities.ActivityMenuMusic"            
             />	
             
         <activity
@@ -52,23 +62,19 @@
             android:label="@string/menu_music_albums"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"            
+            android:parentActivityName=".activities.ActivityMenuMusic"
             />
-        
-        <activity
-            android:name=".activities.ActivityMenuSettings"
-            android:label="@string/settings"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" >
-		</activity>    
-		
+        		
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" >
-        </activity>
-
-        <service android:name=".MusicService"></service>       
+            android:screenOrientation="portrait"
+            />
+        
+        <service
+            android:name=".MusicService"
+            />
 		
     </application>
 
