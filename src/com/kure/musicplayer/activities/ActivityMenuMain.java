@@ -137,6 +137,8 @@ public class ActivityMenuMain extends ActivityMaster
 		// Need to clear all the items otherwise
 		// they'll keep adding up.
 		items.clear();
+		
+		kMP.stopMusicService(this);
 	}
 
 	/**
@@ -171,6 +173,16 @@ public class ActivityMenuMain extends ActivityMaster
 				recreate();
 	}
 	
+	/**
+	 * Activity is about to become visible - let's start the music
+	 * service.
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		kMP.startMusicService(this);
+	}
 	// HELPER METHODS
 	
 	/**

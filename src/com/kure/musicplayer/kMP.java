@@ -1,6 +1,12 @@
 package com.kure.musicplayer;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+
+import com.kure.musicplayer.MusicService.MusicBinder;
 
 
 /**
@@ -19,6 +25,12 @@ public class kMP {
 	 * All the app's configurations/preferences/settings.
 	 */
 	public static Settings settings = new Settings();
+	
+	/**
+	 * Our custom service that allows the music to play
+	 * even when the app is not on focus.
+	 */
+	public static MusicService musicService;
 	
 	/**
 	 * Creates everything.
@@ -40,5 +52,68 @@ public class kMP {
 	 */
 	public static void destroy() {
 		songs.destroy();
+	}
+	
+	/**
+	 * The actual connection to the MusicService.
+	 * We start it with an Intent.
+	 * 
+	 * These callbacks will bind the MusicService to our internal
+	 * variables.
+	 * We can only know it happened through our flag, `musicBound`. 
+	 */
+	public static ServiceConnection musicConnection = new ServiceConnection() {
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			MusicBinder binder = (MusicBinder)service;
+			
+			// Here's where we finally create the MusicService
+			// and set it's music list.
+			musicService = binder.getService();
+			musicService.setList(kMP.songs.songs);
+			musicService.musicBound = true;
+		}; 
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			musicService.musicBound = false;
+		}
+		
+	};
+
+	/**
+	 * Our will to start a new music Service.
+	 * Android requires that we start a service through an Intent.
+	 */
+	private static Intent musicServiceIntent = null;
+	
+	/**
+	 * Initializes the Music Service at Activity/Context c.
+	 * 
+	 * @note Only starts the service once - does nothing when
+	 *       called multiple times.
+	 */
+	public static void startMusicService(Context c) {
+
+		if (musicServiceIntent != null)
+			return;
+			
+		// Create an intent to bind our Music Connection to
+		// the MusicService.
+		musicServiceIntent = new Intent(c, MusicService.class);
+		c.bindService(musicServiceIntent, musicConnection, Context.BIND_AUTO_CREATE);
+		c.startService(musicServiceIntent);
+	}
+	
+	/**
+	 * Makes the music Service stop and clean itself at
+	 * Activity/Context c.
+	 */
+	public static void stopMusicService(Context c) {
+		c.stopService(musicServiceIntent);
+		musicServiceIntent = null;
+		
+		kMP.musicService = null;
 	}
 }

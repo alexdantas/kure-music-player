@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 
-import com.kure.musicplayer.MusicService.MusicBinder;
 
 /**
  * Main screen that will be shown when the user starts.
@@ -29,20 +28,7 @@ import com.kure.musicplayer.MusicService.MusicBinder;
 public class MainActivity extends Activity implements MediaPlayerControl {
 	
 	private ListView songView;
-	
-	/**
-	 * Our custom service that allows the music to play.
-	 * It'll be controlled here, on the MainActivity.
-	 */
-	private MusicService musicService;
-	
-	private Intent playIntent;
-	
-	/**
-	 * Tells if we bound the Activity class to the Service. 
-	 */
-	private boolean musicBound = false;
-	
+
 	private boolean paused = false;
 	private boolean playbackPaused = false;
 	
@@ -80,13 +66,6 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		
-		if (playIntent == null) {
-			// Start the MusicService with our list of musics
-			playIntent = new Intent(this, MusicService.class);
-			bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-			startService(playIntent);
-		}
 	};	
 	
 	/**
@@ -131,45 +110,12 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	 */
 	@Override
 	protected void onDestroy() {
-		// Cleaning up everything
-		stopService(playIntent);
-		musicService = null;
-		
+
 		super.onDestroy();
 	}
 	
 	// END OF ACTIVITY LIFECYCLE METHODS
-	
-	/**
-	 * The actual connection to the MusicService.
-	 * We start it with an Intent.
-	 * 
-	 * These callbacks will bind the MusicService to our internal
-	 * variables.
-	 * We can only know it happened through our flag, `musicBound`. 
-	 */
-	private ServiceConnection musicConnection = new ServiceConnection() {
 		
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			MusicBinder binder = (MusicBinder)service;
-			
-			// Here's where we finally create the MusicService
-			// and set it's music list.
-			musicService = binder.getService();
-			musicService.setList(kMP.songs.songs);
-			musicBound = true;
-		}; 
-		
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			musicBound = false;
-		}
-		
-	};
-	
-
-	
 	/**
 	 * Called when creating the top menu.
 	 * It adds all the buttons on the `res/menu/main.xml` file.
@@ -193,15 +139,11 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		switch (item.getItemId()) {
 		
 		case R.id.action_shuffle:
-			musicService.toggleShuffleMode();
+			kMP.musicService.toggleShuffleMode();
 			return true;
 			
 		case R.id.action_end:
 		case R.id.action_end2:
-			// Let's stop playing the music and
-			// quitting the App altogether
-			stopService(playIntent);
-			musicService = null;
 			
 			// This forces the system to kill the process, although
 			// it's not a nice way to do it.
@@ -226,8 +168,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	public void songPickedByUser(View view) {
 		// We're getting the song's index from the tag
 		// set to the View on SongAdapter.
-		musicService.setSong(Integer.parseInt(view.getTag().toString()));
-		musicService.playSong();
+		kMP.musicService.setSong(Integer.parseInt(view.getTag().toString()));
+		kMP.musicService.playSong();
 		
 		if (playbackPaused) {
 			setMusicController();
@@ -274,39 +216,39 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	
 	@Override
 	public void start() {
-		musicService.start();
+		kMP.musicService.start();
 	}
 
 	@Override
 	public void pause() {
-		musicService.pausePlayer();
+		kMP.musicService.pausePlayer();
 	}
 
 	@Override
 	public int getDuration() {
-		if (musicService != null && musicBound && musicService.isPlaying())
-			return musicService.getDuration();
+		if (kMP.musicService != null && kMP.musicService.musicBound && kMP.musicService.isPlaying())
+			return kMP.musicService.getDuration();
 		else
 			return 0;
 	}
 
 	@Override
 	public int getCurrentPosition() {
-		if (musicService != null && musicBound && musicService.isPlaying())
-			return musicService.getPosition();
+		if (kMP.musicService != null && kMP.musicService.musicBound && kMP.musicService.isPlaying())
+			return kMP.musicService.getPosition();
 		else
 			return 0;
 	}
 
 	@Override
 	public void seekTo(int position) {
-		musicService.seekTo(position);
+		kMP.musicService.seekTo(position);
 	}
 
 	@Override
 	public boolean isPlaying() {
-		if (musicService != null && musicBound)
-			return musicService.isPlaying();
+		if (kMP.musicService != null && kMP.musicService.musicBound)
+			return kMP.musicService.isPlaying();
 		
 		return false;
 	}
@@ -341,8 +283,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	// Back to the normal methods
 	
 	private void playNext() {
-		musicService.next();
-		musicService.playSong();
+		kMP.musicService.next();
+		kMP.musicService.playSong();
 		
 		// To prevent the MusicPlayer from behaving
 		// unexpectedly when we pause the song playback.		
@@ -354,8 +296,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		musicController.show(0); //immediately
 	}
 	private void playPrevious() {
-		musicService.previous();
-		musicService.playSong();
+		kMP.musicService.previous();
+		kMP.musicService.playSong();
 		
 		// To prevent the MusicPlayer from behaving
 		// unexpectedly when we pause the song playback.

@@ -17,7 +17,8 @@ import android.os.PowerManager;
 import android.util.Log;
 
 /**
- * Service that makes the music play.
+ * Service that makes the music play regardless if our
+ * app is on focus.
  * 
  * Note that it keeps the music playing even when the
  * device is locked.
@@ -48,6 +49,8 @@ public class MusicService extends Service implements
 	
 	private boolean shuffleMode = false;
 	private Random random;
+	
+	public boolean musicBound = false;
 	
 	/**
 	 * Whenever we're created, reset the MusicPlayer.
