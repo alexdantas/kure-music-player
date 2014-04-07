@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.kure.musicplayer.R;
@@ -60,6 +61,20 @@ public class ActivityListSongs extends ActivityMaster
 		// on `AndroidManifest`
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);	
+		
+		// If we press and hold on a Song, let's add to the current
+		// playing queue.
+		songListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				kMP.musicService.add(kMP.musicList.get(position));
+				return true;
+			}
+		});
+		
 	}
 	
 	/**

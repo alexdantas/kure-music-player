@@ -108,6 +108,13 @@ public class MusicService extends Service
 	}
 	
 	/**
+	 * Appends a `song` to the currently playing queue.
+	 */
+	public void add(Song song) {
+		songs.add(song);
+	}
+	
+	/**
 	 * Actually plays the song set by `currentSongPosition`.
 	 */
 	public void playSong() {

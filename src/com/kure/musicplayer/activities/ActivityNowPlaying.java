@@ -1,10 +1,12 @@
 package com.kure.musicplayer.activities;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 
@@ -59,16 +61,6 @@ public class ActivityNowPlaying extends ActivityMaster
 		
 		// Scroll the list view to the current song.
 		songListView.setSelection(kMP.nowPlayingIndex);
-
-		
-		// Attempt to change the background of current song
-		/*
-		View view = songListView.getChildAt(index - songListView.getFirstVisiblePosition());
-		if (view != null)
-		{
-			view.setBackgroundColor(Color.RED);
-		}
-		*/
 		
 		// We'll get warned when the user clicks on an item.
 		songListView.setOnItemClickListener(this);
