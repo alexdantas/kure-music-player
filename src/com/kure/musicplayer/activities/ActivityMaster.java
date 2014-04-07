@@ -128,6 +128,10 @@ public class ActivityMaster extends Activity {
 		case R.id.action_bar_shuffle:
 			kMP.musicService.toggleShuffleMode();
 			return true;
+			
+		case R.id.action_bar_repeat:
+			kMP.musicService.toggleRepeatMode();
+			return true;			
 
 		case R.id.context_menu_end:
 			

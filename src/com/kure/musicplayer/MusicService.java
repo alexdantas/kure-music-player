@@ -69,6 +69,8 @@ public class MusicService extends Service
 	 */
 	private Random random;
 	
+	private boolean repeatMode = false;
+	
 	/**
 	 * Whenever we're created, reset the MusicPlayer.
 	 */
@@ -197,8 +199,16 @@ public class MusicService extends Service
 	public void onCompletion(MediaPlayer mp) {
 		
 		if (player.getCurrentPosition() > 0) {
-			mp.reset();
-			next();
+			
+			if (repeatMode) {
+				scrobbleCurrentSong(false);
+				mp.reset();
+				playSong();
+			}
+			else {
+				mp.reset();
+				next();
+			}
 		}
 	}
 
@@ -233,6 +243,7 @@ public class MusicService extends Service
 	}
 	
 	public void next() {
+		
 		// TODO implement a queue of songs to prevent last songs
 		//      to be played
 		// TODO or maybe a playlist, whatever
@@ -288,6 +299,10 @@ public class MusicService extends Service
 	
 	public void toggleShuffleMode() {
 		shuffleMode = !shuffleMode;
+	}
+	
+	public void toggleRepeatMode() {
+		repeatMode = ! repeatMode;
 	}
 	
 	
