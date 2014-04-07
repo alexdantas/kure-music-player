@@ -1,9 +1,12 @@
 package com.kure.musicplayer.activities;
 
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 
@@ -18,7 +21,7 @@ import com.kure.musicplayer.adapters.AdapterSong;
  * letting the user change between songs with a MediaPlayerControl.
  */
 public class ActivityNowPlaying extends ActivityMaster
-	implements MediaPlayerControl {
+	implements MediaPlayerControl, OnItemClickListener {
 	
 	/**
 	 * List that will display all the songs.
@@ -45,7 +48,10 @@ public class ActivityNowPlaying extends ActivityMaster
 		// (thing that creates several Layouts from the song list)
 		AdapterSong songAdapter = new AdapterSong(this, kMP.nowPlayingList);
 		songListView.setAdapter(songAdapter);	
-		
+
+		// We'll get warned when the user clicks on an item.
+		songListView.setOnItemClickListener(this);
+	
 		// We expect an extra with the song to start playing
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
@@ -96,7 +102,7 @@ public class ActivityNowPlaying extends ActivityMaster
 		
 		if(event.getAction() == KeyEvent.ACTION_DOWN) 
 			if (keyCode == KeyEvent.KEYCODE_MENU)
-				musicController.show(0);
+				musicController.show();
 		
 		return super.onKeyDown(keyCode, event);
 	}
@@ -260,6 +266,24 @@ public class ActivityNowPlaying extends ActivityMaster
 		}
 		
 		musicController.show(0); //immediately
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		
+		// Prepare the music service to play the song.
+		kMP.musicService.setSong(position);
+		
+		// Scroll the list view to the current song.
+		songListView.setSelection(position);
+
+		
+		kMP.musicService.playSong();
+
+		if (playbackPaused) {
+			setMusicController();
+			playbackPaused = false;
+		}
 	}
 }
 

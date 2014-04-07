@@ -21,7 +21,7 @@ import com.kure.musicplayer.kMP;
  * 
  */
 public class ActivityMenuMusic extends ActivityMaster
-implements OnItemClickListener {
+	implements OnItemClickListener {
 
 	/**
 	 * All the possible items the user can select on this menu.

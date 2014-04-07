@@ -1,6 +1,8 @@
 package com.kure.musicplayer;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.MediaController;
 
 /**
@@ -21,5 +23,5 @@ public class MusicController extends MediaController {
 	 * We're overriding the parent's `hide` method, so we
 	 * can prevent the controls from hiding after 3 seconds.
 	 */
-	public void hide() { }
+	/*public void hide() { }*/
 }
