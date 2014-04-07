@@ -210,8 +210,6 @@ public class SongList {
 
 	/**
 	 * Returns a list of Songs belonging to a specified artist.
-	 * 
-	 * @param desiredArtist Artist that will be applied as filter.
 	 */
 	public ArrayList<Song> getSongsByArtist(String desiredArtist) {
 		ArrayList<Song> songsByArtist = new ArrayList<Song>();
@@ -234,6 +232,30 @@ public class SongList {
 		return songsByArtist;
 	}
 
+	/**
+	 * Returns a list of album names belonging to a specified artist.
+	 */
+	public ArrayList<String> getAlbumsByArtist(String desiredArtist) {
+		ArrayList<String> albumsByArtist = new ArrayList<String>();
+		
+		for (Song song : songs) {
+			String currentArtist = song.getArtist();
+			String currentAlbum  = song.getAlbum();
+			
+			if (currentArtist.equals(desiredArtist))
+				if (! albumsByArtist.contains(currentAlbum))
+					albumsByArtist.add(currentAlbum);
+		}
+		
+		// Sorting alphabetically
+		Collections.sort(albumsByArtist);
+		
+		return albumsByArtist;
+	}
+	
+	/**
+	 * Returns a list of Songs belonging to a specified album.
+	 */
 	public ArrayList<Song> getSongsByAlbum(String desiredAlbum) {
 		ArrayList<Song> songsByAlbum = new ArrayList<Song>();
 		

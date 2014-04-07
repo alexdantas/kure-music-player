@@ -70,7 +70,14 @@
             android:label="@string/songs"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            />        
+            />      
+            
+        <activity
+            android:name=".activities.ActivityListAlbums"
+            android:label="@string/songs"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            />      
         		
         <activity
             android:name=".MainActivity"

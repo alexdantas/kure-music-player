@@ -22,7 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
  *
  */
 public class ActivityMenuArtist extends ActivityMaster
-	implements OnItemClickListener {
+implements OnItemClickListener {
 
 	/**
 	 * All the possible items the user can select on this menu.
@@ -81,8 +81,24 @@ public class ActivityMenuArtist extends ActivityMaster
 		
 		String selectedArtist = items.get(position);
 		
-		kMP.musicList = kMP.songs.getSongsByArtist(selectedArtist);	
-		startActivity(new Intent(this, ActivityListSongs.class));
+		// Now we'll decide between going to two screens:
+		// - If the artist has only one album, show all his songs already!
+		// - If has more than one, show list of albums first.
+		ArrayList<String> albumsByArtist = kMP.songs.getAlbumsByArtist(selectedArtist);
+		
+		if (albumsByArtist.size() == 1) {
+			kMP.musicList = kMP.songs.getSongsByArtist(selectedArtist);	
+			startActivity(new Intent(this, ActivityListSongs.class));
+		}
+		else {
+			// We'll send the artist name to display his albums
+			// as an extra to this new Activity
+			Intent intent = new Intent(this, ActivityListAlbums.class);
+			
+			intent.putExtra("artist", selectedArtist);
+			
+			startActivity(intent);
+		}
 	}
 	
 	/**
