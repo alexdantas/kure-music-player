@@ -47,6 +47,15 @@ public class kMP {
 	public static ArrayList<Song> musicList = null;
 	
 	/**
+	 * List of the songs being currently played by the user.
+	 * 
+	 * (independent of the UI)
+	 * 
+	 * TODO remove this shit
+	 */
+	public static ArrayList<Song> nowPlayingList = null;
+	
+	/**
 	 * Creates everything.
 	 * 
 	 * Must be called only once at the beginning

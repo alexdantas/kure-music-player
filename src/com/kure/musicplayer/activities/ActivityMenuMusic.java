@@ -11,7 +11,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.kure.musicplayer.MainActivity;
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 

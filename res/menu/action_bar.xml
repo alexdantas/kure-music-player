@@ -6,7 +6,7 @@
         android:id="@+id/action_bar_shuffle"
         android:icon="@drawable/rand"
         android:orderInCategory="2"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/shuffle"
         />
     
@@ -14,7 +14,7 @@
         android:id="@+id/action_bar_end"
         android:icon="@drawable/end"
         android:orderInCategory="2"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/end"
         />
 

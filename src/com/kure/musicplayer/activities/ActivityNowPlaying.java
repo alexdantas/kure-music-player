@@ -1,65 +1,106 @@
-package com.kure.musicplayer;
+package com.kure.musicplayer.activities;
 
-import com.kure.musicplayer.adapters.AdapterSong;
-
-import android.app.ActionBar;
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 
+import com.kure.musicplayer.MusicController;
+import com.kure.musicplayer.R;
+import com.kure.musicplayer.kMP;
+import com.kure.musicplayer.adapters.AdapterSong;
+
 
 /**
- * Main screen that will be shown when the user starts.
- * Here's all the application logic, split into several classes.
- * 
- * The default behavior is to keep playing the music on
- * the background and only quit the app if the user
- * presses the button "End".
- * 
- * It has a nice media control.
+ * Shows the "Now Playing Queue", with all songs to be played, plus
+ * letting the user change between songs with a MediaPlayerControl.
  */
-public class MainActivity extends Activity implements MediaPlayerControl {
+public class ActivityNowPlaying extends ActivityMaster
+	implements MediaPlayerControl {
 	
-	private ListView songView;
+	/**
+	 * List that will display all the songs.
+	 */
+	private ListView songListView;
 
 	private boolean paused = false;
 	private boolean playbackPaused = false;
 	
 	private MusicController musicController;
 	
-	// THESE ARE THE METHODS THAT CONTROL THE ACTIVITY LIFECYCLE
-	
-	/**
-	 * Activity is being created for the first time.
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_now_playing);
 
-		// Let's fill ourselves with all the songs
-		// available on the device.
-		songView = (ListView)findViewById(R.id.activity_now_playing_song_list);
+		songListView = (ListView)findViewById(R.id.activity_now_playing_song_list);
+		
+		// We'll play this pre-defined list
+		kMP.musicService.setList(kMP.nowPlayingList);
 				
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
-		AdapterSong songAdapter = new AdapterSong(this, kMP.musicList);
-		songView.setAdapter(songAdapter);	
+		AdapterSong songAdapter = new AdapterSong(this, kMP.nowPlayingList);
+		songListView.setAdapter(songAdapter);	
+		
+		// We expect an extra with the song to start playing
+		Intent intent = getIntent();
+		Bundle bundle = intent.getExtras();
+		
+		if (bundle == null)
+			throw new RuntimeException("Expected Song Index");
+		
+		// This is the song we'll play!
+		int index = (int)bundle.get("current");
+		
+		// Prepare the music service to play the song.
+		kMP.musicService.setSong(index);
+		
+		// Scroll the list view to the current song.
+		songListView.setSelection(index);
+		
+		// Attempt to change the background of current song
+		/*
+		View view = songListView.getChildAt(index - songListView.getFirstVisiblePosition());
+		if (view != null)
+		{
+			view.setBackgroundColor(Color.RED);
+		}
+		*/
 		
 		setMusicController();
 		
-		// This enables the "Up" button on the top Action Bar
-		// Note that it returns to the parent Activity, specified
-		// on `AndroidManifest`
-		ActionBar actionBar = getActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		kMP.musicService.playSong();
+
+		if (playbackPaused) {
+			setMusicController();
+			playbackPaused = false;
+		}
+	}
+	
+	@Override
+	protected void onStart() {
 		
+		super.onStart();
+		
+	//	if (!this.isFinishing()) {
+	//	    musicController.show(5000);
+	//	}
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		
+		if(event.getAction() == KeyEvent.ACTION_DOWN) 
+			if (keyCode == KeyEvent.KEYCODE_MENU)
+				musicController.show(0);
+		
+		return super.onKeyDown(keyCode, event);
+	}
+	
 	/**
 	 * Another Activity is taking focus.
 	 * (either from user going to another Activity or home)
@@ -97,30 +138,11 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		super.onStop();		
 	}
 
-	
-	/**
-	 * Gets called whenever the user touches the song on the View.
-	 * It is defined on the Song Layout.
-	 */
-	public void songPickedByUser(View view) {
-		// We're getting the song's index from the tag
-		// set to the View on SongAdapter.
-		kMP.musicService.setSong(Integer.parseInt(view.getTag().toString()));
-		kMP.musicService.playSong();
-		
-		if (playbackPaused) {
-			setMusicController();
-			playbackPaused = false;
-		}
-		
-		musicController.show(0);
-	}
-
 	/**
 	 * (Re)Starts the musicController.
 	 */
 	private void setMusicController() {
-		musicController = new MusicController(this);
+		musicController = new MusicController(ActivityNowPlaying.this);
 		
 		// What will happen when the user presses the
 		// next/previous buttons?
@@ -139,10 +161,9 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 			}
 		});
 		
-		musicController.setAnchorView(findViewById(R.id.activity_now_playing_song_list));
-		
+		// Binding to our media player
 		musicController.setMediaPlayer(this);
-		
+		musicController.setAnchorView(findViewById(R.id.activity_now_playing_song_list));
 		musicController.setEnabled(true);
 	}
 	
@@ -241,3 +262,4 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		musicController.show(0); //immediately
 	}
 }
+

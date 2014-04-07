@@ -1,8 +1,11 @@
 package com.kure.musicplayer.activities;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.kure.musicplayer.R;
@@ -17,7 +20,8 @@ import com.kure.musicplayer.adapters.AdapterSong;
  * @note This class is a mess because, to decide which songs to
  *       display, it uses the member `kMP.musicList`.
  */
-public class ActivityListSongs extends ActivityMaster {
+public class ActivityListSongs extends ActivityMaster
+	implements OnItemClickListener {
 	
 	/**
 	 * List of songs that will be shown to the user.
@@ -33,7 +37,10 @@ public class ActivityListSongs extends ActivityMaster {
 		// Let's fill ourselves with all the songs
 		// available on the device.
 		songListView = (ListView)findViewById(R.id.activity_list_songs_list);
-				
+
+		// We'll get warned when the user clicks on an item.
+		songListView.setOnItemClickListener(this);
+		
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
 		if ((kMP.musicList != null) && (! kMP.musicList.isEmpty())) {
@@ -49,13 +56,22 @@ public class ActivityListSongs extends ActivityMaster {
 	}
 	
 	/**
-	 * Gets called whenever the user touches the song on the View.
-	 * It is defined on the Song Layout.
+	 * When the user selects an item from our list, we'll start playing.
+	 * 
+	 * We'll play the current list, starting from the song the user
+	 * just selected.
 	 */
-	public void songPickedByUser(View view) {
-		// We're getting the song's index from the tag
-		// set to the View on SongAdapter.
-		kMP.musicService.setSong(Integer.parseInt(view.getTag().toString()));
-		kMP.musicService.playSong();
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		
+		// We'll play the current song list
+		kMP.nowPlayingList = kMP.musicList;
+		
+		Intent intent = new Intent(this, ActivityNowPlaying.class);
+		
+		// And we'll send the song selected 
+		intent.putExtra("current", position);
+		
+		startActivity(intent);		
 	}
 }

@@ -78,6 +78,13 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             />      
+            
+        <activity
+            android:name=".activities.ActivityNowPlaying"
+            android:label="@string/now_playing"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            />              
         		
         <activity
             android:name=".MainActivity"
