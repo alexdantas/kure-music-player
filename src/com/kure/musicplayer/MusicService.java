@@ -3,8 +3,6 @@ package com.kure.musicplayer;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.kure.musicplayer.activities.ActivityMenuMain;
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -169,7 +167,7 @@ public class MusicService extends Service
 		startForeground(NOTIFY_ID, notification);
 		
 		// Can only send to last.fm when prepared.
-		scrobbleCurrentSong();
+		scrobbleCurrentSong(true);
 	}
 	
 	/**
@@ -212,6 +210,9 @@ public class MusicService extends Service
 	// to work on the music-playing.
 	
 	public void previous() {
+		
+		scrobbleCurrentSong(false);
+		
 		currentSongPosition--;
 		if (currentSongPosition < 0)
 			currentSongPosition = songs.size() - 1;
@@ -225,6 +226,8 @@ public class MusicService extends Service
 		// TODO implement a queue of songs to prevent last songs
 		//      to be played
 		// TODO or maybe a playlist, whatever
+		
+		scrobbleCurrentSong(false);
 		
 		if (shuffleMode) {
 			int newSongPosition = currentSongPosition;
@@ -260,7 +263,7 @@ public class MusicService extends Service
 	public void pausePlayer() {
 		player.pause();
 		
-		scrobbleCurrentSong();
+		scrobbleCurrentSong(false);
 	}
 
 	public void seekTo(int position) {
@@ -270,7 +273,7 @@ public class MusicService extends Service
 	public void start() {
 		player.start();
 		
-		scrobbleCurrentSong();
+		scrobbleCurrentSong(true);
 	}
 	
 	public void toggleShuffleMode() {
@@ -298,15 +301,13 @@ public class MusicService extends Service
 	 *       this method only when the music player is prepared!
 	 * @see onPrepared()
 	 */
-	private void scrobbleCurrentSong() {
+	private void scrobbleCurrentSong(boolean isPlaying) {
 		
 		// Only scrobbling if the user lets us
 		if (! kMP.settings.get("lastfm", false))
 			return;
 		
 		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
-		
-		boolean isPlaying = isPlaying();
 		
 		scrobble.putExtra("playing", isPlaying);
 		scrobble.putExtra("id", getCurrentSongId());

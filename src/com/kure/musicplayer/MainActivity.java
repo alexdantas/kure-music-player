@@ -5,7 +5,6 @@ import com.kure.musicplayer.adapters.AdapterSong;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;

@@ -1,8 +1,6 @@
 package com.kure.musicplayer;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.MediaController;
 
 /**
