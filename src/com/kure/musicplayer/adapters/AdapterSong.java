@@ -50,24 +50,33 @@ public class AdapterSong extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		// Will map from a Song to a Song layout
-		LinearLayout songLayout = (LinearLayout)songInflater.inflate(R.layout.menu_item_double, parent, false);
+		LinearLayout songLayout = (LinearLayout)songInflater.inflate(R.layout.menu_item_song,
+				                                                     parent,
+				                                                     false);
 		
-		TextView songView   = (TextView)songLayout.findViewById(R.id.menu_item_title);
-		TextView artistView = (TextView)songLayout.findViewById(R.id.menu_item_subtitle);
+		TextView titleView  = (TextView)songLayout.findViewById(R.id.menu_item_song_title);
+		TextView artistView = (TextView)songLayout.findViewById(R.id.menu_item_song_artist);
+		TextView albumView  = (TextView)songLayout.findViewById(R.id.menu_item_song_album);
 		
 		Song currentSong = songs.get(position);
 		
 		String title = currentSong.getTitle();
 		if (title.isEmpty())
-			songView.setText("<unknown>");
+			titleView.setText("<unknown>");
 		else
-			songView.setText(currentSong.getTitle());
+			titleView.setText(currentSong.getTitle());
 		
 		String artist = currentSong.getArtist();
 		if (artist.isEmpty())
 			artistView.setText("<unknown>");
 		else
 			artistView.setText(currentSong.getArtist());
+		
+		String album = currentSong.getAlbum();
+		if (album.isEmpty())
+			albumView.setText("<unknown>");
+		else
+			albumView.setText(currentSong.getAlbum());
 		
 		// Saving position as a tag.
 		// Each Song layout has a onClick attribute,
