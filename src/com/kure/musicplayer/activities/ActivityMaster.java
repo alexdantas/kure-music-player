@@ -1,13 +1,14 @@
 package com.kure.musicplayer.activities;
 
-import com.kure.musicplayer.R;
-import com.kure.musicplayer.kMP;
-
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.kure.musicplayer.R;
+import com.kure.musicplayer.kMP;
 
 /**
  * Master Activity, from which every Activity other inherits.
@@ -129,6 +130,7 @@ public class ActivityMaster extends Activity {
 			return true;
 			
 		case R.id.action_bar_end:
+		case R.id.context_menu_end:
 			
 			// This forces the system to kill the process, although
 			// it's not a nice way to do it.
@@ -136,6 +138,14 @@ public class ActivityMaster extends Activity {
 			// Later implement FinActivity:
 			// http://stackoverflow.com/a/4737595
 			System.exit(0);
+			break;
+			
+		case R.id.context_menu_settings:
+			startActivity(new Intent(this, ActivityMenuSettings.class));
+			break;
+			
+		case R.id.context_menu_now_playing:
+			startActivity(new Intent(this, ActivityNowPlaying.class));
 			break;
 		}
 		
