@@ -1,10 +1,10 @@
 package com.kure.musicplayer;
 
+import com.kure.musicplayer.adapters.AdapterSong;
+
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
@@ -27,6 +27,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 	private boolean paused = false;
 	private boolean playbackPaused = false;
 	
+	private MusicController musicController;
+	
 	// THESE ARE THE METHODS THAT CONTROL THE ACTIVITY LIFECYCLE
 	
 	/**
@@ -44,10 +46,17 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 				
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
-		SongAdapter songAdapter = new SongAdapter(this, kMP.songs.songs);
+		AdapterSong songAdapter = new AdapterSong(this, kMP.musicList);
 		songView.setAdapter(songAdapter);	
 		
 		setMusicController();
+		
+		// This enables the "Up" button on the top Action Bar
+		// Note that it returns to the parent Activity, specified
+		// on `AndroidManifest`
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 	}
 
 	/**
@@ -108,14 +117,8 @@ public class MainActivity extends Activity implements MediaPlayerControl {
 		musicController.show(0);
 	}
 
-	
-	// These are the methods to implement for the MediaPlayerControl
-	// They're called by the Android System.
-	
-	private MusicController musicController;
-
 	/**
-	 * (Re)Starts the MusicController.
+	 * (Re)Starts the musicController.
 	 */
 	private void setMusicController() {
 		musicController = new MusicController(this);

@@ -1,5 +1,7 @@
 package com.kure.musicplayer;
 
+import java.util.ArrayList;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +33,18 @@ public class kMP {
 	 * even when the app is not on focus.
 	 */
 	public static MusicService musicService;
+
+	/**
+	 * Contains the songs that are going to be shown to
+	 * the user on a particular menu.
+	 * 
+	 * @note IGNORE THIS - don't mess with it.
+	 * 
+	 * Every `ActivityMenu*` uses this temporary variable to
+	 * store subsections of `SongList` and set `ActivityListSongs`
+	 * to display it.
+	 */
+	public static ArrayList<Song> musicList = null;
 	
 	/**
 	 * Creates everything.

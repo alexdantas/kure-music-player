@@ -50,6 +50,8 @@ public class ActivityMaster extends Activity {
 		// Mandatory - when creating we don't have
 		// a theme applied yet.
 		refreshTheme();
+		
+		
 	}
 	
 	@Override

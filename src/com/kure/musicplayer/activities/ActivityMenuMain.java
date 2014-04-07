@@ -7,9 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -58,7 +55,7 @@ public class ActivityMenuMain extends ActivityMaster
 	 * Called when the activity is created for the first time.
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle seventhSonOfASeventhSon) {
 		
 		// We need to load the settings right before creating
 		// the first activity so that the user-selected theme
@@ -69,7 +66,7 @@ public class ActivityMenuMain extends ActivityMaster
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		kMP.settings.load(this);
 				
-		super.onCreate(savedInstanceState);
+		super.onCreate(seventhSonOfASeventhSon);
 		setContentView(R.layout.activity_main_menu);
 	
 		// Adding all possible items on the main menu.

@@ -98,7 +98,8 @@ implements OnItemClickListener {
 			startActivity(new Intent(this, ActivityMenuAlbum.class));
 		}		
 		else if (currentItem == getString(R.string.menu_music_songs)) {
-			startActivity(new Intent(this, MainActivity.class));
+			kMP.musicList = kMP.songs.songs;	
+			startActivity(new Intent(this, ActivityListSongs.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_years)) {
 			

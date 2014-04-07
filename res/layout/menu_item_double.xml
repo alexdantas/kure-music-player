@@ -7,7 +7,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/menu_item_header"
+        android:id="@+id/menu_item_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
