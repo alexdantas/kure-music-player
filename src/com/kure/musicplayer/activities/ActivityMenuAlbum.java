@@ -6,6 +6,7 @@ import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -81,9 +82,8 @@ public class ActivityMenuAlbum extends ActivityMaster
 		
 		String selectedAlbum= items.get(position);
 		
-		Toast.makeText(this,
-				selectedAlbum,
-				Toast.LENGTH_LONG).show();		
+		kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);	
+		startActivity(new Intent(this, ActivityListSongs.class));	
 	}
 	
 	/**

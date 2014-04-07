@@ -206,5 +206,44 @@ public class SongList {
 		Collections.sort(albums);
 		
 		return albums;
+	}
+
+	/**
+	 * Returns a list of Songs belonging to a specified artist.
+	 * 
+	 * @param desiredArtist Artist that will be applied as filter.
+	 */
+	public ArrayList<Song> getSongsByArtist(String desiredArtist) {
+		ArrayList<Song> songsByArtist = new ArrayList<Song>();
+		
+		for (Song song : songs) {
+			String currentArtist = song.getArtist();
+			
+			if (currentArtist.equals(desiredArtist))
+				songsByArtist.add(song);
+		}
+		
+		// Sorting resulting list by Album
+		Collections.sort(songsByArtist, new Comparator<Song>() {
+			public int compare(Song a, Song b)
+			{
+				return a.getAlbum().compareTo(b.getAlbum());
+			}
+		});
+		
+		return songsByArtist;
+	}
+
+	public ArrayList<Song> getSongsByAlbum(String desiredAlbum) {
+		ArrayList<Song> songsByAlbum = new ArrayList<Song>();
+		
+		for (Song song : songs) {
+			String currentAlbum = song.getAlbum();
+			
+			if (currentAlbum.equals(desiredAlbum))
+				songsByAlbum.add(song);
+		}
+		
+		return songsByAlbum;
 	}	
 }
