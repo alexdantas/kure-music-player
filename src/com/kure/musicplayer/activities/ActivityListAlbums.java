@@ -31,6 +31,8 @@ public class ActivityListAlbums extends ActivityMaster
 	 */
 	private ArrayList<String> items;
 	
+	private String currentArtist;
+	
 	@Override
 	protected void onCreate(Bundle tableSex) {
 		super.onCreate(tableSex);
@@ -47,18 +49,23 @@ public class ActivityListAlbums extends ActivityMaster
 			throw new RuntimeException("Expected Artist Name");
 		
 		// This is the artist that we'll display the albums.
-		String artist = (String)bundle.get("artist");
+		currentArtist = (String)bundle.get("artist");
 		
-		if (artist == null || artist.isEmpty())
+		if (currentArtist == null || currentArtist.isEmpty())
 			throw new RuntimeException("Expected Artist Name");
 		
-		this.setTitle(artist);
+		this.setTitle(currentArtist);
 		
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
 		if ((kMP.musicList != null) && (! kMP.musicList.isEmpty())) {
 			
-			items = kMP.songs.getAlbumsByArtist(artist);
+			items = kMP.songs.getAlbumsByArtist(currentArtist);
+			
+			// Let's prepend all the albums with this label.
+			// Then, when selecting the item, we'll need to
+			// subtract one.
+			items.add(0, getString(R.string.all_songs));
 			
 			// Adapter that will convert from Strings to List Items
 			final ArrayAdapter<String> adapter = new ArrayAdapter<String>
@@ -88,15 +95,26 @@ public class ActivityListAlbums extends ActivityMaster
 		// device.
 		if (! kMP.songs.isInitialized())
 			return;
-		
-		String selectedAlbum = items.get(position);
-		
-		kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);
-		
+
+		// Let's switch to a song list.
 		Intent intent = new Intent(this, ActivityListSongs.class);
 		
-		intent.putExtra("title", selectedAlbum);
-		
+		// This is the special case - the user selected "All Albums".
+		// We'll show all songs from this artist, then.
+		if (position == 0) {
+			kMP.musicList = kMP.songs.getSongsByArtist(currentArtist);
+
+			intent.putExtra("title", currentArtist);
+		}
+		// Regular case, user selected a specific album.
+		// Show all songs from that album.
+		else {
+			String selectedAlbum = items.get(position);
+
+			kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);
+
+			intent.putExtra("title", selectedAlbum);
+		}
 		startActivity(intent);
 	}
 }
