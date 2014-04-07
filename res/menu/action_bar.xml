@@ -8,16 +8,7 @@
         android:orderInCategory="2"
         android:showAsAction="ifRoom"
         android:title="@string/shuffle"
-        />
-    
-    <item
-        android:id="@+id/action_bar_end"
-        android:icon="@drawable/end"
-        android:orderInCategory="2"
-        android:showAsAction="ifRoom"
-        android:title="@string/end"
-        />
-    
+        />    
     
     <!-- These items are shown on the context menu -->
     <item

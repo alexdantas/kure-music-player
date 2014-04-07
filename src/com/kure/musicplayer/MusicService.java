@@ -160,16 +160,17 @@ public class MusicService extends Service
 				                                                0,
 				                                                notifyIntent,
 				                                                PendingIntent.FLAG_UPDATE_CURRENT);
-		
+						
 		// Will create a Notification
 		Notification.Builder builder = new Notification.Builder(this);
-		builder.setContentIntent(pendingIntent)
-			.setSmallIcon(R.drawable.play)
-			.setTicker("Playing \"" + currentSongTitle + "\"")
-			.setOngoing(true)
-			.setContentTitle("Playing \"" + currentSongTitle + "\"")
-			.setContentText("from \"" + currentSongArtist + "\"");
 		
+		builder.setContentIntent(pendingIntent)
+			   .setSmallIcon(R.drawable.play)
+			   .setTicker(currentSongTitle)
+			   .setOngoing(true)
+			   .setContentTitle(currentSongTitle)
+			   .setContentText(currentSongArtist);
+
 		Notification notification = builder.build();
 		
 		// Sets the notification to run on the foreground.
