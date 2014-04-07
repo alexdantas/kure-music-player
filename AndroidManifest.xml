@@ -85,14 +85,6 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             />              
-        		
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".activities.ActivityMenuMusic"
-            />
         
         <service
             android:name=".MusicService"

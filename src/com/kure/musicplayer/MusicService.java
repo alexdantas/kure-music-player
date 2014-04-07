@@ -16,6 +16,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.kure.musicplayer.activities.ActivityNowPlaying;
+
 /**
  * Service that makes the music play regardless if our
  * app is on focus.
@@ -142,11 +144,11 @@ public class MusicService extends Service
 		// Start playback
 		player.start();
 		
-		Intent notifyIntent = new Intent(this, MainActivity.class);
+		// If the user clicks on the notification, let's spawn the
+		// Now Playing screen.
+		Intent notifyIntent = new Intent(this, ActivityNowPlaying.class);
 		notifyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		
-		// It will take the user back to MainActivity
-		// when they select the notification.
 		PendingIntent pendingIntent = PendingIntent.getActivity(this,
 				                                                0,
 				                                                notifyIntent,
