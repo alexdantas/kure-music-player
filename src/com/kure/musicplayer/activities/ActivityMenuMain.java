@@ -2,6 +2,7 @@ package com.kure.musicplayer.activities;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +37,9 @@ public class ActivityMenuMain extends ActivityMaster
 	 */
 	public static final ArrayList<String> items = new ArrayList<String>();
 
+	// Adapter that will convert from Strings to List Items
+	public static ArrayAdapter<String> adapter = null;
+	
 	/**
 	 * List that will be populated with all the items.
 	 * 
@@ -73,13 +77,11 @@ public class ActivityMenuMain extends ActivityMaster
 		items.add(getString(R.string.menu_main_music));
 		items.add(getString(R.string.menu_main_settings));
 		items.add(getString(R.string.menu_main_shuffle));
-		
+			
 		// ListView to be populated with the menu items
 		listView = (ListView)findViewById(R.id.activity_main_menu_list);
-		
-		// Adapter that will convert from Strings to List Items
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>
-				(this, android.R.layout.simple_list_item_1, items);
+				
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
 		
 		// Filling teh list with all the items
 		listView.setAdapter(adapter);
@@ -108,10 +110,10 @@ public class ActivityMenuMain extends ActivityMaster
 		// compares to all possible items.
 		String currentItem = listView.getItemAtPosition(position).toString();
 		
-		if (currentItem == getString(R.string.menu_main_music)) {
+		if (currentItem.equals(getString(R.string.menu_main_music))) {
 			startActivity(new Intent(this, ActivityMenuMusic.class));
 		}
-		else if (currentItem == getString(R.string.menu_main_settings)) {
+		else if (currentItem.equals(getString(R.string.menu_main_settings))) {
 			
 			// Let's start the settings screen.
 			// While doing so, we need to know if the user have
@@ -122,14 +124,18 @@ public class ActivityMenuMain extends ActivityMaster
 			startActivityForResult(settingsIntent, USER_CHANGED_THEME);
 			
 		}
-		else if (currentItem == getString(R.string.menu_main_shuffle)) {
+		else if (currentItem.equals(getString(R.string.menu_main_shuffle))) {
 			
 			// Can only jump to shuffle all songs if we've
 			// scanned all the songs from the device.
 			if (kMP.songs.isInitialized()) {
 				
 			}
-		}		
+		}	
+		else if (currentItem.equals(getString(R.string.menu_main_now_playing))) {
+			// Jump to Now Playing screen
+			startActivity(new Intent(this, ActivityNowPlaying.class));
+		}
 		else {
 			
 		}
@@ -219,5 +225,16 @@ public class ActivityMenuMain extends ActivityMaster
 				       result,
 				       Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	/**
+	 * Forces to add a new item "Now Playing" on the main menu.
+	 */
+	public static void nowPlaying(Context c, boolean option) {
+		
+		if (! items.contains(c.getString(R.string.menu_main_now_playing)))
+			ActivityMenuMain.items.add(c.getString(R.string.menu_main_now_playing));
+		
+		adapter.notifyDataSetChanged();
 	}
 }

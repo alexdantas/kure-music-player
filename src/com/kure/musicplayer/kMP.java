@@ -56,6 +56,12 @@ public class kMP {
 	public static ArrayList<Song> nowPlayingList = null;
 	
 	/**
+	 * Index for the `nowPlayingList` that indicates the current
+	 * song we're playing.
+	 */
+	public static int nowPlayingIndex = 0;
+	
+	/**
 	 * Creates everything.
 	 * 
 	 * Must be called only once at the beginning

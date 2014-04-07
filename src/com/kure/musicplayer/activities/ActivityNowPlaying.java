@@ -1,6 +1,5 @@
 package com.kure.musicplayer.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,7 +19,8 @@ import com.kure.musicplayer.adapters.AdapterSong;
  * letting the user change between songs with a MediaPlayerControl.
  */
 public class ActivityNowPlaying extends ActivityMaster
-	implements MediaPlayerControl, OnItemClickListener {
+	implements MediaPlayerControl,
+	           OnItemClickListener {
 	
 	/**
 	 * List that will display all the songs.
@@ -48,24 +48,18 @@ public class ActivityNowPlaying extends ActivityMaster
 		AdapterSong songAdapter = new AdapterSong(this, kMP.nowPlayingList);
 		songListView.setAdapter(songAdapter);	
 
-		// We'll get warned when the user clicks on an item.
-		songListView.setOnItemClickListener(this);
-	
-		// We expect an extra with the song to start playing
-		Intent intent = getIntent();
-		Bundle bundle = intent.getExtras();
-		
-		if (bundle == null)
-			throw new RuntimeException("Expected Song Index");
-		
-		// This is the song we'll play!
-		int index = (int)bundle.get("current");
-		
 		// Prepare the music service to play the song.
-		kMP.musicService.setSong(index);
+		// Note that if we're returning to this screen with the same
+		// music index, we should not restart the music.
+		if (kMP.musicService.currentSongPosition != kMP.nowPlayingIndex)
+		{
+			kMP.musicService.setSong(kMP.nowPlayingIndex);
+			kMP.musicService.playSong();
+		}
 		
 		// Scroll the list view to the current song.
-		songListView.setSelection(index);
+		songListView.setSelection(kMP.nowPlayingIndex);
+
 		
 		// Attempt to change the background of current song
 		/*
@@ -76,14 +70,19 @@ public class ActivityNowPlaying extends ActivityMaster
 		}
 		*/
 		
+		// We'll get warned when the user clicks on an item.
+		songListView.setOnItemClickListener(this);
+				
 		setMusicController();
-		
-		kMP.musicService.playSong();
 
 		if (playbackPaused) {
 			setMusicController();
 			playbackPaused = false;
 		}
+		
+		// When we're playing music, we'll leave a shortcut on
+		// the main screen to us.
+		ActivityMenuMain.nowPlaying(this, true);
 	}
 	
 	@Override
@@ -91,6 +90,8 @@ public class ActivityNowPlaying extends ActivityMaster
 		
 		super.onStart();
 		
+		// WHY CANT I SET THE MUSIC CONTROLLER HERE AND LET IT BE
+		// FOREVER?
 	//	if (!this.isFinishing()) {
 	//	    musicController.show(5000);
 	//	}
@@ -242,7 +243,6 @@ public class ActivityNowPlaying extends ActivityMaster
 	
 	private void playNext() {
 		kMP.musicService.next();
-		kMP.musicService.playSong();
 		
 		// To prevent the MusicPlayer from behaving
 		// unexpectedly when we pause the song playback.		
@@ -251,11 +251,10 @@ public class ActivityNowPlaying extends ActivityMaster
 			playbackPaused = false;
 		}
 		
-		musicController.show(0); //immediately
+		musicController.show();
 	}
 	private void playPrevious() {
 		kMP.musicService.previous();
-		kMP.musicService.playSong();
 		
 		// To prevent the MusicPlayer from behaving
 		// unexpectedly when we pause the song playback.
@@ -264,14 +263,16 @@ public class ActivityNowPlaying extends ActivityMaster
 			playbackPaused = false;
 		}
 		
-		musicController.show(0); //immediately
+		musicController.show();
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		
+		kMP.nowPlayingIndex = position;
+		
 		// Prepare the music service to play the song.
-		kMP.musicService.setSong(position);
+		kMP.musicService.setSong(kMP.nowPlayingIndex);
 		
 		// Scroll the list view to the current song.
 		songListView.setSelection(position);

@@ -72,13 +72,9 @@ public class ActivityListSongs extends ActivityMaster
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		
 		// We'll play the current song list
-		kMP.nowPlayingList = kMP.musicList;
+		kMP.nowPlayingList  = kMP.musicList;
+		kMP.nowPlayingIndex = position;
 		
-		Intent intent = new Intent(this, ActivityNowPlaying.class);
-		
-		// And we'll send the song selected 
-		intent.putExtra("current", position);
-		
-		startActivity(intent);		
+		startActivity(new Intent(this, ActivityNowPlaying.class));		
 	}
 }

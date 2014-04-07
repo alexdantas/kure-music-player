@@ -3,6 +3,8 @@ package com.kure.musicplayer;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.kure.musicplayer.activities.ActivityMenuMain;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -26,10 +28,10 @@ import android.util.Log;
  * Manifest.
  * 
  */
-public class MusicService extends Service implements
-	MediaPlayer.OnPreparedListener,
-	MediaPlayer.OnErrorListener,
-	MediaPlayer.OnCompletionListener {
+public class MusicService extends Service
+	implements MediaPlayer.OnPreparedListener,
+	           MediaPlayer.OnErrorListener,
+	           MediaPlayer.OnCompletionListener {
 
 	/**
 	 * Android Media Player - we control it in here.
@@ -44,7 +46,7 @@ public class MusicService extends Service implements
 	/**
 	 * Index of the current song we're playing on the `songs` list.
 	 */
-	private int currentSongPosition;
+	public int currentSongPosition;
 	
 		
 	// We'll compose the text to be shown on the notification
@@ -213,6 +215,10 @@ public class MusicService extends Service implements
 		currentSongPosition--;
 		if (currentSongPosition < 0)
 			currentSongPosition = songs.size() - 1;
+		
+		kMP.nowPlayingIndex = currentSongPosition;
+		
+		playSong();
 	}
 	
 	public void next() {
@@ -233,6 +239,10 @@ public class MusicService extends Service implements
 		currentSongPosition++;
 		if (currentSongPosition >= songs.size())
 			currentSongPosition = 0;		
+		
+		kMP.nowPlayingIndex = currentSongPosition;
+		
+		playSong();
 	}
 	
 	public int getPosition() {
