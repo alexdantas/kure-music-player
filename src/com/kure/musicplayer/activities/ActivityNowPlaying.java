@@ -1,6 +1,5 @@
 package com.kure.musicplayer.activities;
 
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;

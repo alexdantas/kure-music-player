@@ -82,7 +82,12 @@ public class ActivityMenuAlbum extends ActivityMaster
 		String selectedAlbum= items.get(position);
 		
 		kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);	
-		startActivity(new Intent(this, ActivityListSongs.class));	
+		
+		Intent intent = new Intent(this, ActivityListSongs.class);
+		
+		intent.putExtra("title", selectedAlbum);
+		
+		startActivity(intent);			
 	}
 	
 	/**

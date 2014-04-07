@@ -86,8 +86,14 @@ implements OnItemClickListener {
 		ArrayList<String> albumsByArtist = kMP.songs.getAlbumsByArtist(selectedArtist);
 		
 		if (albumsByArtist.size() == 1) {
-			kMP.musicList = kMP.songs.getSongsByArtist(selectedArtist);	
-			startActivity(new Intent(this, ActivityListSongs.class));
+			
+			kMP.musicList = kMP.songs.getSongsByArtist(selectedArtist);
+			
+			Intent intent = new Intent(this, ActivityListSongs.class);
+			
+			intent.putExtra("title", selectedArtist);
+			
+			startActivity(intent);			
 		}
 		else {
 			// We'll send the artist name to display his albums

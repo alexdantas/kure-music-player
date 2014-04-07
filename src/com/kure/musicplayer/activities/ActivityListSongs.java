@@ -40,6 +40,13 @@ public class ActivityListSongs extends ActivityMaster
 
 		// We'll get warned when the user clicks on an item.
 		songListView.setOnItemClickListener(this);
+
+		// If we got an extra with a title, we'll apply it
+		Intent intent = getIntent();
+		Bundle bundle = intent.getExtras();
+		
+		if (bundle != null)
+			this.setTitle((String)bundle.get("title"));
 		
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)

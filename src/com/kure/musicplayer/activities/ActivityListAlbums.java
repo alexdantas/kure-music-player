@@ -52,6 +52,8 @@ public class ActivityListAlbums extends ActivityMaster
 		if (artist == null || artist.isEmpty())
 			throw new RuntimeException("Expected Artist Name");
 		
+		this.setTitle(artist);
+		
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
 		if ((kMP.musicList != null) && (! kMP.musicList.isEmpty())) {
@@ -89,7 +91,12 @@ public class ActivityListAlbums extends ActivityMaster
 		
 		String selectedAlbum = items.get(position);
 		
-		kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);	
-		startActivity(new Intent(this, ActivityListSongs.class));
+		kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);
+		
+		Intent intent = new Intent(this, ActivityListSongs.class);
+		
+		intent.putExtra("title", selectedAlbum);
+		
+		startActivity(intent);
 	}
 }
