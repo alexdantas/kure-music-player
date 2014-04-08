@@ -90,5 +90,9 @@ public class ActivityMenuSettings extends PreferenceActivity
 		// This key's at `res/xml/preferences.xml`
 		if (key.equals("themes"))
 			recreate();
+		
+		if (key.equals("show_notification")) {
+			// WE SHOULD KILL THE CURRENT NOTIFICATION, IF IT EXISTS
+		}
 	}
 }

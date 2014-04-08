@@ -154,30 +154,32 @@ public class MusicService extends Service
 		// Start playback
 		player.start();
 		
-		// If the user clicks on the notification, let's spawn the
-		// Now Playing screen.
-		Intent notifyIntent = new Intent(this, ActivityNowPlaying.class);
-		notifyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		
-		PendingIntent pendingIntent = PendingIntent.getActivity(this,
-				                                                0,
-				                                                notifyIntent,
-				                                                PendingIntent.FLAG_UPDATE_CURRENT);
-						
-		// Will create a Notification
-		Notification.Builder builder = new Notification.Builder(this);
-		
-		builder.setContentIntent(pendingIntent)
-			   .setSmallIcon(R.drawable.play)
-			   .setTicker(currentSongTitle)
-			   .setOngoing(true)
-			   .setContentTitle(currentSongTitle)
-			   .setContentText(currentSongArtist);
+		if (kMP.settings.get("show_notification", true)) {
+			// If the user clicks on the notification, let's spawn the
+			// Now Playing screen.
+			Intent notifyIntent = new Intent(this, ActivityNowPlaying.class);
+			notifyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		Notification notification = builder.build();
-		
-		// Sets the notification to run on the foreground.
-		startForeground(NOTIFY_ID, notification);
+			PendingIntent pendingIntent = PendingIntent.getActivity(this,
+					0,
+					notifyIntent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+
+			// Will create a Notification
+			Notification.Builder builder = new Notification.Builder(this);
+
+			builder.setContentIntent(pendingIntent)
+			.setSmallIcon(R.drawable.play)
+			.setTicker(currentSongTitle)
+			.setOngoing(true)
+			.setContentTitle(currentSongTitle)
+			.setContentText(currentSongArtist);
+
+			Notification notification = builder.build();
+
+			// Sets the notification to run on the foreground.
+			startForeground(NOTIFY_ID, notification);
+		}
 		
 		// Can only send to last.fm when prepared.
 		scrobbleCurrentSong(true);

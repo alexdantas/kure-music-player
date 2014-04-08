@@ -43,6 +43,13 @@
             android:defaultValue="false"
         />
         
+        <CheckBoxPreference 
+            android:key="show_notification"
+            android:title="@string/menu_settings_show_notification_title"
+            android:summary="@string/menu_settings_show_notification_subtitle"
+            android:defaultValue="true"
+        />
+                
     </PreferenceCategory>
     
 </PreferenceScreen>
