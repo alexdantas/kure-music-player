@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.kure.musicplayer.activities.ActivityNowPlaying;
@@ -261,12 +262,24 @@ public class MusicService extends Service
 		}
 		
 		currentSongPosition++;
-		if (currentSongPosition >= songs.size())
-			currentSongPosition = 0;		
 		
+		// If we've reached the end of our current play queue
+		boolean reachedEnd = false;
+		
+		if (currentSongPosition >= songs.size()) {
+			currentSongPosition = 0;
+			reachedEnd = true;
+		}
 		kMP.nowPlayingIndex = currentSongPosition;
-		
-		playSong();
+
+		// Reached the end, should we restart playing
+		// from the first song or simply stop?		
+		if (reachedEnd) {
+			if (kMP.settings.get("repeat_list", false))
+				playSong();
+			else
+				stopSelf();
+		}
 	}
 	
 	public int getPosition() {

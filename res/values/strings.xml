@@ -29,6 +29,13 @@
     <string name="menu_settings_lastfm_subtitle">
         For this to work you must have the app "Scrobble Droid" installed.
     </string>
+  
+    <string name="menu_settings_repeat_list_title">
+        Repeat Now Playing Queue
+    </string>
+    <string name="menu_settings_repeat_list_subtitle">
+        When reaching the end of the "Now Playing Queue", should we start it all over again?
+    </string>
     
     <!-- The Theme sub item from the Settings menu -->
     <string name="menu_settings_themes_title">Theme</string>
