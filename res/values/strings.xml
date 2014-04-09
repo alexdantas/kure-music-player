@@ -65,13 +65,23 @@
     <string-array name="themes">
         <item>Light</item>
         <item>Dark</item>
-        <item>Solarized</item>
+        <item>Solarized Dark</item>
+        <item>Wallpaper</item>
+        <item>Dialog Light</item>
+        <item>Dialog Dark</item>
+        <item>Light (simple)</item>
+        <item>Dark (simple)</item>
     </string-array>
     
     <string-array name="themes_values">
         <item>light</item>
         <item>dark</item>
-        <item>solarized</item>
+        <item>solarized_dark</item>
+        <item>wallpaper</item>
+        <item>dialog_light</item>
+        <item>dialog_dark</item>
+        <item>light_simple</item>
+        <item>dark_simple</item>
     </string-array>
     
 </resources>

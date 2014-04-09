@@ -85,14 +85,14 @@ public class ActivityMaster extends Activity {
 			// Testing each possible theme name.
 			// I repeat - all valid theme names are specified
 			// at `res/strings.xml`, right at the Settings sub menu.
-			if (theme.equals("light"))
-				this.setTheme(R.style.Theme_Light);
-
-			else if (theme.equals("dark"))
-				this.setTheme(R.style.Theme_Dark);
-
-			else if (theme.equals("solarized"))
-				this.setTheme(R.style.Theme_Solarized_Dark);
+			if      (theme.equals("light"))           setTheme(R.style.Theme_Light);
+			else if (theme.equals("dark"))            setTheme(R.style.Theme_Dark);
+			else if (theme.equals("solarized_dark"))  setTheme(R.style.Theme_Solarized_Dark);
+			else if (theme.equals("wallpaper"))       setTheme(R.style.Theme_Wallpaper);
+			else if (theme.equals("dialog_light"))    setTheme(R.style.Theme_DialogLight);
+			else if (theme.equals("dialog_dark"))     setTheme(R.style.Theme_DialogDark);
+			else if (theme.equals("light_simple"))    setTheme(R.style.Theme_LightSimple);
+			else if (theme.equals("dark_simple"))     setTheme(R.style.Theme_DarkSimple);
 
 			currentTheme = theme;
 			return true;

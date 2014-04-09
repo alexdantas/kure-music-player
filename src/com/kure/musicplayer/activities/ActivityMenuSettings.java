@@ -49,20 +49,22 @@ public class ActivityMenuSettings extends PreferenceActivity
 		//      because it already needs to subclass
 		//      PreferenceActivity.
 		String theme = kMP.settings.get("themes", "light");
-		if (theme.equals("light"))
-			setTheme(R.style.Theme_Light);
 
-		else if (theme.equals("dark"))
-			setTheme(R.style.Theme_Dark);
-
-		else if (theme.equals("solarized"))
-			this.setTheme(R.style.Theme_Solarized_Dark);
+		if      (theme.equals("light"))           setTheme(R.style.Theme_Light);
+		else if (theme.equals("dark"))            setTheme(R.style.Theme_Dark);
+		else if (theme.equals("solarized_dark"))  setTheme(R.style.Theme_Solarized_Dark);
+		else if (theme.equals("wallpaper"))       setTheme(R.style.Theme_Wallpaper);
+		else if (theme.equals("dialog_light"))    setTheme(R.style.Theme_DialogLight);
+		else if (theme.equals("dialog_dark"))     setTheme(R.style.Theme_DialogDark);
+		else if (theme.equals("light_simple"))    setTheme(R.style.Theme_LightSimple);
+		else if (theme.equals("dark_simple"))     setTheme(R.style.Theme_DarkSimple);
 
 		// This enables the "Up" button on the top Action Bar
 		// Note that it returns to the parent Activity, specified
 		// on `AndroidManifest`
 		ActionBar actionBar = getActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		if (actionBar != null)
+			actionBar.setDisplayHomeAsUpEnabled(true);
 
 		super.onCreate(savedInstanceState);
 
