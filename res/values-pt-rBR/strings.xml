@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">kure Music Player</string>
+    <string name="app_name_short">kMP</string>
+    
+    
+    <string name="now_playing">Tocando Agora</string>
+    <string name="all_songs">Todas as Músicas</string>
+    <string name="settings">Configurações</string>
+    <string name="shuffle">Reprodução Aleatória</string>
+    <string name="repeat">Repetir</string>
+    <string name="songs">Músicas</string>    
+    <string name="end">Sair</string>
+    
+    
+    <string name="menu_main_music">Músicas</string>
+    <string name="menu_main_settings">Configurações</string>
+    <string name="menu_main_shuffle">Embaralhar todas as Músicas</string>
+    <string name="menu_main_now_playing">Tocando Agora</string>
+    
+    
+    <string name="menu_music_playlists">Listas de Reprodução</string>
+    <string name="menu_music_artists">Artistas</string>
+    <string name="menu_music_albums">Álbuns</string>
+    <string name="menu_music_songs">Todas as Músicas</string>
+    <string name="menu_music_years">Anos</string>
+    
+    
+    <string name="menu_settings_themes_title">
+        Tema
+    </string>
+    <string name="menu_settings_themes_subtitle">
+        Cores usadas no aplicativo.
+    </string>
+    
+    
+    <string name="menu_settings_lastfm_title">
+        Compartilhar músicas no Last.fm
+    </string>
+    <string name="menu_settings_lastfm_subtitle">
+        Você precisa ter o aplicativo \"Scrobble Droid\" instalado.
+    </string>
+
+    
+    <string name="menu_settings_repeat_list_title">
+        Repetir a lista \"Tocando Agora\"
+    </string>
+    <string name="menu_settings_repeat_list_subtitle">
+        Quanto terminar a lista \"Tocando Agora\", devemos repetir desde o começo?
+    </string>
+    
+    
+    <string name="menu_settings_show_notification_title">
+        Notificação Persistente
+    </string>
+    <string name="menu_settings_show_notification_subtitle">
+        Mostrar uma notificação enquanto toca músicas.
+    </string>
+    
+    
+	<!-- Values for Settings 
+	 -->
+    
+    <string-array name="themes">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Solarized</item>
+    </string-array>
+    
+    <string-array name="themes_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>solarized</item>
+    </string-array>
+    
+</resources>
