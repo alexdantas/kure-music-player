@@ -21,12 +21,12 @@ import com.kure.musicplayer.activities.ActivityNowPlaying;
 /**
  * Service that makes the music play regardless if our
  * app is on focus.
- * 
+ *
  * Note that it keeps the music playing even when the
  * device is locked.
  * For that, we must add a special permission on the
  * Manifest.
- * 
+ *
  */
 public class MusicService extends Service
 	implements MediaPlayer.OnPreparedListener,
@@ -37,122 +37,122 @@ public class MusicService extends Service
 	 * Android Media Player - we control it in here.
 	 */
 	private MediaPlayer player;
-	
+
 	/**
 	 * List of songs we're  currently playing.
 	 */
 	private ArrayList<Song> songs;
-	
+
 	/**
 	 * Index of the current song we're playing on the `songs` list.
 	 */
 	public int currentSongPosition;
-	
-		
+
+
 	// We'll compose the text to be shown on the notification
 	// area based on those variables
 	private String currentSongTitle  = "";
 	private String currentSongArtist = "";
-	
+
 	/**
 	 * WHAT THE FUCK
 	 */
 	private static final int NOTIFY_ID = 1;
-	
+
 	/**
 	 * Flag that indicates whether we're at Shuffle mode.
 	 */
 	private boolean shuffleMode = false;
-	
+
 	/**
 	 * Random number generator for the Shuffle Mode.
 	 */
 	private Random random;
-	
+
 	private boolean repeatMode = false;
-	
+
 	/**
 	 * Whenever we're created, reset the MusicPlayer.
 	 */
 	public void onCreate() {
 		super.onCreate();
-		
+
 		currentSongPosition = 0;
 		player = new MediaPlayer();
-		
+
 		initMusicPlayer();
-		
+
 		random = new Random();
 	}
-	
+
 	/**
 	 * Initializes the internal Music Player.
 	 */
 	public void initMusicPlayer() {
 		if (player == null)
 			return;
-		
+
 		// This Wake Lock allows playback to continue
 		// even when the device becomes idle.
 		player.setWakeMode(getApplicationContext(),
 				PowerManager.PARTIAL_WAKE_LOCK);
-		
+
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		
-		// These are the events that will "wake us up"		
+
+		// These are the events that will "wake us up"
 		player.setOnPreparedListener(this); // player initialized
 		player.setOnCompletionListener(this); // song completed
 		player.setOnErrorListener(this);
 	}
-	
+
 	public void setList(ArrayList<Song> theSongs) {
 		songs = theSongs;
 	}
-	
+
 	/**
 	 * Appends a `song` to the currently playing queue.
 	 */
 	public void add(Song song) {
 		songs.add(song);
 	}
-	
+
 	/**
 	 * Actually plays the song set by `currentSongPosition`.
 	 */
 	public void playSong() {
 		player.reset();
-		
+
 		// Get the song ID from the list, extract the ID and
 		// get an URL based on it
 		Song songToPlay = songs.get(currentSongPosition);
-		
+
 		currentSongTitle  = songToPlay.getTitle();
 		currentSongArtist = songToPlay.getArtist();
-		
+
 		long songToPlayID = songToPlay.getId();
-		
+
 		// Append the external URI with our songs'
 		Uri songToPlayURI = ContentUris.withAppendedId(
 				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				songToPlayID);
-		
+
 		try {
 			player.setDataSource(getApplicationContext(), songToPlayURI);
 		}
 		catch(Exception e) {
 			Log.e("MUSIC SERVICE", "Error when changing the song", e);
 		}
-		
+
 		// Prepare the MusicPlayer asynchronously.
 		// When finished, will call `onPrepare`
 		player.prepareAsync();
 	}
-	
+
 	@Override
 	public void onPrepared(MediaPlayer mp) {
 		// Start playback
 		player.start();
-		
+
 		if (kMP.settings.get("show_notification", true)) {
 			// If the user clicks on the notification, let's spawn the
 			// Now Playing screen.
@@ -179,11 +179,11 @@ public class MusicService extends Service
 			// Sets the notification to run on the foreground.
 			startForeground(NOTIFY_ID, notification);
 		}
-		
+
 		// Can only send to last.fm when prepared.
 		scrobbleCurrentSong(true);
 	}
-	
+
 	/**
 	 * Let's call this when the user selects a song from the list.
 	 * @param songIndex FUCK YEAH
@@ -199,19 +199,37 @@ public class MusicService extends Service
 	 */
 	@Override
 	public void onCompletion(MediaPlayer mp) {
-		
-		if (player.getCurrentPosition() > 0) {
-			
-			if (repeatMode) {
-				scrobbleCurrentSong(false);
-				mp.reset();
-				playSong();
-			}
-			else {
-				mp.reset();
-				next();
-			}
+
+		// TODO: Why do I need this?
+		if (player.getCurrentPosition() <= 0)
+			return;
+
+		scrobbleCurrentSong(false);
+
+		// Repeating current song if desired
+		if (repeatMode) {
+			playSong();
+			return;
 		}
+
+		// Remember that by calling next(), if played
+		// the last song on the list, will reset to the
+		// first one.
+		next();
+
+		// Reached the end, should we restart playing
+		// from the first song or simply stop?
+		if (kMP.musicService.currentSongPosition == 0) {
+			if (kMP.settings.get("repeat_list", false))
+				playSong();
+			else
+				stopSelf();
+
+			return;
+		}
+
+		// Common case - skipped a track or anything
+		playSong();
 	}
 
 	@Override
@@ -219,74 +237,67 @@ public class MusicService extends Service
 		mp.reset();
 		return false;
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		// Stops feeding the notification
 		stopForeground(true);
-		
+
 		super.onDestroy();
 	}
-	
+
 	// These methods are to be called by the Activity
 	// to work on the music-playing.
-	
+
 	public void previous() {
-		
+
 		scrobbleCurrentSong(false);
-		
+
 		currentSongPosition--;
 		if (currentSongPosition < 0)
 			currentSongPosition = songs.size() - 1;
-		
+
 		kMP.nowPlayingIndex = currentSongPosition;
-		
+
 		playSong();
 	}
-	
+
+	/**
+	 * Jumps to the next song on the list.
+	 *
+	 * @note Remember to call `playSong()` to make the MusicPlayer
+	 *       actually play the music.
+	 */
 	public void next() {
-		
+
 		// TODO implement a queue of songs to prevent last songs
 		//      to be played
 		// TODO or maybe a playlist, whatever
-		
+
 		scrobbleCurrentSong(false);
-		
+
 		if (shuffleMode) {
 			int newSongPosition = currentSongPosition;
-			
+
 			while (newSongPosition == currentSongPosition)
 				newSongPosition = random.nextInt(songs.size());
-			
+
 			currentSongPosition = newSongPosition;
 			return;
 		}
-		
-		currentSongPosition++;
-		
-		// If we've reached the end of our current play queue
-		boolean reachedEnd = false;
-		
-		if (currentSongPosition >= songs.size()) {
-			currentSongPosition = 0;
-			reachedEnd = true;
-		}
-		kMP.nowPlayingIndex = currentSongPosition;
 
-		// Reached the end, should we restart playing
-		// from the first song or simply stop?		
-		if (reachedEnd) {
-			if (kMP.settings.get("repeat_list", false))
-				playSong();
-			else
-				stopSelf();
-		}
+		currentSongPosition++;
+
+		if (currentSongPosition >= songs.size())
+			currentSongPosition = 0;
+
+		kMP.nowPlayingIndex = currentSongPosition;
 	}
-	
+
 	public int getPosition() {
 		return player.getCurrentPosition();
 	}
-	
+
 	public int getDuration() {
 		return player.getDuration();
 	}
@@ -297,7 +308,7 @@ public class MusicService extends Service
 
 	public void pausePlayer() {
 		player.pause();
-		
+
 		scrobbleCurrentSong(false);
 	}
 
@@ -307,62 +318,62 @@ public class MusicService extends Service
 
 	public void start() {
 		player.start();
-		
+
 		scrobbleCurrentSong(true);
 	}
-	
+
 	public void toggleShuffleMode() {
 		shuffleMode = !shuffleMode;
 	}
-	
+
 	public void toggleRepeatMode() {
 		repeatMode = ! repeatMode;
 	}
-	
-	
+
+
 	public long getCurrentSongId() {
 		Song currentSong = songs.get(currentSongPosition);
-		
-		return currentSong.getId(); 
+
+		return currentSong.getId();
 	}
-	
+
 	/**
 	 * Last.fm support!
-	 * 
+	 *
 	 * We'll send our current song to ScrobbleDroid ONLY IF
 	 * the preference for it is enabled.
-	 * 
+	 *
 	 * This needs to be called as often as possible - when pausing,
 	 * resuming, when the track is going to be changed, when the
 	 * track is changed...
-	 * 
+	 *
 	 * @note To avoid concurrency issues, make sure to clal
 	 *       this method only when the music player is prepared!
 	 * @see onPrepared()
 	 */
 	private void scrobbleCurrentSong(boolean isPlaying) {
-		
+
 		// Only scrobbling if the user lets us
 		if (! kMP.settings.get("lastfm", false))
 			return;
-		
+
 		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
-		
+
 		scrobble.putExtra("playing", isPlaying);
 		scrobble.putExtra("id", getCurrentSongId());
-		
+
 		sendBroadcast(scrobble);
 	}
-	
+
 	// THESE ARE METHODS RELATED TO CONNECTING THE SERVICE
 	// TO THE ANDROID PLATFORM
 	// NOTHING TO DO WITH MUSIC-PLAYING
-	
+
 	/**
 	 * Tells if this service is bound to an Activity.
 	 */
 	public boolean musicBound = false;
-	
+
 	/**
 	 * Defines the interaction between an Activity and this Service.
 	 */
@@ -371,7 +382,7 @@ public class MusicService extends Service
 			return MusicService.this;
 		}
 	}
-	
+
 	/**
 	 * Token for the interaction between an Activity and this Service.
 	 */

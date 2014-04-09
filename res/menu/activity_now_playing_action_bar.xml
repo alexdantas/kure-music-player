@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.kure.musicplayer.MainActivity" >
+    tools:context="com.kure.musicplayer.MainActivity">
     
     <!-- Action Bar (menu on top) that is shown only on
          the "Now Playing" Activity.
