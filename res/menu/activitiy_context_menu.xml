@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.kure.musicplayer.MainActivity" >
+    
+    <!-- This is the context menu (appears when the user presses
+         the menu button).
+         
+         Highlight for the `orderInCategory=100`.
+     -->
+     
+    <item
+        android:id="@+id/context_menu_settings"
+        android:orderInCategory="100"
+        android:title="@string/settings"
+        />
+    
+    <item
+        android:id="@+id/context_menu_end"
+        android:icon="@drawable/end"
+        android:orderInCategory="100"
+        android:title="@string/end"
+        />
+
+</menu>

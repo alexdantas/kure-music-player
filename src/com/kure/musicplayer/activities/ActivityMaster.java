@@ -11,12 +11,13 @@ import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
 /**
- * Master Activity, from which every Activity other inherits.
- * Contains things all other Activities have in common.
+ * Master Activity from which every other Activity inherits
+ * (except for `ActivityMenuSettings`).
  * 
- * This is needed so we can change the color theme at runtime.
+ * If contains some things they all have in common:
  * 
- * Also, so every Activity can have the same Action Bar.
+ * - They can change the color theme at runtime;
+ * - They all have the same context menu.
  * 
  * What we do is make each Activity keep track of which
  * theme it currently has.
@@ -30,7 +31,6 @@ import com.kure.musicplayer.kMP;
  * Sources that made me apply this idea, thank you so much:
  * - http://stackoverflow.com/a/4673209
  * - http://stackoverflow.com/a/11875930
- * 
  */
 public class ActivityMaster extends Activity {
 	
@@ -111,7 +111,7 @@ public class ActivityMaster extends Activity {
 		
 		// Built based on the `res/menu/main.xml`
 		MenuInflater inflater= getMenuInflater();
-		inflater.inflate(R.menu.action_bar, menu);
+		inflater.inflate(R.menu.activitiy_context_menu, menu);
 		
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -125,14 +125,6 @@ public class ActivityMaster extends Activity {
 		
 		switch (item.getItemId()) {
 		
-		case R.id.action_bar_shuffle:
-			kMP.musicService.toggleShuffleMode();
-			return true;
-			
-		case R.id.action_bar_repeat:
-			kMP.musicService.toggleRepeatMode();
-			return true;			
-
 		case R.id.context_menu_end:
 			
 			// This forces the system to kill the process, although
@@ -145,10 +137,6 @@ public class ActivityMaster extends Activity {
 			
 		case R.id.context_menu_settings:
 			startActivity(new Intent(this, ActivityMenuSettings.class));
-			break;
-			
-		case R.id.context_menu_now_playing:
-			startActivity(new Intent(this, ActivityNowPlaying.class));
 			break;
 		}
 		

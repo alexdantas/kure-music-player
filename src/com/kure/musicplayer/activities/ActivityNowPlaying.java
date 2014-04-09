@@ -1,8 +1,12 @@
 package com.kure.musicplayer.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -75,6 +79,39 @@ public class ActivityNowPlaying extends ActivityMaster
 		// When we're playing music, we'll leave a shortcut on
 		// the main screen to us.
 		ActivityMenuMain.nowPlaying(this, true);
+	}
+	
+	/**
+	 * Let's create the ActionBar (menu on the top).
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		MenuInflater inflater= getMenuInflater();
+		inflater.inflate(R.menu.activity_now_playing_action_bar, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	/**
+	 * This method gets called whenever the user clicks an
+	 * item on the ActionBar.
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch (item.getItemId()) {
+		
+		case R.id.action_bar_shuffle:
+			kMP.musicService.toggleShuffleMode();
+			return true;
+			
+		case R.id.action_bar_repeat:
+			kMP.musicService.toggleRepeatMode();
+			return true;			
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
