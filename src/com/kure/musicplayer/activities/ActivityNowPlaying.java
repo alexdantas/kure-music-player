@@ -1,7 +1,5 @@
 package com.kure.musicplayer.activities;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -10,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 
@@ -82,15 +79,51 @@ public class ActivityNowPlaying extends ActivityMaster
 	}
 	
 	/**
+	 * Icon that will show on the top menu showing if
+	 * `shuffle` is on/off and allowing the user to change it.
+	 */
+	private MenuItem shuffleItem;
+	
+	/**
+	 * Icon that will show on the top menu showing if
+	 * `repeat` is on/off and allowing the user to change it.
+	 */
+	private MenuItem repeatItem;
+	
+	/**
 	 * Let's create the ActionBar (menu on the top).
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
-		MenuInflater inflater= getMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_now_playing_action_bar, menu);
 		
+		shuffleItem = menu.findItem(R.id.action_bar_shuffle);
+		
+		repeatItem = menu.findItem(R.id.action_bar_repeat);
+		
+		refreshActionBarItems();
+		
 		return super.onCreateOptionsMenu(menu);
+	}
+	
+	/**
+	 * Refreshes the icons on the Action Bar based on the
+	 * status of `shuffle` and `repeat`.
+	 * 
+	 * Source:
+	 * http://stackoverflow.com/a/11006878
+	 */
+	private void refreshActionBarItems() {
+		
+		shuffleItem.setIcon((kMP.musicService.isShuffle())?
+                R.drawable.shuffle_on:
+                R.drawable.shuffle_off);
+
+		repeatItem.setIcon((kMP.musicService.isRepeat())?
+		                    R.drawable.repeat_on:
+		                    R.drawable.repeat_off);
 	}
 	
 	/**
@@ -104,10 +137,12 @@ public class ActivityNowPlaying extends ActivityMaster
 		
 		case R.id.action_bar_shuffle:
 			kMP.musicService.toggleShuffleMode();
+			refreshActionBarItems();
 			return true;
 			
 		case R.id.action_bar_repeat:
 			kMP.musicService.toggleRepeatMode();
+			refreshActionBarItems();
 			return true;			
 		}
 		

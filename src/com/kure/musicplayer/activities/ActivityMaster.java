@@ -17,7 +17,7 @@ import com.kure.musicplayer.kMP;
  * If contains some things they all have in common:
  * 
  * - They can change the color theme at runtime;
- * - They all have the same context menu.
+ * - They all have the same context menu (bottom menu).
  * 
  * What we do is make each Activity keep track of which
  * theme it currently has.
@@ -101,24 +101,21 @@ public class ActivityMaster extends Activity {
 	}
 	
 	/**
-	 * Let's create the ActionBar (menu on the top).
-	 * 
-	 * @note If you don't want to have this action bar,
-	 *       simply override it on a child Activity.
+	 * Let's set a context menu (menu that appears when
+	 * the user presses the "menu" button).
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
-		// Built based on the `res/menu/main.xml`
 		MenuInflater inflater= getMenuInflater();
-		inflater.inflate(R.menu.activitiy_context_menu, menu);
+		inflater.inflate(R.menu.menu_context, menu);
 		
 		return super.onCreateOptionsMenu(menu);
 	}
 	
 	/**
 	 * This method gets called whenever the user clicks an
-	 * item on the ActionBar.
+	 * item on the context menu.
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

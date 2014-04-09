@@ -396,4 +396,12 @@ public class MusicService extends Service
 		player.release();
 		return false;
 	}
+
+	public boolean isShuffle() {
+		return shuffleMode;
+	}
+
+	public boolean isRepeat() {
+		return repeatMode;
+	}
 }
