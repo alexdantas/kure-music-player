@@ -13,22 +13,22 @@ import com.kure.musicplayer.kMP;
 /**
  * Let's the user interact with a Menu and change the
  * application's settings/preferences/configuration.
- * 
+ *
  * I don't need to build the View because  I'm subclassing
  * `PreferenceActivity` - it gives an an automatic ListView
  * based on our items on the `res/xml/preferences.xml` file.
- * 
+ *
  * Thanks a lot, you awesome source you!
  * http://android-elements.blogspot.com.br/2011/06/creating-android-preferences-screen.html
- * 
+ *
  * If the user changes the application's theme, the changes are
  * applied through all the application.
- * 
+ *
  * This Activity listens for any change on the Theme, and if it
  * happens, we `recreate()` this Activity.
- * 
+ *
  * Every other class handles it's theme according to the methods
- * inside `ActivityMaster`.  
+ * inside `ActivityMaster`.
  */
 public class ActivityMenuSettings extends PreferenceActivity
 	implements OnSharedPreferenceChangeListener {
@@ -38,7 +38,7 @@ public class ActivityMenuSettings extends PreferenceActivity
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		// Setting the theme from kMP.Settings
 		// right before creating the actual activity.
 		//
@@ -51,38 +51,38 @@ public class ActivityMenuSettings extends PreferenceActivity
 		String theme = kMP.settings.get("themes", "light");
 		if (theme.equals("light"))
 			setTheme(R.style.Theme_Light);
-		
+
 		else if (theme.equals("dark"))
 			setTheme(R.style.Theme_Dark);
-	
-		else if (theme.equals("solariezd"))
-			this.setTheme(R.style.Theme_Solarized);			
-		
+
+		else if (theme.equals("solarized"))
+			this.setTheme(R.style.Theme_Solarized_Dark);
+
 		// This enables the "Up" button on the top Action Bar
 		// Note that it returns to the parent Activity, specified
 		// on `AndroidManifest`
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
+
 		super.onCreate(savedInstanceState);
-		
+
 		// Populating the View with all the items from
 		// file `res/xml/preferences.xml`.
 		addPreferencesFromResource(R.xml.preferences);
-		
-		// We're asking to be notified when the user changes 
+
+		// We're asking to be notified when the user changes
 		// any setting.
 		PreferenceManager
 			.getDefaultSharedPreferences(this)
 			.registerOnSharedPreferenceChangeListener(this);
 	}
-	
+
 	/**
 	 * Called when the user modifies any preference.
 	 */
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		
+
 		// If the user changed the theme, we'll restart
 		// this activity. This way the changes are applied
 		// immediately.
@@ -90,7 +90,7 @@ public class ActivityMenuSettings extends PreferenceActivity
 		// This key's at `res/xml/preferences.xml`
 		if (key.equals("themes"))
 			recreate();
-		
+
 		if (key.equals("show_notification")) {
 			// WE SHOULD KILL THE CURRENT NOTIFICATION, IF IT EXISTS
 		}

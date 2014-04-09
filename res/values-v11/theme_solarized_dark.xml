@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <style name="Theme.Solarized.Dark" parent="AppTheme">
+       
+        <item name="android:windowBackground">@color/solarized_base03</item>
+        
+	    <item name="android:textColor">@color/solarized_base1</item>
+	    
+	    <item name="android:listDivider">@color/yellow</item>
+	    <item name="android:textColorHighlight">@color/red</item>
+	    
+	    <item name="android:actionBarStyle" >@style/Theme.Solarized.Dark.ActionBar</item>
+        
+	    <item name="android:listViewStyle">@style/Theme.Solarized.Dark.ListView</item>
+	    
+    </style>
+
+    <style name="Theme.Solarized.Dark.ActionBar"
+           parent="android:Widget.ActionBar">
+        
+        <item name="android:background">@color/solarized_base02</item>
+        
+        <item name="android:titleTextStyle">@style/Theme.Solarized.Dark.ActionBar.Title</item>
+        <item name="android:subtitleTextStyle">@style/Theme.Solarized.Dark.ActionBar.Subtitle</item>
+        
+    </style> 
+    
+    <style name="Theme.Solarized.Dark.ActionBar.Title"
+           parent="@android:style/TextAppearance.Medium">
+        
+        <item name="android:textColor">@color/solarized_base0</item>
+    </style>
+    
+    <style name="Theme.Solarized.Dark.ActionBar.Subtitle"
+           parent="@android:style/TextAppearance.Small">
+        
+        <item name="android:textColor">@color/solarized_base0</item>
+    </style>
+    
+    <style name="Theme.Solarized.Dark.ListView"
+           parent="@android:style/Widget.ListView">
+        
+        <!-- We're making the divider behave the same way as the
+             selector - making it seem that there's no divider at all
+         -->
+        <item name="android:listSelector">@drawable/theme_solarized_dark_list_selector</item>
+        <item name="android:divider">@drawable/theme_solarized_dark_list_selector</item>
+    </style>    
+    
+</resources>
