@@ -7,7 +7,6 @@
      -->
     <item
         android:id="@+id/action_bar_shuffle"
-        android:icon="@drawable/rand"
         android:orderInCategory="2"
         android:showAsAction="ifRoom"
         android:title="@string/shuffle"
@@ -15,7 +14,6 @@
         
     <item
         android:id="@+id/action_bar_repeat"
-        android:icon="@drawable/end"
         android:orderInCategory="2"
         android:showAsAction="ifRoom"
         android:title="@string/repeat"

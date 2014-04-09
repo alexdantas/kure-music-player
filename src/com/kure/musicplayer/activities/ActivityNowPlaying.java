@@ -118,12 +118,12 @@ public class ActivityNowPlaying extends ActivityMaster
 	private void refreshActionBarItems() {
 		
 		shuffleItem.setIcon((kMP.musicService.isShuffle())?
-                R.drawable.shuffle_on:
-                R.drawable.shuffle_off);
+				             R.drawable.ic_menu_shuffle_on:	 
+		                     R.drawable.ic_menu_shuffle_off);
 
 		repeatItem.setIcon((kMP.musicService.isRepeat())?
-		                    R.drawable.repeat_on:
-		                    R.drawable.repeat_off);
+		                    R.drawable.ic_menu_repeat_on:
+		                    R.drawable.ic_menu_repeat_off);
 	}
 	
 	/**
