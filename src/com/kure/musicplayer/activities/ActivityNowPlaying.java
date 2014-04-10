@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.kure.musicplayer.MusicController;
 import com.kure.musicplayer.R;
@@ -50,7 +52,8 @@ import com.kure.musicplayer.adapters.AdapterSong;
  */
 public class ActivityNowPlaying extends ActivityMaster
 	implements MediaPlayerControl,
-	           OnItemClickListener {
+	           OnItemClickListener,
+	           OnItemLongClickListener {
 
 	/**
 	 * List that will display all the songs.
@@ -112,8 +115,10 @@ public class ActivityNowPlaying extends ActivityMaster
 		// Scroll the list view to the current song.
 		songListView.setSelection(kMP.musicService.currentSongPosition);
 
-		// We'll get warned when the user clicks on an item.
+		// We'll get warned when the user clicks on an item
+		// and when he long selects an item.
 		songListView.setOnItemClickListener(this);
+		songListView.setOnItemLongClickListener(this);
 
 		setMusicController();
 
@@ -527,6 +532,23 @@ kMP.musicService.playSong();
 			setMusicController();
 			playbackPaused = false;
 		}
+	}
+
+	/**
+	 * When the user long clicks a music inside the "Now Playing List".
+	 */
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+		Toast.makeText(this, kMP.musicService.getSong(position).getPath(), Toast.LENGTH_LONG).show();
+
+		// Just a catch - if we return `false`, when an user
+		// long clicks an item, the list will react as if
+		// we've long clicked AND clicked.
+		//
+		// So by returning `false`, it will call both
+		// `onItemLongClick` and `onItemClick`!
+		return true;
 	}
 }
 

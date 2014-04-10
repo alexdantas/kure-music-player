@@ -17,6 +17,8 @@ import android.provider.MediaStore;
  * We can configure it to look out on the internal storage
  * (phone) or the external storage (sd card).
  *
+ * Thanks a lot for showing me how to get a music's full PATH:
+ * http://stackoverflow.com/a/21333187
  */
 public class SongList {
 
@@ -100,9 +102,14 @@ public class SongList {
 				android.provider.MediaStore.Audio.Media.TITLE,
 				android.provider.MediaStore.Audio.Media.ARTIST,
 				android.provider.MediaStore.Audio.Media.ALBUM,
-				android.provider.MediaStore.Audio.Media.YEAR
+				android.provider.MediaStore.Audio.Media.YEAR,
+				android.provider.MediaStore.Audio.Media.DATA
 		};
 
+/*		Uri songToPlayURI = ContentUris.withAppendedId
+				(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+				 songToPlay.getId());
+*/
 		// Limiter that will only get rows with music files
 		// It's a SQL "WHERE" clause.
 		final String musicsOnly = MediaStore.Audio.Media.IS_MUSIC + "=1";
@@ -118,6 +125,7 @@ public class SongList {
 			int artistColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ARTIST);
 			int albumColumn  = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.ALBUM);
 			int yearColumn   = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.YEAR);
+			int dataColumn   = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.DATA);
 
 			// Adding all songs to the list, one by row
 			do {
@@ -128,6 +136,8 @@ public class SongList {
 						             musicCursor.getString(albumColumn),
 						             musicCursor.getInt(yearColumn));
 
+				String path = musicCursor.getString(dataColumn);
+				song.setPath(path);
 				songs.add(song);
 			}
 			while (musicCursor.moveToNext());

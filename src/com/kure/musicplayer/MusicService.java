@@ -136,12 +136,10 @@ public class MusicService extends Service
 
 		currentSong = songToPlay;
 
-		long songToPlayID = songToPlay.getId();
-
 		// Append the external URI with our songs'
-		Uri songToPlayURI = ContentUris.withAppendedId(
-				android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-				songToPlayID);
+		Uri songToPlayURI = ContentUris.withAppendedId
+				(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+				 songToPlay.getId());
 
 		try {
 			player.setDataSource(getApplicationContext(), songToPlayURI);
@@ -475,20 +473,21 @@ public class MusicService extends Service
 			});
 
 		else if (rule == "album")
-		Collections.sort(songs, new Comparator<Song>() {
-			public int compare(Song a, Song b)
-			{
-				return a.getAlbum().compareTo(b.getAlbum());
-			}
-		});
+			Collections.sort(songs, new Comparator<Song>() {
+				public int compare(Song a, Song b)
+				{
+					return a.getAlbum().compareTo(b.getAlbum());
+				}
+			});
 
 		else if (rule == "track") {
 			// not implemented yet
 		}
 
 		else if (rule == "random") {
-
+			Collections.shuffle(songs, random);
 		}
+
 
 		// Now that we sorted, get again the current song
 		// position.
@@ -500,5 +499,12 @@ public class MusicService extends Service
 			}
 			position++;
 		}
+	}
+
+	/**
+	 * Returns the song on the Now Playing List at `position`.
+	 */
+	public Song getSong(int position) {
+		return songs.get(position);
 	}
 }

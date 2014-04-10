@@ -1,5 +1,6 @@
 package com.kure.musicplayer;
 
+
 /**
  * Represents a single audio file on the system.
  */
@@ -10,12 +11,12 @@ public class Song {
 	 * (so we can locate the file anywhere)
 	 */
 	private long   id;
-	
+
 	private String title;
 	private String artist;
 	private String album;
 	private int    year;
-	
+
 	public Song(long songID, String title, String artist, String album, int year) {
 		this.id     = songID;
 		this.title  = title;
@@ -23,7 +24,7 @@ public class Song {
 		this.album  = album;
 		this.year   = year;
 	}
-	
+
 	public long getId() {
 		return id;
 	}
@@ -38,5 +39,14 @@ public class Song {
 	}
 	public int getYear() {
 		return year;
+	}
+
+	private String path;
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+	public String getPath() {
+		return path;
 	}
 }
