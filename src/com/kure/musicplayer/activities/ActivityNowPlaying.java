@@ -62,6 +62,19 @@ public class ActivityNowPlaying extends ActivityMaster
 
 	private MusicController musicController;
 
+	/**
+	 * Thing that maps songs to items on the ListView.
+	 *
+	 * We're keeping track of it so we can refresh the ListView
+	 * if the user wishes to change it's order.
+	 *
+	 * Check out the leftmost menu and it's options.
+	 */
+	private AdapterSong songAdapter;
+
+	/**
+	 * Gets called when the Activity is getting initialized.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -75,7 +88,7 @@ public class ActivityNowPlaying extends ActivityMaster
 
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
-		AdapterSong songAdapter = new AdapterSong(this, kMP.nowPlayingList);
+		songAdapter = new AdapterSong(this, kMP.nowPlayingList);
 		songListView.setAdapter(songAdapter);
 
 		// Looking for an optional extra with the song ID
@@ -164,16 +177,40 @@ public class ActivityNowPlaying extends ActivityMaster
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
+
 				switch (item.getItemId()) {
+
+				// Sorting options - after changing the now playing list
+				// order, we must refresh the ListView and scroll to the
+				// currently playing song.
 				case R.id.action_bar_submenu_title:
+					kMP.musicService.sortBy("title");
+					songAdapter.notifyDataSetChanged();
+					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
+
 				case R.id.action_bar_submenu_artist:
+					kMP.musicService.sortBy("artist");
+					songAdapter.notifyDataSetChanged();
+					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
+
 				case R.id.action_bar_submenu_album:
+					kMP.musicService.sortBy("album");
+					songAdapter.notifyDataSetChanged();
+					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
+
 				case R.id.action_bar_submenu_track:
+					kMP.musicService.sortBy("track");
+					songAdapter.notifyDataSetChanged();
+					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
+
 				case R.id.action_bar_submenu_random:
+					kMP.musicService.sortBy("random");
+					songAdapter.notifyDataSetChanged();
+					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
 				}
 				return false;

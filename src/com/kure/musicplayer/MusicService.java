@@ -1,6 +1,8 @@
 package com.kure.musicplayer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import android.app.Notification;
@@ -430,5 +432,73 @@ public class MusicService extends Service
 
 	public boolean isRepeat() {
 		return repeatMode;
+	}
+
+	/**
+	 * Sorts the internal Now Playing List according to
+	 * a `rule`.
+	 *
+	 * Supported ways to sort are:
+	 * - "title":  Sorts alphabetically by song title
+	 * - "artist": Sorts alphabetically by artist name
+	 * - "album":  Sorts alphabetically by album name
+	 * - "track":  Sorts by track number
+	 * - "random": Sorts randomly (shuffles song's orders)
+	 */
+	public void sortBy(String rule) {
+
+		// We track the currently playing song to
+		// a position on the song list.
+		//
+		// When we sort, it'll be on a different
+		// position.
+		//
+		// So we keep a reference to the currently
+		// playing song's ID and then look it up
+		// after sorting.
+		long nowPlayingSongID = currentSong.getId();
+
+		if (rule == "title")
+			Collections.sort(songs, new Comparator<Song>() {
+				public int compare(Song a, Song b)
+				{
+					return a.getTitle().compareTo(b.getTitle());
+				}
+			});
+
+		else if (rule == "artist")
+			Collections.sort(songs, new Comparator<Song>() {
+				public int compare(Song a, Song b)
+				{
+					return a.getArtist().compareTo(b.getArtist());
+				}
+			});
+
+		else if (rule == "album")
+		Collections.sort(songs, new Comparator<Song>() {
+			public int compare(Song a, Song b)
+			{
+				return a.getAlbum().compareTo(b.getAlbum());
+			}
+		});
+
+		else if (rule == "track") {
+			// not implemented yet
+		}
+
+		else if (rule == "random") {
+
+		}
+
+		// Now that we sorted, get again the current song
+		// position.
+		int position = 0;
+		for (Song song : songs) {
+			if (song.getId() == nowPlayingSongID) {
+				currentSongPosition = position;
+				break;
+			}
+			position++;
+		}
 	}
 }
