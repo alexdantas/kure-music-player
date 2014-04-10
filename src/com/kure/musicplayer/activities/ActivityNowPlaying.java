@@ -1,5 +1,6 @@
 package com.kure.musicplayer.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,8 +19,31 @@ import com.kure.musicplayer.adapters.AdapterSong;
 
 
 /**
- * Shows the "Now Playing Queue", with all songs to be played, plus
- * letting the user change between songs with a MediaPlayerControl.
+ * It is the "Now Playing Queue".
+ *
+ * Tasks:
+ *
+ * - List all currently playing songs.
+ * - Has a MediaController, little widgets with
+ *   buttons to play, pause, skip, etc.
+ * - Lets the user append songs to it at any time.
+ * - Allows the user to select any song inside it to
+ *   start playing right away.
+ *
+ * Interface:
+ *
+ * If you want to play a set of musics, set the
+ * ArrayList<Song> on `kmP.nowPlayingList` with all
+ * the songs you want.
+ *
+ * Then, send an Extra called "song" that contains
+ * the global ID of the Song you want to start
+ * playing.
+ *
+ * - If we don't find that ID on the list, we start
+ *   playing from the beginning.
+ * - The Extra is optional: if you don't provide it
+ *   it does nothing.
  */
 public class ActivityNowPlaying extends ActivityMaster
 	implements MediaPlayerControl,
@@ -51,17 +75,26 @@ public class ActivityNowPlaying extends ActivityMaster
 		AdapterSong songAdapter = new AdapterSong(this, kMP.nowPlayingList);
 		songListView.setAdapter(songAdapter);
 
-		// Prepare the music service to play the song.
-		// Note that if we're returning to this screen with the same
-		// music index, we should not restart the music.
-		if (kMP.musicService.currentSongPosition != kMP.nowPlayingIndex)
-		{
-			kMP.musicService.setSong(kMP.nowPlayingIndex);
+		// Looking for an optional extra with the song ID
+		// to start playing.
+		Intent intent = getIntent();
+		Bundle bundle = intent.getExtras();
+
+		if (bundle != null) {
+
+			// If we received an extra with the song position
+			// inside the now playing list, start playing it
+
+			int songToPlayIndex = (int)bundle.get("song");
+
+			// Prepare the music service to play the song.
+			// `setSong` does limit-checking
+			kMP.musicService.setSong(songToPlayIndex);
 			kMP.musicService.playSong();
 		}
 
 		// Scroll the list view to the current song.
-		songListView.setSelection(kMP.nowPlayingIndex);
+		songListView.setSelection(kMP.musicService.currentSongPosition);
 
 		// We'll get warned when the user clicks on an item.
 		songListView.setOnItemClickListener(this);
@@ -305,6 +338,9 @@ public class ActivityNowPlaying extends ActivityMaster
 
 	// Back to the normal methods
 
+	/**
+	 * Jumps to the next song and starts playing it right now.
+	 */
 	private void playNext() {
 		kMP.musicService.next();
 
@@ -317,6 +353,10 @@ public class ActivityNowPlaying extends ActivityMaster
 
 		musicController.show();
 	}
+
+	/**
+	 * Jumps to the previous song and starts playing it right now.
+	 */
 	private void playPrevious() {
 		kMP.musicService.previous();
 
@@ -330,17 +370,18 @@ public class ActivityNowPlaying extends ActivityMaster
 		musicController.show();
 	}
 
+	/**
+	 * When the user selects a music inside the "Now Playing List",
+	 * we'll start playing it right away.
+	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-		kMP.nowPlayingIndex = position;
-
 		// Prepare the music service to play the song.
-		kMP.musicService.setSong(kMP.nowPlayingIndex);
+		kMP.musicService.setSong(position);
 
 		// Scroll the list view to the current song.
 		songListView.setSelection(position);
-
 
 		kMP.musicService.playSong();
 

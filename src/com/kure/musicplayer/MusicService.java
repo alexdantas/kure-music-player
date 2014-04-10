@@ -22,11 +22,16 @@ import com.kure.musicplayer.activities.ActivityNowPlaying;
  * Service that makes the music play regardless if our
  * app is on focus.
  *
- * Note that it keeps the music playing even when the
- * device is locked.
- * For that, we must add a special permission on the
- * Manifest.
+ * Tasks:
  *
+ * - Abstracts controlling the native Android MediaPlayer
+ * - Keep showing a system Notification with info on
+ *   currently playing song.
+ *
+ * @note It keeps the music playing even when the
+ *       device is locked.
+ *       For that, we must add a special permission
+ *       on the AndroidManifest.
  */
 public class MusicService extends Service
 	implements MediaPlayer.OnPreparedListener,
@@ -185,10 +190,15 @@ public class MusicService extends Service
 	}
 
 	/**
-	 * Let's call this when the user selects a song from the list.
-	 * @param songIndex FUCK YEAH
+	 * Sets a specific song, already within internal Now Playing List.
+	 *
+	 * @param songIndex Index of the song inside the Now Playing List.
 	 */
 	public void setSong(int songIndex) {
+
+		if (songIndex < 0 || songIndex >= songs.size())
+			currentSongPosition = 0;
+
 		currentSongPosition = songIndex;
 	}
 
@@ -232,6 +242,9 @@ public class MusicService extends Service
 		playSong();
 	}
 
+	/**
+	 * If something wrong happens with the MusicPlayer.
+	 */
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
 		mp.reset();
@@ -249,6 +262,12 @@ public class MusicService extends Service
 	// These methods are to be called by the Activity
 	// to work on the music-playing.
 
+	/**
+	 * Jumps to the previous song on the list.
+	 *
+	 * @note Remember to call `playSong()` to make the MusicPlayer
+	 *       actually play the music.
+	 */
 	public void previous() {
 
 		scrobbleCurrentSong(false);
@@ -256,10 +275,6 @@ public class MusicService extends Service
 		currentSongPosition--;
 		if (currentSongPosition < 0)
 			currentSongPosition = songs.size() - 1;
-
-		kMP.nowPlayingIndex = currentSongPosition;
-
-		playSong();
 	}
 
 	/**
@@ -290,8 +305,6 @@ public class MusicService extends Service
 
 		if (currentSongPosition >= songs.size())
 			currentSongPosition = 0;
-
-		kMP.nowPlayingIndex = currentSongPosition;
 	}
 
 	public int getPosition() {
