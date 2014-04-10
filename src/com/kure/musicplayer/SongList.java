@@ -106,10 +106,6 @@ public class SongList {
 				android.provider.MediaStore.Audio.Media.DATA
 		};
 
-/*		Uri songToPlayURI = ContentUris.withAppendedId
-				(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-				 songToPlay.getId());
-*/
 		// Limiter that will only get rows with music files
 		// It's a SQL "WHERE" clause.
 		final String musicsOnly = MediaStore.Audio.Media.IS_MUSIC + "=1";
@@ -127,17 +123,23 @@ public class SongList {
 			int yearColumn   = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.YEAR);
 			int dataColumn   = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.Media.DATA);
 
+			// NOTE
+			// I tried to use MediaMetadataRetriever, but it was too slow.
+			// Even with 10 songs, it took like 10 seconds,
+			// No way I'm releasing it this way - I have like 4.260 songs!
+
 			// Adding all songs to the list, one by row
 			do {
 				// Creating a song from the values on the row
 				Song song = new Song(musicCursor.getInt(idColumn),
-						             musicCursor.getString(titleColumn),
-						             musicCursor.getString(artistColumn),
-						             musicCursor.getString(albumColumn),
-						             musicCursor.getInt(yearColumn));
+						             musicCursor.getString(dataColumn));
 
-				String path = musicCursor.getString(dataColumn);
-				song.setPath(path);
+				song.setTitle(musicCursor.getString(titleColumn));
+				song.setArtist(musicCursor.getString(artistColumn));
+				song.setAlbum(musicCursor.getString(albumColumn));
+				song.setYear(musicCursor.getInt(yearColumn));
+
+				// Adding the song to the global list
 				songs.add(song);
 			}
 			while (musicCursor.moveToNext());
@@ -145,11 +147,6 @@ public class SongList {
 		else
 		{
 			// What do I do if I can't find any songs?
-			songs.add(new Song(0,
-					           "No Songs Found",
-					           "On this Device",
-					           "kMP",
-					           2014));
 		}
 		musicCursor.close();
 
