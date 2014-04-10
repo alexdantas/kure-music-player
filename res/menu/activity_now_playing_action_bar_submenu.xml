@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    
+	<item
+	    android:id="@+id/action_bar_submenu_title"
+	    android:title="Sort by Title">
+	    
+	</item>
+
+     <item
+	    android:id="@+id/action_bar_submenu_artist"
+	    android:title="Sort by Artist">
+         
+     </item>
+     
+    <item
+	    android:id="@+id/action_bar_submenu_album"
+	    android:title="Sort by Album">
+        
+    </item>
+    
+    <item
+	    android:id="@+id/action_bar_submenu_track"
+	    android:title="Sort by Track Number">
+        
+    </item>
+    
+    <item
+	    android:id="@+id/action_bar_submenu_random"
+	    android:title="Sort Randomly">
+        
+    </item>
+    
+</menu>

@@ -8,10 +8,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.PopupMenu;
 
 import com.kure.musicplayer.MusicController;
 import com.kure.musicplayer.R;
@@ -107,9 +109,80 @@ public class ActivityNowPlaying extends ActivityMaster
 			playbackPaused = false;
 		}
 
-		// When we're playing music, we'll leave a shortcut on
-		// the main screen to us.
+		// While we're playing music, add an item to the
+		// Main Menu that returns here.
 		ActivityMenuMain.nowPlaying(this, true);
+
+		// Customizing ActionBar
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null) {
+			// Making sure the leftmost button (Home Button) is there
+			actionBar.setHomeButtonEnabled(true);
+
+			// Change it to a sweet custom icon
+			actionBar.setIcon(R.drawable.ic_menu_more);
+		}
+	}
+
+	/**
+	 * Activates the ActionBar's leftmost drop-down menu.
+	 *
+	 * @note We're creating the menu EVERY TIME you call
+	 *       this function! Hope it doesn't become too
+	 *       slow on some phones.
+	 *
+	 * @note All of it's items are defined on
+	 * `res/menu/activity_now_playing_action_bar_submenu.xml`.
+	 */
+	public void showSubmenu() {
+
+		// The menu can't possibly work if there's no ActionBar
+		ActionBar actionBar = getActionBar();
+		if (actionBar == null)
+			return;
+
+		// And now we create the drop-down menu, attaching
+		// it to the leftmost button (Home Button).
+		//
+		// To do so I need to get a reference to the leftmost
+		// button's View...
+		//
+		// (Source: http://stackoverflow.com/a/21125631)
+		Window window = getWindow();
+		View view = window.getDecorView();
+		int resID = getResources().getIdentifier("action_bar_container", "id", "android");
+
+		// ...and create the PopupMenu, populating with the options...
+		PopupMenu popup = new PopupMenu(this, view.findViewById(resID));
+		MenuInflater menuInflater = popup.getMenuInflater();
+
+		menuInflater.inflate(R.menu.activity_now_playing_action_bar_submenu,
+				             popup.getMenu());
+
+		// ... then we tell what happens when the user selects any of it's items.
+		PopupMenu.OnMenuItemClickListener listener = new PopupMenu.OnMenuItemClickListener() {
+
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.action_bar_submenu_title:
+					return false;
+				case R.id.action_bar_submenu_artist:
+					return false;
+				case R.id.action_bar_submenu_album:
+					return false;
+				case R.id.action_bar_submenu_track:
+					return false;
+				case R.id.action_bar_submenu_random:
+					return false;
+				}
+				return false;
+			}
+		};
+		popup.setOnMenuItemClickListener(listener);
+
+		// Finally, actually show the menu
+		popup.show();
 	}
 
 	/**
@@ -180,6 +253,11 @@ public class ActivityNowPlaying extends ActivityMaster
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
+
+		// The leftmost icon, usually with the app logo
+		case android.R.id.home:
+			showSubmenu();
+			return true;
 
 		case R.id.action_bar_shuffle:
 			kMP.musicService.toggleShuffleMode();
