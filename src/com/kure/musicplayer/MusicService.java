@@ -53,11 +53,12 @@ public class MusicService extends Service
 	 */
 	public int currentSongPosition;
 
-
-	// We'll compose the text to be shown on the notification
-	// area based on those variables
-	private String currentSongTitle  = "";
-	private String currentSongArtist = "";
+	/**
+	 * Copy of the current song being played (or paused).
+	 *
+	 * Use it to get info from the current song.
+	 */
+	public Song currentSong = null;
 
 	/**
 	 * WHAT THE FUCK
@@ -131,8 +132,7 @@ public class MusicService extends Service
 		// get an URL based on it
 		Song songToPlay = songs.get(currentSongPosition);
 
-		currentSongTitle  = songToPlay.getTitle();
-		currentSongArtist = songToPlay.getArtist();
+		currentSong = songToPlay;
 
 		long songToPlayID = songToPlay.getId();
 
@@ -174,10 +174,10 @@ public class MusicService extends Service
 
 			builder.setContentIntent(pendingIntent)
 			.setSmallIcon(R.drawable.play)
-			.setTicker(currentSongTitle)
+			.setTicker(currentSong.getTitle())
 			.setOngoing(true)
-			.setContentTitle(currentSongTitle)
-			.setContentText(currentSongArtist);
+			.setContentTitle(currentSong.getTitle())
+			.setContentText(currentSong.getArtist());
 
 			Notification notification = builder.build();
 
@@ -233,7 +233,10 @@ public class MusicService extends Service
 			if (kMP.settings.get("repeat_list", false))
 				playSong();
 			else
+			{
 				stopSelf();
+				currentSong = null;
+			}
 
 			return;
 		}
@@ -255,6 +258,7 @@ public class MusicService extends Service
 	public void onDestroy() {
 		// Stops feeding the notification
 		stopForeground(true);
+		currentSong = null;
 
 		super.onDestroy();
 	}

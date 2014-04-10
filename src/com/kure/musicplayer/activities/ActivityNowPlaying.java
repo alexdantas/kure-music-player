@@ -1,5 +1,6 @@
 package com.kure.musicplayer.activities;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -133,10 +134,10 @@ public class ActivityNowPlaying extends ActivityMaster
 		inflater.inflate(R.menu.activity_now_playing_action_bar, menu);
 
 		shuffleItem = menu.findItem(R.id.action_bar_shuffle);
-
-		repeatItem = menu.findItem(R.id.action_bar_repeat);
+		repeatItem  = menu.findItem(R.id.action_bar_repeat);
 
 		refreshActionBarItems();
+		refreshActionBarSubtitle();
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -157,6 +158,18 @@ public class ActivityNowPlaying extends ActivityMaster
 		repeatItem.setIcon((kMP.musicService.isRepeat())?
 		                    R.drawable.ic_menu_repeat_on:
 		                    R.drawable.ic_menu_repeat_off);
+	}
+
+	/**
+	 * Sets the Action Bar subtitle to the currently playing
+	 * song title.
+	 */
+	public void refreshActionBarSubtitle() {
+		ActionBar actionBar = getActionBar();
+
+		if (actionBar != null)
+			if (kMP.musicService.currentSong != null)
+				actionBar.setSubtitle(kMP.musicService.currentSong.getTitle());
 	}
 
 	/**
@@ -224,6 +237,9 @@ public class ActivityNowPlaying extends ActivityMaster
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		refreshActionBarSubtitle();
+
 		if (paused) {
 			// Ensure that the controller
 			// is shown when the user returns to the app
@@ -343,6 +359,9 @@ public class ActivityNowPlaying extends ActivityMaster
 	 */
 	private void playNext() {
 		kMP.musicService.next();
+kMP.musicService.playSong();
+
+		refreshActionBarSubtitle();
 
 		// To prevent the MusicPlayer from behaving
 		// unexpectedly when we pause the song playback.
@@ -359,6 +378,9 @@ public class ActivityNowPlaying extends ActivityMaster
 	 */
 	private void playPrevious() {
 		kMP.musicService.previous();
+		kMP.musicService.playSong();
+
+		refreshActionBarSubtitle();
 
 		// To prevent the MusicPlayer from behaving
 		// unexpectedly when we pause the song playback.
@@ -384,6 +406,7 @@ public class ActivityNowPlaying extends ActivityMaster
 		songListView.setSelection(position);
 
 		kMP.musicService.playSong();
+		refreshActionBarSubtitle();
 
 		if (playbackPaused) {
 			setMusicController();
