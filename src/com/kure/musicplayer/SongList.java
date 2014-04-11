@@ -155,6 +155,7 @@ public class SongList {
 		String SONG_ARTIST   = android.provider.MediaStore.Audio.Media.ARTIST;
 		String SONG_ALBUM    = android.provider.MediaStore.Audio.Media.ALBUM;
 		String SONG_YEAR     = android.provider.MediaStore.Audio.Media.YEAR;
+		String SONG_TRACK_NO = android.provider.MediaStore.Audio.Media.TRACK;
 		String SONG_FILEPATH = android.provider.MediaStore.Audio.Media.DATA;
 
 
@@ -212,6 +213,7 @@ public class SongList {
 				SONG_ARTIST,
 				SONG_ALBUM,
 				SONG_YEAR,
+				SONG_TRACK_NO,
 				SONG_FILEPATH
 		};
 
@@ -236,10 +238,11 @@ public class SongList {
 				Song song = new Song(cursor.getInt(cursor.getColumnIndex(SONG_ID)),
 						             cursor.getString(cursor.getColumnIndex(SONG_FILEPATH)));
 
-				song.setTitle(cursor.getString(cursor.getColumnIndex(SONG_TITLE)));
-				song.setArtist(cursor.getString(cursor.getColumnIndex(SONG_ARTIST)));
-				song.setAlbum(cursor.getString(cursor.getColumnIndex(SONG_ALBUM)));
-				song.setYear(cursor.getInt(cursor.getColumnIndex(SONG_YEAR)));
+				song.setTitle      (cursor.getString(cursor.getColumnIndex(SONG_TITLE)));
+				song.setArtist     (cursor.getString(cursor.getColumnIndex(SONG_ARTIST)));
+				song.setAlbum      (cursor.getString(cursor.getColumnIndex(SONG_ALBUM)));
+				song.setYear       (cursor.getInt   (cursor.getColumnIndex(SONG_YEAR)));
+				song.setTrackNumber(cursor.getInt   (cursor.getColumnIndex(SONG_TRACK_NO)));
 
 				// Using the previously created genre maps
 				// to fill the current song genre.

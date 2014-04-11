@@ -482,9 +482,21 @@ public class MusicService extends Service
 				}
 			});
 
-		else if (rule.equals("track")) {
-			// not implemented yet
-		}
+		else if (rule.equals("track"))
+			Collections.sort(songs, new Comparator<Song>() {
+				public int compare(Song a, Song b)
+				{
+					int left  = a.getTrackNumber();
+					int right = b.getTrackNumber();
+
+					if (left == right)
+						return 0;
+
+					return ((left < right) ?
+					         -1 :
+					         1);
+				}
+			});
 
 		else if (rule.equals("random")) {
 			Collections.shuffle(songs, randomNumberGenerator);
