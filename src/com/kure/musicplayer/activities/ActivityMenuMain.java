@@ -211,12 +211,12 @@ public class ActivityMenuMain extends ActivityMaster
 			try {
 				// Will scan all songs on the device
 				kMP.songs.scanSongs(ActivityMenuMain.this, "external");
-				return "Finished scanning songs";
+				return ActivityMenuMain.this.getString(R.string.menu_main_scanning_ok);
 			}
 			catch (Exception e) {
 				Log.e("Couldn't execute background task", e.toString());
 				e.printStackTrace();
-				return "Failed to scan songs";
+				return ActivityMenuMain.this.getString(R.string.menu_main_scanning_not_ok);
 			}
 		}
 
@@ -228,18 +228,28 @@ public class ActivityMenuMain extends ActivityMaster
 			super.onPostExecute(result);
 
 			Toast.makeText(ActivityMenuMain.this,
-				       result,
-				       Toast.LENGTH_LONG).show();
+			               result,
+			               Toast.LENGTH_LONG).show();
 		}
 	}
+
+	/**
+	 * Flag that tells if we've added a "Now Playing" item
+	 * on the main menu.
+	 */
+	public static boolean hasNowPlaying = false;
 
 	/**
 	 * Forces to add a new item "Now Playing" on the main menu.
 	 */
 	public static void nowPlaying(Context c, boolean option) {
 
-		if (! items.contains(c.getString(R.string.menu_main_now_playing)))
-			ActivityMenuMain.items.add(c.getString(R.string.menu_main_now_playing));
+		if (! hasNowPlaying)
+			return;
+
+
+		ActivityMenuMain.items.add(c.getString(R.string.menu_main_now_playing));
+		hasNowPlaying = true;
 
 		adapter.notifyDataSetChanged();
 	}

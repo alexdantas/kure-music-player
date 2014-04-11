@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
@@ -81,8 +82,12 @@ public class ActivityMenuMusic extends ActivityMaster
 		// We can only handle the user choice from now on
 		// if we've successfuly scanned the songs from the
 		// device.
-		if (! kMP.songs.isInitialized())
+		if (! kMP.songs.isInitialized()) {
+			Toast.makeText(this,
+			               getString(R.string.menu_music_proceed_error),
+			               Toast.LENGTH_LONG).show();
 			return;
+		}
 
 		// Gets the string value of the current item and
 		// compares to all possible items.
