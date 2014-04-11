@@ -56,6 +56,15 @@ public class kMP {
 	public static ArrayList<Song> nowPlayingList = null;
 
 	/**
+	 * Flag that tells if the Main Menu has an item that
+	 * sends the user to the Now Playing Activity.
+	 *
+	 * It's here because when firstly initializing the
+	 * application, there's no Now Playing Activity.
+	 */
+	public static boolean mainMenuHasNowPlayingItem = false;
+
+	/**
 	 * Index for the `nowPlayingList` that indicates the current
 	 * song we're playing.
 	 */

@@ -107,8 +107,14 @@ public class ActivityMaster extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		MenuInflater inflater= getMenuInflater();
+		// Default options specified on the XML
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu_context, menu);
+
+		// Extra option to go to Now Playing screen
+		// (only activated when there's an actual Now Playing screen)
+		if (kMP.mainMenuHasNowPlayingItem)
+			menu.findItem(R.id.context_menu_now_playing).setVisible(true);
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -134,6 +140,10 @@ public class ActivityMaster extends Activity {
 
 		case R.id.context_menu_settings:
 			startActivity(new Intent(this, ActivityMenuSettings.class));
+			break;
+
+		case R.id.context_menu_now_playing:
+			startActivity(new Intent(this, ActivityNowPlaying.class));
 			break;
 		}
 

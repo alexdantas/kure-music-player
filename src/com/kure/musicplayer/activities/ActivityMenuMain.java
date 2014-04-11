@@ -78,6 +78,9 @@ public class ActivityMenuMain extends ActivityMaster
 		items.add(getString(R.string.menu_main_settings));
 		items.add(getString(R.string.menu_main_shuffle));
 
+		if (kMP.mainMenuHasNowPlayingItem)
+			items.add(getString(R.string.menu_main_now_playing));
+
 		// ListView to be populated with the menu items
 		listView = (ListView)findViewById(R.id.activity_main_menu_list);
 
@@ -251,10 +254,12 @@ public class ActivityMenuMain extends ActivityMaster
 	 */
 	public static void addNowPlayingItem(Context c) {
 
-		if (ActivityMenuMain.items.contains(c.getString(R.string.menu_main_now_playing)))
+		if (kMP.mainMenuHasNowPlayingItem)
 			return;
 
 		ActivityMenuMain.items.add(c.getString(R.string.menu_main_now_playing));
+
+		kMP.mainMenuHasNowPlayingItem = true;
 
 		// Refresh ListView
 		adapter.notifyDataSetChanged();
