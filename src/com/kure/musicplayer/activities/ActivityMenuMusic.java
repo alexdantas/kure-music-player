@@ -85,9 +85,9 @@ public class ActivityMenuMusic extends ActivityMaster
 		// device.
 		if (! kMP.songs.isInitialized()) {
 			Toast.makeText(this,
-			               getString(R.string.menu_music_proceed_error),
-			               Toast.LENGTH_LONG).show();
-			return;
+		               getString(R.string.menu_music_proceed_error),
+		               Toast.LENGTH_LONG).show();
+		return;
 		}
 
 		// Gets the string value of the current item and

@@ -385,6 +385,22 @@ public class SongList {
 	}
 
 	/**
+	 * Returns a new list with all songs.
+	 *
+	 * @note This is different than accessing `songs` directly
+	 *       because it duplicates it - you can then mess with
+	 *       it without worrying about changing the original.
+	 */
+	public ArrayList<Song> getSongs() {
+		ArrayList<Song> list = new ArrayList<Song>();
+
+		for (Song song : songs)
+			list.add(song);
+
+		return list;
+	}
+
+	/**
 	 * Returns a list of Songs belonging to a specified album.
 	 */
 	public ArrayList<Song> getSongsByAlbum(String desiredAlbum) {

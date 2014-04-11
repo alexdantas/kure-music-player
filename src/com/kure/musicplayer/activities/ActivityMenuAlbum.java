@@ -80,7 +80,7 @@ public class ActivityMenuAlbum extends ActivityMaster
 		if (! kMP.songs.isInitialized())
 			return;
 
-		String selectedAlbum= items.get(position);
+		String selectedAlbum = items.get(position);
 
 		kMP.musicList = kMP.songs.getSongsByAlbum(selectedAlbum);
 

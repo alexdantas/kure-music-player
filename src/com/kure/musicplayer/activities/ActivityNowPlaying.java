@@ -45,6 +45,12 @@ import com.kure.musicplayer.adapters.AdapterSong;
  * the global ID of the Song you want to start
  * playing.
  *
+ * Another thing you can do is to send an extra
+ * of key "sort" with any value accepted by the
+ * function `MusicService.sortBy()`.
+ * Then, the list will get sorted that way before
+ * it starts playing.
+ *
  * - If we don't find that ID on the list, we start
  *   playing from the beginning.
  * - The Extra is optional: if you don't provide it
@@ -86,29 +92,37 @@ public class ActivityNowPlaying extends ActivityMaster
 
 		songListView = (ListView)findViewById(R.id.activity_now_playing_song_list);
 
-		// We'll play this pre-defined list
+		// We'll play this pre-defined list.
+		// By default we play the first track, although an
+		// extra can change this. Look below.
 		kMP.musicService.setList(kMP.nowPlayingList);
+		kMP.musicService.setSong(0);
 
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
 		songAdapter = new AdapterSong(this, kMP.nowPlayingList);
 		songListView.setAdapter(songAdapter);
 
-		// Looking for an optional extra with the song ID
-		// to start playing.
+		// Looking for optional extras
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
 
 		if (bundle != null) {
 
+			// There's the other optional extra - sorting rule
+			if (bundle.containsKey("sort"))
+				kMP.musicService.sortBy((String)bundle.get("sort"));
+
 			// If we received an extra with the song position
 			// inside the now playing list, start playing it
+			if (bundle.containsKey("song")) {
+				int songToPlayIndex = (int)bundle.get("song");
 
-			int songToPlayIndex = (int)bundle.get("song");
+				// Prepare the music service to play the song.
+				// `setSong` does limit-checking
+				kMP.musicService.setSong(songToPlayIndex);
+			}
 
-			// Prepare the music service to play the song.
-			// `setSong` does limit-checking
-			kMP.musicService.setSong(songToPlayIndex);
 			kMP.musicService.playSong();
 		}
 
@@ -129,7 +143,7 @@ public class ActivityNowPlaying extends ActivityMaster
 
 		// While we're playing music, add an item to the
 		// Main Menu that returns here.
-		ActivityMenuMain.nowPlaying(this, true);
+		ActivityMenuMain.addNowPlayingItem(this);
 
 		// Customizing ActionBar
 		ActionBar actionBar = getActionBar();

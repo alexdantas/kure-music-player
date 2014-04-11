@@ -75,7 +75,7 @@ public class MusicService extends Service
 	/**
 	 * Random number generator for the Shuffle Mode.
 	 */
-	private Random random;
+	private Random randomNumberGenerator;
 
 	private boolean repeatMode = false;
 
@@ -90,7 +90,7 @@ public class MusicService extends Service
 
 		initMusicPlayer();
 
-		random = new Random();
+		randomNumberGenerator = new Random();
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class MusicService extends Service
 			int newSongPosition = currentSongPosition;
 
 			while (newSongPosition == currentSongPosition)
-				newSongPosition = random.nextInt(songs.size());
+				newSongPosition = randomNumberGenerator.nextInt(songs.size());
 
 			currentSongPosition = newSongPosition;
 			return;
@@ -454,9 +454,11 @@ public class MusicService extends Service
 		// So we keep a reference to the currently
 		// playing song's ID and then look it up
 		// after sorting.
-		long nowPlayingSongID = currentSong.getId();
+		long nowPlayingSongID = ((currentSong == null) ?
+		                         0 :
+		                         currentSong.getId());
 
-		if (rule == "title")
+		if (rule.equals("title"))
 			Collections.sort(songs, new Comparator<Song>() {
 				public int compare(Song a, Song b)
 				{
@@ -464,7 +466,7 @@ public class MusicService extends Service
 				}
 			});
 
-		else if (rule == "artist")
+		else if (rule.equals("artist"))
 			Collections.sort(songs, new Comparator<Song>() {
 				public int compare(Song a, Song b)
 				{
@@ -472,7 +474,7 @@ public class MusicService extends Service
 				}
 			});
 
-		else if (rule == "album")
+		else if (rule.equals("album"))
 			Collections.sort(songs, new Comparator<Song>() {
 				public int compare(Song a, Song b)
 				{
@@ -480,12 +482,12 @@ public class MusicService extends Service
 				}
 			});
 
-		else if (rule == "track") {
+		else if (rule.equals("track")) {
 			// not implemented yet
 		}
 
-		else if (rule == "random") {
-			Collections.shuffle(songs, random);
+		else if (rule.equals("random")) {
+			Collections.shuffle(songs, randomNumberGenerator);
 		}
 
 

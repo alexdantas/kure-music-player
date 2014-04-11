@@ -134,9 +134,21 @@ public class ActivityMenuMain extends ActivityMaster
 
 			// Can only jump to shuffle all songs if we've
 			// scanned all the songs from the device.
-			if (kMP.songs.isInitialized()) {
-
+			if (! kMP.songs.isInitialized()) {
+				Toast.makeText(this,
+			               getString(R.string.menu_music_proceed_error),
+			               Toast.LENGTH_LONG).show();
+				return;
 			}
+
+			// Shuffle all songs
+
+			kMP.nowPlayingList = kMP.songs.getSongs();
+
+			Intent intent = new Intent(this, ActivityNowPlaying.class);
+			intent.putExtra("sort", "random");
+
+			startActivity(intent);
 		}
 		else if (currentItem.equals(getString(R.string.menu_main_now_playing))) {
 			// Jump to Now Playing screen
@@ -234,23 +246,17 @@ public class ActivityMenuMain extends ActivityMaster
 	}
 
 	/**
-	 * Flag that tells if we've added a "Now Playing" item
-	 * on the main menu.
+	 * Adds a new item "Now Playing" on the main menu, if
+	 * it ain't there yet.
 	 */
-	public static boolean hasNowPlaying = false;
+	public static void addNowPlayingItem(Context c) {
 
-	/**
-	 * Forces to add a new item "Now Playing" on the main menu.
-	 */
-	public static void nowPlaying(Context c, boolean option) {
-
-		if (! hasNowPlaying)
+		if (ActivityMenuMain.items.contains(c.getString(R.string.menu_main_now_playing)))
 			return;
 
-
 		ActivityMenuMain.items.add(c.getString(R.string.menu_main_now_playing));
-		hasNowPlaying = true;
 
+		// Refresh ListView
 		adapter.notifyDataSetChanged();
 	}
 }
