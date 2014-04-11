@@ -79,7 +79,15 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"            
             android:parentActivityName=".activities.ActivityMenuMusic"
-            />        
+            />
+        
+        <activity
+            android:name=".activities.ActivityMenuPlaylist"
+            android:label="@string/menu_music_playlists"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"            
+            android:parentActivityName=".activities.ActivityMenuMusic"
+            />
         
         <activity
             android:name=".activities.ActivityListSongs"

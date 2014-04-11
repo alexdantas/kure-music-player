@@ -31,6 +31,11 @@ public class SongList {
 	public ArrayList<Song> songs = new ArrayList<Song>();
 
 	/**
+	 * Big list with all the Playlists found.
+	 */
+	public ArrayList<Playlist> playlists = new ArrayList<Playlist>();
+
+	/**
 	 * Maps song's genre IDs to song's genre names.
 	 * @note It's only available after calling `scanSongs`.
 	 */
@@ -78,6 +83,9 @@ public class SongList {
 	 * So you should call it on a separate thread and
 	 * query `isInitialized` when needed.
 	 *
+	 * Inside it, we make a lot of queries to the system's
+	 * databases - getting songs, genres and playlists.
+	 *
 	 * @note If you call this function twice, it rescans
 	 *       the songs, refreshing internal lists.
 	 *       It doesn't add up songs.
@@ -107,7 +115,7 @@ public class SongList {
 		scanningSongs = true;
 
 		// The URIs that tells where we should scan for files.
-		// There are separate URIs for music and genres. Go figure...
+		// There are separate URIs for music, genres and playlists. Go figure...
 		//
 		// Remember - internal is the phone memory, external is for the SD card.
 		Uri musicUri = ((fromWhere == "internal") ?
@@ -116,6 +124,9 @@ public class SongList {
 		Uri genreUri = ((fromWhere == "internal") ?
 				        android.provider.MediaStore.Audio.Genres.INTERNAL_CONTENT_URI:
 				        android.provider.MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI);
+		Uri playlistUri = ((fromWhere == "internal") ?
+		        android.provider.MediaStore.Audio.Playlists.INTERNAL_CONTENT_URI:
+		        android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
 
 		// Gives us access to query for files on the system.
 		ContentResolver resolver = c.getContentResolver();
@@ -146,8 +157,8 @@ public class SongList {
 		// metadata - like artist, album and such.
 
 
-		// Some local variables to ease typing.
-		// They represent columns on the underlying system databases.
+		// These are the columns from the system databases.
+		// They're the information I want to get from songs.
 		String GENRE_ID      = MediaStore.Audio.Genres._ID;
 		String GENRE_NAME    = MediaStore.Audio.Genres.NAME;
         String SONG_ID       = android.provider.MediaStore.Audio.Media._ID;
@@ -157,7 +168,6 @@ public class SongList {
 		String SONG_YEAR     = android.provider.MediaStore.Audio.Media.YEAR;
 		String SONG_TRACK_NO = android.provider.MediaStore.Audio.Media.TRACK;
 		String SONG_FILEPATH = android.provider.MediaStore.Audio.Media.DATA;
-
 
 		// Creating the map  "Genre IDs" -> "Genre Names"
 		genreIdToGenreNameMap = new HashMap<String, String>();
@@ -260,6 +270,47 @@ public class SongList {
 			// What do I do if I can't find any songs?
 		}
 		cursor.close();
+
+		// Alright, now I'll get all the Playlists.
+		// First I grab all playlist IDs and Names and then for each
+		// one of those, getting all songs inside them.
+
+		// As you know, the columns for the database.
+		String PLAYLIST_ID      = MediaStore.Audio.Playlists._ID;
+		String PLAYLIST_NAME    = MediaStore.Audio.Playlists.NAME;
+		String PLAYLIST_SONG_ID = MediaStore.Audio.Playlists.Members.AUDIO_ID;
+
+		// This is what I'll get for all playlists.
+		String[] playlistColumns = {
+				PLAYLIST_ID,
+				PLAYLIST_NAME
+		};
+
+		// The actual query - takes a while.
+		cursor = resolver.query(playlistUri, playlistColumns, null, null, null);
+
+		// Going through all playlists, creating my class and populating
+		// it with all the song IDs they have.
+		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+
+			Playlist playlist = new Playlist(cursor.getLong(cursor.getColumnIndex(PLAYLIST_ID)),
+			                                 cursor.getString(cursor.getColumnIndex(PLAYLIST_NAME)));
+
+			// For each playlist, get all song IDs
+			Uri currentUri = MediaStore.Audio.Playlists.Members.getContentUri(fromWhere, playlist.getID());
+
+			Cursor cursor2 = resolver.query(currentUri,
+			                                new String[] { PLAYLIST_SONG_ID },
+			                                musicsOnly,
+			                                null, null);
+
+			// Adding each song's ID to it
+			for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext())
+				playlist.add(cursor2.getLong(cursor2.getColumnIndex(PLAYLIST_SONG_ID)));
+
+			playlists.add(playlist);
+			cursor2.close();
+		}
 
 		// Finally, let's sort the song list alphabetically
 		// based on the song title.
@@ -474,6 +525,47 @@ public class SongList {
 			if (currentYear == year)
 				currentSongs.add(song);
 		}
+
+		return currentSongs;
+	}
+
+	public ArrayList<String> getPlaylistNames() {
+
+		ArrayList<String> names = new ArrayList<String>();
+
+		for (Playlist playlist : playlists)
+			names.add(playlist.getName());
+
+		return names;
+	}
+
+	public Song getSongById(long id) {
+
+		Song currentSong = null;
+
+		for (Song song : songs)
+			if (song.getId() == id) {
+				currentSong = song;
+				break;
+			}
+
+		return currentSong;
+	}
+
+	public ArrayList<Song> getSongsByPlaylist(String playlistName) {
+
+		ArrayList<Long> songIDs = null;
+
+		for (Playlist playlist : playlists)
+			if (playlist.getName().equals(playlistName)) {
+				songIDs = playlist.getSongIds();
+				break;
+			}
+
+		ArrayList<Song> currentSongs = new ArrayList<Song>();
+
+		for (Long songID : songIDs)
+			currentSongs.add(getSongById(songID));
 
 		return currentSongs;
 	}

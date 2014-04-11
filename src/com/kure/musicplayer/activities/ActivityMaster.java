@@ -18,6 +18,8 @@ import com.kure.musicplayer.kMP;
  *
  * - They can change the color theme at runtime;
  * - They all have the same context menu (bottom menu).
+ *   (note that there's an extra item "Now Playing" that
+ *    only appears if user started playing something)
  *
  * What we do is make each Activity keep track of which
  * theme it currently has.
@@ -55,6 +57,9 @@ public class ActivityMaster extends Activity {
 
 	}
 
+	/**
+	 * Called when the user returns to this activity after leaving.
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();

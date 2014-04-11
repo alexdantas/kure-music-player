@@ -95,7 +95,7 @@ public class ActivityMenuMusic extends ActivityMaster
 		String currentItem = listView.getItemAtPosition(position).toString();
 
 		if (currentItem == getString(R.string.menu_music_playlists)) {
-
+			startActivity(new Intent(this, ActivityMenuPlaylist.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_artists)) {
 			startActivity(new Intent(this, ActivityMenuArtist.class));
