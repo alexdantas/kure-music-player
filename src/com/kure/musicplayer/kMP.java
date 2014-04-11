@@ -69,7 +69,6 @@ public class kMP {
 	 */
 	public static void initialize(Context c) {
 
-		songs.setContent("external");
 		settings.load(c);
 	}
 

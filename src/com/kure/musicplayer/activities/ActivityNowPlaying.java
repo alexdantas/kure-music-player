@@ -540,7 +540,7 @@ kMP.musicService.playSong();
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-		Toast.makeText(this, kMP.musicService.getSong(position).getFilePath(), Toast.LENGTH_LONG).show();
+		Toast.makeText(this, kMP.musicService.getSong(position).getGenre(), Toast.LENGTH_LONG).show();
 
 		// Just a catch - if we return `false`, when an user
 		// long clicks an item, the list will react as if

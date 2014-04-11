@@ -210,7 +210,7 @@ public class ActivityMenuMain extends ActivityMaster
 
 			try {
 				// Will scan all songs on the device
-				kMP.songs.scanSongs(ActivityMenuMain.this);
+				kMP.songs.scanSongs(ActivityMenuMain.this, "external");
 				return "Finished scanning songs";
 			}
 			catch (Exception e) {
