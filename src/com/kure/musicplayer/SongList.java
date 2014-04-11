@@ -343,6 +343,29 @@ public class SongList {
 	}
 
 	/**
+	 * Returns a list with all years your songs have.
+	 *
+	 * @note It is a list of Strings. To access the
+	 *       years, do a `Integer.parseInt(string)`.
+	 */
+	public ArrayList<String> getYears() {
+
+		ArrayList<String> years = new ArrayList<String>();
+
+		for (Song song : songs) {
+			String year = Integer.toString(song.getYear());
+
+			if ((Integer.parseInt(year) > 0) && (! years.contains(year)))
+				years.add(year);
+		}
+
+		// Making them alphabetically sorted
+		Collections.sort(years);
+
+		return years;
+	}
+
+	/**
 	 * Returns a list of Songs belonging to a specified artist.
 	 */
 	public ArrayList<Song> getSongsByArtist(String desiredArtist) {
@@ -431,6 +454,24 @@ public class SongList {
 			String currentSongGenre = song.getGenre();
 
 			if (currentSongGenre == genreName)
+				currentSongs.add(song);
+		}
+
+		return currentSongs;
+	}
+
+	/**
+	 * Returns a list with all songs composed at `year`.
+	 */
+	public ArrayList<Song> getSongsByYear(int year) {
+
+		ArrayList<Song> currentSongs = new ArrayList<Song>();
+
+		for (Song song : songs) {
+
+			int currentYear = song.getYear();
+
+			if (currentYear == year)
 				currentSongs.add(song);
 		}
 

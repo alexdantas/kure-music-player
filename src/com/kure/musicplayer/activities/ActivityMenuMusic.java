@@ -111,7 +111,7 @@ public class ActivityMenuMusic extends ActivityMaster
 			startActivity(new Intent(this, ActivityMenuGenre.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_years)) {
-
+			startActivity(new Intent(this, ActivityMenuYear.class));
 		}
 		else {
 

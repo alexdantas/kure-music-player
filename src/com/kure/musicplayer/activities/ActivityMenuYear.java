@@ -15,10 +15,9 @@ import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
 /**
- * Shows a menu with all the genres your songs have.
- *
+ * Shows a menu with all the years your songs have.
  */
-public class ActivityMenuGenre extends ActivityMaster
+public class ActivityMenuYear extends ActivityMaster
 	implements OnItemClickListener {
 
 	/**
@@ -40,7 +39,7 @@ public class ActivityMenuGenre extends ActivityMaster
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_menu_genres);
+		setContentView(R.layout.activity_menu_years);
 
 		// This enables the "Up" button on the top Action Bar
 		// Note that it returns to the parent Activity, specified
@@ -50,9 +49,9 @@ public class ActivityMenuGenre extends ActivityMaster
 			actionBar.setDisplayHomeAsUpEnabled(true);
 
 		// List to be populated with items
-		listView = (ListView)findViewById(R.id.activity_menu_genres_list);
+		listView = (ListView)findViewById(R.id.activity_menu_years_list);
 
-		items = kMP.songs.getGenres();
+		items = kMP.songs.getYears();
 
 		// Adapter that will convert from Strings to List Items
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>
@@ -70,13 +69,13 @@ public class ActivityMenuGenre extends ActivityMaster
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-		String selectedGenre = items.get(position);
+		int selectedYear = Integer.parseInt(items.get(position));
 
-		kMP.musicList = kMP.songs.getSongsByGenre(selectedGenre);
+		kMP.musicList = kMP.songs.getSongsByYear(selectedYear);
 
 		Intent intent = new Intent(this, ActivityListSongs.class);
 
-		intent.putExtra("title", selectedGenre);
+		intent.putExtra("title", Integer.toString(selectedYear));
 
 		startActivity(intent);
 	}

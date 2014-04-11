@@ -74,6 +74,14 @@
             />
         
         <activity
+            android:name=".activities.ActivityMenuYear"
+            android:label="@string/menu_music_years"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"            
+            android:parentActivityName=".activities.ActivityMenuMusic"
+            />        
+        
+        <activity
             android:name=".activities.ActivityListSongs"
             android:label="@string/songs"
             android:launchMode="singleTop"
