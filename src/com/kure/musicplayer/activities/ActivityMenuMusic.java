@@ -57,6 +57,7 @@ public class ActivityMenuMusic extends ActivityMaster
 		items.add(getString(R.string.menu_music_playlists));
 		items.add(getString(R.string.menu_music_artists));
 		items.add(getString(R.string.menu_music_albums));
+		items.add(getString(R.string.menu_music_genres));
 		items.add(getString(R.string.menu_music_years));
 		items.add(getString(R.string.menu_music_songs));
 
@@ -105,6 +106,9 @@ public class ActivityMenuMusic extends ActivityMaster
 		else if (currentItem == getString(R.string.menu_music_songs)) {
 			kMP.musicList = kMP.songs.songs;
 			startActivity(new Intent(this, ActivityListSongs.class));
+		}
+		else if (currentItem == getString(R.string.menu_music_genres)) {
+			startActivity(new Intent(this, ActivityMenuGenre.class));
 		}
 		else if (currentItem == getString(R.string.menu_music_years)) {
 

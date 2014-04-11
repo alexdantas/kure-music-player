@@ -37,10 +37,10 @@ public class SongList {
 	private HashMap<String, String> genreIdToGenreNameMap;
 
 	/**
-	 * Maps song's genre IDs to song's IDs.
+	 * Maps song's IDs to song genre IDs.
 	 * @note It's only available after calling `scanSongs`.
 	 */
-	private HashMap<String, String> genreIdToSongIdMap;
+	private HashMap<String, String> songIdToGenreIdMap;
 
 	/**
 	 * Flag that tells if successfully scanned all songs.
@@ -174,8 +174,10 @@ public class SongList {
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
             genreIdToGenreNameMap.put(cursor.getString(0), cursor.getString(1));
 
+        cursor.close();
+
         // Map from Songs IDs to Genre IDs
-        genreIdToSongIdMap = new HashMap<String, String>();
+        songIdToGenreIdMap = new HashMap<String, String>();
 
         // UPDATE URI HERE
     	if (fromWhere == "both")
@@ -195,8 +197,9 @@ public class SongList {
 
         		long currentSongID = cursor.getLong(cursor.getColumnIndex(SONG_ID));
 
-        		genreIdToSongIdMap.put(Long.toString(currentSongID), genreID);
+        		songIdToGenreIdMap.put(Long.toString(currentSongID), genreID);
         	}
+        	cursor.close();
         }
 
     	// Finished getting the Genres.
@@ -240,7 +243,7 @@ public class SongList {
 
 				// Using the previously created genre maps
 				// to fill the current song genre.
-				String currentGenreID   = genreIdToSongIdMap.get(Long.toString(song.getId()));
+				String currentGenreID   = songIdToGenreIdMap.get(Long.toString(song.getId()));
 				String currentGenreName = genreIdToGenreNameMap.get(currentGenreID);
 				song.setGenre(currentGenreName);
 
@@ -321,6 +324,22 @@ public class SongList {
 	}
 
 	/**
+	 * Returns an alphabetically sorted list with all
+	 * existing genres on the scanned songs.
+	 */
+	public ArrayList<String> getGenres() {
+
+		ArrayList<String> genres = new ArrayList<String>();
+
+		for (String genre : genreIdToGenreNameMap.values())
+			genres.add(genre);
+
+		Collections.sort(genres);
+
+		return genres;
+	}
+
+	/**
 	 * Returns a list of Songs belonging to a specified artist.
 	 */
 	public ArrayList<Song> getSongsByArtist(String desiredArtist) {
@@ -379,5 +398,23 @@ public class SongList {
 		}
 
 		return songsByAlbum;
+	}
+
+	/**
+	 * Returns a list with all songs that have the same `genre.`
+	 */
+	public ArrayList<Song> getSongsByGenre(String genreName) {
+
+		ArrayList<Song> currentSongs = new ArrayList<Song>();
+
+		for (Song song : songs) {
+
+			String currentSongGenre = song.getGenre();
+
+			if (currentSongGenre == genreName)
+				currentSongs.add(song);
+		}
+
+		return currentSongs;
 	}
 }
