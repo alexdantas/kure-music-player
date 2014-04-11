@@ -78,7 +78,6 @@ public class kMP {
 	 */
 	public static void initialize(Context c) {
 
-		settings.load(c);
 	}
 
 	/**
@@ -115,7 +114,6 @@ public class kMP {
 		public void onServiceDisconnected(ComponentName name) {
 			musicService.musicBound = false;
 		}
-
 	};
 
 	/**
@@ -135,6 +133,9 @@ public class kMP {
 		if (musicServiceIntent != null)
 			return;
 
+		if (kMP.musicService.isPlaying())
+			return;
+
 		// Create an intent to bind our Music Connection to
 		// the MusicService.
 		musicServiceIntent = new Intent(c, MusicService.class);
@@ -147,6 +148,7 @@ public class kMP {
 	 * Activity/Context c.
 	 */
 	public static void stopMusicService(Context c) {
+
 		if (musicServiceIntent == null)
 			return;
 

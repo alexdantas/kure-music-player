@@ -84,6 +84,7 @@ public class ActivityMenuMain extends ActivityMaster
 		// ListView to be populated with the menu items
 		listView = (ListView)findViewById(R.id.activity_main_menu_list);
 
+		// Thing that converts the menu items to the ListView
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
 
 		// Filling teh list with all the items
@@ -95,15 +96,30 @@ public class ActivityMenuMain extends ActivityMaster
 		// Initializing the main program logic.
 		kMP.initialize(this);
 
+		scanSongs(false);
+	}
+
+	/**
+	 * Starts the background process of scanning the songs.
+	 *
+	 * @param forceScan If we should scan again. You should set
+	 *                  this to true if you want to scan again
+	 *                  the database.
+	 *                  Otherwise, leave it `false` so we don't
+	 *                  rescan the songs when this Activity
+	 *                  is created again for some reason.
+	 */
+	void scanSongs(boolean forceScan) {
+
 		// Loading all the songs from the device on a different thread.
 		// We'll only actually do it if they weren't loaded already
 		//
 		// See the implementation right at the end of this class.
-		if (! kMP.songs.isInitialized()) {
+		if ((forceScan) || (! kMP.songs.isInitialized())) {
 
 			Toast.makeText(ActivityMenuMain.this,
-					       "Scanning songs on the device...",
-					       Toast.LENGTH_LONG).show();
+					"Scanning songs on the device...",
+					Toast.LENGTH_LONG).show();
 
 			new ScanSongs().execute();
 		}

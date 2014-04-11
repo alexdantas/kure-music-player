@@ -29,7 +29,7 @@
     <string name="menu_music_genres">Genres</string>
     <string name="menu_music_years">Years</string>
     <string name="menu_music_proceed_error">
-        Cannot proceed. Please wait while we scan the device for songs.
+        Cannot proceed.\nPlease wait while we scan the device for songs.
     </string>
     
     
