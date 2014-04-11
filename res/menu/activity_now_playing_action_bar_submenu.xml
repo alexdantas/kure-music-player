@@ -1,35 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <!-- Leftmost menu on the Now Playing screen -->
     
-	<item
-	    android:id="@+id/action_bar_submenu_title"
-	    android:title="Sort by Title">
-	    
-	</item>
-
-     <item
-	    android:id="@+id/action_bar_submenu_artist"
-	    android:title="Sort by Artist">
-         
-     </item>
-     
-    <item
-	    android:id="@+id/action_bar_submenu_album"
-	    android:title="Sort by Album">
+	<item android:id="@+id/action_bar_submenu_title"
+	      android:title="@string/menu_now_playing_action_bar_sort_title" />
+	
+	<item android:id="@+id/action_bar_submenu_artist"
+	      android:title="@string/menu_now_playing_action_bar_sort_artist" />
         
-    </item>
-    
-    <item
-	    android:id="@+id/action_bar_submenu_track"
-	    android:title="Sort by Track Number">
+    <item android:id="@+id/action_bar_submenu_album"
+	      android:title="@string/menu_now_playing_action_bar_sort_album" />
         
-    </item>
-    
-    <item
-	    android:id="@+id/action_bar_submenu_random"
-	    android:title="Sort Randomly">
+    <item android:id="@+id/action_bar_submenu_track"
+	      android:title="@string/menu_now_playing_action_bar_sort_track" />
         
-    </item>
+    <item android:id="@+id/action_bar_submenu_random"
+	      android:title="@string/menu_now_playing_action_bar_sort_random" />
     
+    <item android:id="@+id/action_bar_submenu_new_playlist"
+	      android:title="@string/menu_now_playing_action_bar_new_playlist" />
+        
 </menu>

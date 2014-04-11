@@ -133,7 +133,7 @@ public class kMP {
 		if (musicServiceIntent != null)
 			return;
 
-		if (kMP.musicService.isPlaying())
+		if (kMP.musicService != null)
 			return;
 
 		// Create an intent to bind our Music Connection to

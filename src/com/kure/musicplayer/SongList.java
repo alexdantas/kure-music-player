@@ -20,8 +20,13 @@ import android.provider.MediaStore;
  * - Has query functions to songs and their attributes.
  *
  * Thanks:
+ *
  * - Showing me how to get a music's full PATH:
  *   http://stackoverflow.com/a/21333187
+ *
+ * - Teaching me the queries to get Playlists
+ *   and their songs:
+ *   http://stackoverflow.com/q/11292125
  */
 public class SongList {
 

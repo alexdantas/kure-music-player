@@ -189,6 +189,19 @@ public class MusicService extends Service
 		scrobbleCurrentSong(true);
 	}
 
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+
+		// Service is not restarted.
+		// Used for services which are periodically triggered anyway.
+		// The service is only restarted if the runtime has pending
+		// `startService()` calls since the service termination.
+		//
+		// Source:
+		// http://www.vogella.com/tutorials/AndroidServices/article.html#service_starting
+		return Service.START_NOT_STICKY;
+	}
+
 	/**
 	 * Sets a specific song, already within internal Now Playing List.
 	 *

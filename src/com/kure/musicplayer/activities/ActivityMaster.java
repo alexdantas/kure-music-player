@@ -54,7 +54,7 @@ public class ActivityMaster extends Activity {
 		// a theme applied yet.
 		refreshTheme();
 
-
+		kMP.startMusicService(this);
 	}
 
 	/**
