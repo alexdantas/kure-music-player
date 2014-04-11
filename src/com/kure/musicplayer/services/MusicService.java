@@ -1,4 +1,4 @@
-package com.kure.musicplayer;
+package com.kure.musicplayer.services;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +18,9 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.kure.musicplayer.R;
+import com.kure.musicplayer.Song;
+import com.kure.musicplayer.kMP;
 import com.kure.musicplayer.activities.ActivityNowPlaying;
 
 /**
@@ -408,7 +411,7 @@ public class MusicService extends Service
 	 * Defines the interaction between an Activity and this Service.
 	 */
 	public class MusicBinder extends Binder {
-		MusicService getService() {
+		public MusicService getService() {
 			return MusicService.this;
 		}
 	}

@@ -8,7 +8,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.kure.musicplayer.MusicService.MusicBinder;
+import com.kure.musicplayer.services.MusicService;
+import com.kure.musicplayer.services.MusicService.MusicBinder;
 
 
 /**

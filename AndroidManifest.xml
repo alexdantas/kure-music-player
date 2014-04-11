@@ -111,7 +111,7 @@
             />              
         
         <service
-            android:name=".MusicService"
+            android:name="com.kure.musicplayer.services.MusicService"
             />
 		
     </application>
