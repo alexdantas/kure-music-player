@@ -3,7 +3,7 @@ package com.kure.musicplayer.adapters;
 import java.util.ArrayList;
 
 import com.kure.musicplayer.R;
-import com.kure.musicplayer.Song;
+import com.kure.musicplayer.model.Song;
 
 import android.content.Context;
 import android.view.LayoutInflater;

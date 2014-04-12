@@ -19,9 +19,9 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import com.kure.musicplayer.R;
-import com.kure.musicplayer.Song;
 import com.kure.musicplayer.kMP;
 import com.kure.musicplayer.activities.ActivityNowPlaying;
+import com.kure.musicplayer.model.Song;
 
 /**
  * Service that makes the music play regardless if our

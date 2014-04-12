@@ -1,4 +1,4 @@
-package com.kure.musicplayer;
+package com.kure.musicplayer.model;
 
 import java.util.ArrayList;
 import java.util.Collections;

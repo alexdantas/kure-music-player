@@ -10,6 +10,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 
+import com.kure.musicplayer.model.Song;
+import com.kure.musicplayer.model.SongList;
 import com.kure.musicplayer.services.MusicService;
 import com.kure.musicplayer.services.MusicService.MusicBinder;
 
@@ -18,6 +20,10 @@ import com.kure.musicplayer.services.MusicService.MusicBinder;
  * Big class that contains the main logic behind kure Music Player.
  *
  * This class contains the shared logic between all the Activities.
+ *
+ * Thanks:
+ * - For telling how to get the application version:
+ *   http://stackoverflow.com/a/6593822
  */
 public class kMP {
 
