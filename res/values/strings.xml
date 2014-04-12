@@ -72,6 +72,12 @@
     <string name="menu_now_playing_action_bar_sort_random">Sort Randomly</string>
 	<string name="menu_now_playing_action_bar_new_playlist">Create new Playlist</string>
     
+	<string name="menu_now_playing_dialog_create_playlist_title">Name the new Playlist</string>
+	<string name="menu_now_playing_dialog_create_playlist_subtitle">Enter a name for your new playlist</string>
+	<string name="menu_now_playing_dialog_create_playlist_button_ok">OK</string>
+	<string name="menu_now_playing_dialog_create_playlist_button_cancel">Cancel</string>
+	<string name="menu_now_playing_dialog_create_playlist_success">Playlist successfully created: </string>
+	
 	
 	<!-- Values for the Settings Activity 
 	 -->
