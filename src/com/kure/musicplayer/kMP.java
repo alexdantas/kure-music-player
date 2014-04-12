@@ -6,6 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.IBinder;
 
 import com.kure.musicplayer.services.MusicService;
@@ -65,11 +67,13 @@ public class kMP {
 	 */
 	public static boolean mainMenuHasNowPlayingItem = false;
 
-	/**
-	 * Index for the `nowPlayingList` that indicates the current
-	 * song we're playing.
-	 */
-	//public static int nowPlayingIndex = 0;
+
+	// GENERAL PROGRAM INFO
+	public static String packageName = "<unknown>";
+	public static String versionName = "<unknown>";
+	public static int    versionCode = -1;
+	public static long   firstInstalledTime = -1;
+	public static long   lastUpdatedTime    = -1;
 
 	/**
 	 * Creates everything.
@@ -79,6 +83,23 @@ public class kMP {
 	 */
 	public static void initialize(Context c) {
 
+		kMP.packageName = c.getPackageName();
+
+		try {
+			// Retrieving several information
+			PackageInfo info = c.getPackageManager().getPackageInfo(kMP.packageName, 0);
+
+			kMP.versionName        = info.versionName;
+			kMP.versionCode        = info.versionCode;
+			kMP.firstInstalledTime = info.firstInstallTime;
+			kMP.lastUpdatedTime    = info.lastUpdateTime;
+
+		} catch (PackageManager.NameNotFoundException e) {
+			// Couldn't get package information
+			//
+			// Won't do anything, since variables are
+			// already started with default values.
+		}
 	}
 
 	/**
