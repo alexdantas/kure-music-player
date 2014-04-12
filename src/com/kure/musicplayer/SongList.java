@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -573,5 +574,76 @@ public class SongList {
 			currentSongs.add(getSongById(songID));
 
 		return currentSongs;
+	}
+
+	/**
+	 * Creates a new Playlist.
+	 *
+	 * @param c          Activity on which we're creating.
+	 * @param fromWhere  "internal" or "external".
+	 * @param name       Playlist name.
+	 * @param songsToAdd List of song IDs to place on it.
+	 */
+	public void newPlaylist(Context c, String fromWhere, String name, ArrayList<Song> songsToAdd) {
+
+		ContentResolver resolver = c.getContentResolver();
+
+		Uri playlistUri = ((fromWhere == "internal") ?
+		        android.provider.MediaStore.Audio.Playlists.INTERNAL_CONTENT_URI:
+		        android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI);
+
+		// CHECK IF PLAYLIST EXISTS!
+
+		// Setting the new playlists' values
+		ContentValues values = new ContentValues();
+		values.put(MediaStore.Audio.Playlists.NAME, name);
+		values.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+
+		// Actually inserting the new playlist.
+		Uri newPlaylistUri = resolver.insert(playlistUri, values);
+
+		// Getting the new Playlist ID
+		String PLAYLIST_ID      = MediaStore.Audio.Playlists._ID;
+		String PLAYLIST_NAME    = MediaStore.Audio.Playlists.NAME;
+
+		// This is what I'll get for all playlists.
+		String[] playlistColumns = {
+				PLAYLIST_ID,
+				PLAYLIST_NAME
+		};
+
+		// The actual query - takes a while.
+		Cursor cursor = resolver.query(playlistUri, playlistColumns, null, null, null);
+
+		long playlistID = 0;
+
+		// Going through all playlists, creating my class and populating
+		// it with all the song IDs they have.
+		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
+			if (name.equals(cursor.getString(cursor.getColumnIndex(PLAYLIST_NAME))))
+				playlistID = cursor.getLong(cursor.getColumnIndex(PLAYLIST_ID));
+
+		// Now, to it's songs
+		Uri songUri = Uri.withAppendedPath(newPlaylistUri, MediaStore.Audio.Playlists.Members.CONTENT_DIRECTORY);
+		int songOrder = 1;
+
+		for (Song song : songsToAdd) {
+
+			ContentValues songValues = new ContentValues();
+
+			songValues.put(MediaStore.Audio.Playlists.Members.AUDIO_ID,   song.getId());
+			songValues.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, songOrder);
+
+			resolver.insert(songUri, songValues);
+			songOrder++;
+		}
+
+		// Finally, we're updating our internal list of Playlists
+		Playlist newPlaylist = new Playlist(playlistID, name);
+
+		for (Song song : songsToAdd)
+			newPlaylist.add(song.getId());
+
+		playlists.add(newPlaylist);
 	}
 }

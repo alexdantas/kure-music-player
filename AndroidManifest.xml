@@ -9,8 +9,12 @@
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
 
+    <!-- So we can play songs while the device is locked -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- So we can save new Playlists on the disc -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"

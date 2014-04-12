@@ -1,6 +1,8 @@
 package com.kure.musicplayer.activities;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -12,6 +14,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.PopupMenu;
@@ -202,34 +205,87 @@ public class ActivityNowPlaying extends ActivityMaster
 				// Sorting options - after changing the now playing list
 				// order, we must refresh the ListView and scroll to the
 				// currently playing song.
+
+				// Will sort current songs by title
 				case R.id.action_bar_submenu_title:
 					kMP.musicService.sortBy("title");
 					songAdapter.notifyDataSetChanged();
 					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
 
+				// Will sort current songs by artist
 				case R.id.action_bar_submenu_artist:
 					kMP.musicService.sortBy("artist");
 					songAdapter.notifyDataSetChanged();
 					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
 
+				// Will sort current songs by album
 				case R.id.action_bar_submenu_album:
 					kMP.musicService.sortBy("album");
 					songAdapter.notifyDataSetChanged();
 					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
 
+				// Will sort current songs by track number
 				case R.id.action_bar_submenu_track:
 					kMP.musicService.sortBy("track");
 					songAdapter.notifyDataSetChanged();
 					songListView.setSelection(kMP.musicService.currentSongPosition);
 					return false;
 
+				// Will sort current songs randomly
 				case R.id.action_bar_submenu_random:
 					kMP.musicService.sortBy("random");
 					songAdapter.notifyDataSetChanged();
 					songListView.setSelection(kMP.musicService.currentSongPosition);
+					return false;
+
+				// Will ask the user for a new Playlist name, creating
+				// it with the current songs.
+				//
+				// If there's already a playlist with that name, we'll
+				// append a silly string to the new Playlist name.
+				case R.id.action_bar_submenu_new_playlist:
+
+					// The input box where user will type new name
+					final EditText input = new EditText(ActivityNowPlaying.this);
+
+					// Creating the dialog box with the questions
+					// and stuff.
+					new AlertDialog.Builder(ActivityNowPlaying.this)
+						.setTitle("Create new playlist")
+						.setMessage("Enter a name for your new playlist")
+						.setView(input)
+						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+							// User clicked the OK button - will create playlist
+							public void onClick(DialogInterface dialog, int whichButton) {
+
+								String playlistName = input.getText().toString();
+
+								// TODO: Must somehow update the Playlist Activity if it's
+								//       on the background!
+								//       The ListView only updates when Playlist Menu gets
+								//       created from scratch.
+								kMP.songs.newPlaylist(ActivityNowPlaying.this,
+								                      "external",
+								                      playlistName,
+								                      kMP.nowPlayingList);
+
+								Toast.makeText(ActivityNowPlaying.this,
+								               "Playlist successfully created: " + playlistName,
+								               Toast.LENGTH_SHORT).show();
+
+							}
+						}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+							// User clicked CANCEL button, do nothing
+							public void onClick(DialogInterface dialog, int whichButton) {
+								// Do nothing.
+							}
+						}).show();
+
 					return false;
 				}
 				return false;
@@ -555,6 +611,7 @@ kMP.musicService.playSong();
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
 		Toast.makeText(this, kMP.musicService.getSong(position).getGenre(), Toast.LENGTH_LONG).show();
+
 
 		// Just a catch - if we return `false`, when an user
 		// long clicks an item, the list will react as if
