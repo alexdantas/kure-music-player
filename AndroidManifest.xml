@@ -114,9 +114,15 @@
             android:screenOrientation="portrait"
             />              
         
-        <service
-            android:name="com.kure.musicplayer.services.MusicService"
-            />
+        <!-- Services (run on the background)
+         -->
+        <service android:name="com.kure.musicplayer.services.MusicService" />
+        
+        <!-- Allows specific classes to handle broadcasts
+             (on this case, two buttons clicked on the Notification)
+         -->
+        <receiver android:name="NotificationMusic$NotificationPlayButtonHandler" />
+        <receiver android:name="NotificationMusic$NotificationSkipButtonHandler" />
 		
     </application>
 

@@ -332,16 +332,24 @@ public class MusicService extends Service
 		scrobbleCurrentSong(false);
 	}
 
-	public void seekTo(int position) {
-		player.seekTo(position);
-	}
-
-	public void unpause() {
+	public void unpausePlayer() {
 		player.start();
+		paused = !paused;
 
 		notification.notifyPaused(false);
 
 		scrobbleCurrentSong(true);
+	}
+
+	public void togglePausePlayer() {
+		if (paused)
+			unpausePlayer();
+		else
+			pausePlayer();
+	}
+
+	public void seekTo(int position) {
+		player.seekTo(position);
 	}
 
 	public void toggleShuffleMode() {

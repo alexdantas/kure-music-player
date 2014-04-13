@@ -20,7 +20,7 @@
         android:layout_height="fill_parent"
         android:layout_marginRight="10dp"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/ic_menu_more"
+        android:src="@drawable/ic_launcher"
         android:contentDescription="kMP" />
     
     <ImageButton

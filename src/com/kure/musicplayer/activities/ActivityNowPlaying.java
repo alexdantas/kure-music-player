@@ -490,7 +490,7 @@ public class ActivityNowPlaying extends ActivityMaster
 
 	@Override
 	public void start() {
-		kMP.musicService.unpause();
+		kMP.musicService.unpausePlayer();
 	}
 
 	/**
@@ -562,7 +562,7 @@ public class ActivityNowPlaying extends ActivityMaster
 	/**
 	 * Jumps to the next song and starts playing it right now.
 	 */
-	private void playNext() {
+	public void playNext() {
 		kMP.musicService.next();
 		kMP.musicService.playSong();
 
@@ -581,7 +581,7 @@ public class ActivityNowPlaying extends ActivityMaster
 	/**
 	 * Jumps to the previous song and starts playing it right now.
 	 */
-	private void playPrevious() {
+	public void playPrevious() {
 		kMP.musicService.previous();
 		kMP.musicService.playSong();
 
