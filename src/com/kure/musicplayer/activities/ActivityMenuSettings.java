@@ -1,25 +1,31 @@
 package com.kure.musicplayer.activities;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
 /**
- * Let's the user interact with a Menu and change the
- * application's settings/preferences/configuration.
+ * A menu that allows the user to change the application's
+ * settings/preferences/configuration.
  *
- * I don't need to build the View because  I'm subclassing
- * `PreferenceActivity` - it gives an an automatic ListView
- * based on our items on the `res/xml/preferences.xml` file.
+ * This ListView is populated automatically from the
+ * file `res/xml/preferences.xml`.
  *
- * Thanks a lot, you awesome source you!
- * http://android-elements.blogspot.com.br/2011/06/creating-android-preferences-screen.html
+ * Thanks:
+ * - For teaching me how to build the Settings Activity:
+ *   http://android-elements.blogspot.com.br/2011/06/creating-android-preferences-screen.html
  *
  * If the user changes the application's theme, the changes are
  * applied through all the application.
@@ -77,7 +83,100 @@ public class ActivityMenuSettings extends PreferenceActivity
 		PreferenceManager
 			.getDefaultSharedPreferences(this)
 			.registerOnSharedPreferenceChangeListener(this);
+
+		// For every possible option inside this screen,
+		// let's set what will happen when the user clicks on it.
+		for(int x = 0; x < getPreferenceScreen().getPreferenceCount(); x++) {
+
+			PreferenceCategory category = (PreferenceCategory) getPreferenceScreen().getPreference(x);
+
+			for (int y = 0; y < category.getPreferenceCount(); y++) {
+				Preference preference = category.getPreference(y);
+				preference.setOnPreferenceClickListener(onClickPreference);
+
+				// Initializing the default values
+				if (preference.getKey().equals("version")) {
+					preference.setSummary(kMP.versionName);
+				}
+			}
+		}
 	}
+
+	/**
+	 * This is what will happen when the user clicks
+	 * any setting on this screen.
+	 */
+	public OnPreferenceClickListener onClickPreference = new OnPreferenceClickListener() {
+
+		public boolean onPreferenceClick(Preference pref) {
+
+			// When the user clicks the "Info" preference,
+			// we should show it some information about the
+			// music library.
+			if (pref.getKey().equals("info")) {
+
+				// We can only handle the user choice from now on
+				// if we've successfully scanned the songs from the
+				// device.
+				if (! kMP.songs.isInitialized()) {
+
+					Toast.makeText(ActivityMenuSettings.this,
+					               getString(R.string.menu_music_proceed_error),
+					               Toast.LENGTH_LONG).show();
+
+					return false;
+				}
+
+				// Yay, showing the dialog!
+				AlertDialog.Builder dialog = new AlertDialog.Builder(ActivityMenuSettings.this);
+
+				dialog.setTitle("Music Library Info")
+				      .setMessage(kMP.songs.songs.size()              + " songs\n"     +
+				                  kMP.songs.getAlbums().size()        + " albums\n"    +
+				                  kMP.songs.getArtists().size()       + " artists\n"   +
+				                  kMP.songs.getPlaylistNames().size() + " playlists\n" +
+				                  "\n" +
+				                  "Next versions will have more info here.")
+				      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+				    	  @Override
+				    	  public void onClick(DialogInterface dialog, int which) {
+
+				    		  dialog.cancel();
+				    	  }
+
+				      });
+				dialog.show();
+			}
+
+			// yay!
+			if (pref.getKey().equals("version")) { brianGriffin++; if (brianGriffin >= 5) { brianGriffin = 0;
+			// insert easter-egg here
+			}}
+
+			if (pref.getKey().equals("misc")) {
+
+				// Yay, showing the other dialog!
+				AlertDialog.Builder dialog = new AlertDialog.Builder(ActivityMenuSettings.this);
+
+				dialog.setTitle("Misc. Info")
+				      .setMessage("Wait a while for more info.")
+				      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+				    	  @Override
+				    	  public void onClick(DialogInterface dialog, int which) {
+
+				    		  dialog.cancel();
+				    	  }
+
+				      });
+				dialog.show();
+			}
+
+			return false;
+		}
+
+	};
 
 	/**
 	 * Called when the user modifies any preference.
@@ -97,4 +196,8 @@ public class ActivityMenuSettings extends PreferenceActivity
 			// WE SHOULD KILL THE CURRENT NOTIFICATION, IF IT EXISTS
 		}
 	}
+
+
+
+	private int brianGriffin = 0;
 }

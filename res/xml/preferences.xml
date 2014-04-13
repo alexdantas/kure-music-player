@@ -52,4 +52,25 @@
                 
     </PreferenceCategory>
     
+    <!-- These are just items, not real settings.
+         Their behavior is specified on ActivityMenuSettings
+     -->
+    <PreferenceCategory
+        android:title="Other"
+        android:key="other" 
+        >
+        <Preference
+             android:key="version"
+             android:title="kMP Version"
+         />
+        <Preference
+             android:key="info"
+             android:title="Music Library Info"
+         />
+        <Preference
+             android:key="misc"
+             android:title="Misc. Info"
+         />
+        
+    </PreferenceCategory>
 </PreferenceScreen>

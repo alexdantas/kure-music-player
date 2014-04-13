@@ -75,7 +75,7 @@ public class kMP {
 
 
 	// GENERAL PROGRAM INFO
-	public static String packageName = "<unknown>";
+	public static String applicationName = "<unknown>";
 	public static String versionName = "<unknown>";
 	public static int    versionCode = -1;
 	public static long   firstInstalledTime = -1;
@@ -89,11 +89,11 @@ public class kMP {
 	 */
 	public static void initialize(Context c) {
 
-		kMP.packageName = c.getPackageName();
+		kMP.applicationName = c.getPackageName();
 
 		try {
 			// Retrieving several information
-			PackageInfo info = c.getPackageManager().getPackageInfo(kMP.packageName, 0);
+			PackageInfo info = c.getPackageManager().getPackageInfo(kMP.applicationName, 0);
 
 			kMP.versionName        = info.versionName;
 			kMP.versionCode        = info.versionCode;
