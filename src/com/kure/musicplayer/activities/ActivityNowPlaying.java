@@ -448,6 +448,10 @@ public class ActivityNowPlaying extends ActivityMaster
 			setMusicController();
 			paused = false;
 		}
+
+		// Scroll the list view to the current song.
+		if (kMP.settings.get("scroll_on_focus", true))
+			songListView.setSelection(kMP.musicService.currentSongPosition);
 	}
 
 	/**

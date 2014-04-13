@@ -49,6 +49,13 @@
             android:summary="@string/menu_settings_show_notification_subtitle"
             android:defaultValue="true"
         />
+        
+        <CheckBoxPreference 
+            android:key="scroll_on_focus"
+            android:title="@string/menu_settings_scroll_on_focus_title"
+            android:summary="@string/menu_settings_scroll_on_focus_subtitle"
+            android:defaultValue="true"
+        />
                 
     </PreferenceCategory>
     

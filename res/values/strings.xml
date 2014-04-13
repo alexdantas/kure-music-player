@@ -63,7 +63,15 @@
     <string name="menu_settings_show_notification_subtitle">
         Shows a system notification when playing a song.
     </string>
+  
     
+    <string name="menu_settings_scroll_on_focus_title">
+        Scroll \"Now Playing List\" on Focus
+    </string>
+    <string name="menu_settings_scroll_on_focus_subtitle">
+        When returning to the \"Now Playing List\", should it scroll to the currently playing song?
+    </string>
+        
     
     <string name="menu_now_playing_action_bar_sort_title">Sort by Title</string>
     <string name="menu_now_playing_action_bar_sort_artist">Sort by Artist</string> 

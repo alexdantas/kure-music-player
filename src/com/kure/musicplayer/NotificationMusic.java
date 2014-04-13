@@ -16,8 +16,9 @@ import com.kure.musicplayer.model.Song;
  * Specific way to stick an on-going message on the system
  * with the current song I'm playing.
  *
- * It must be attached to a Service, since it'll run on
- * the background.
+ * This is a rather complicated set of functions because
+ * it interacts with a great deal of the Android API.
+ * Read with care.
  *
  * Thanks:
  *
