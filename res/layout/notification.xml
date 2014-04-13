@@ -44,6 +44,7 @@
        android:layout_height="wrap_content"
        android:layout_gravity="center_vertical"
        android:gravity="right"
+       android:layout_toRightOf="@id/notification_button_play"
        android:orientation="vertical" >
 
         <TextView

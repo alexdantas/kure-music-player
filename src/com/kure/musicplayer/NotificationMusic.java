@@ -31,6 +31,23 @@ public class NotificationMusic extends NotificationSimple {
 	Service service = null;
 
 	/**
+	 * Used to create and update the same notification.
+	 */
+	Notification.Builder notificationBuilder;
+
+	/**
+	 * Custom appearance of the notification, also updated.
+	 */
+	RemoteViews notificationView;
+
+	/**
+	 * Used to actually broadcast the notification.
+	 * Depends on the Activity that originally called
+	 * the nofitication.
+	 */
+	NotificationManager notificationManager;
+
+	/**
 	 * Sends a system notification with a song's information.
 	 *
 	 * If the user clicks the notification, will be redirected
@@ -65,19 +82,15 @@ public class NotificationMusic extends NotificationSimple {
 
 		// Setting our custom appearance for the notification
 		// (buttons and text)
-		RemoteViews contentView = new RemoteViews(kMP.applicationName, R.layout.notification);
+		notificationView = new RemoteViews(kMP.applicationName, R.layout.notification);
 
-		if (kMP.musicService.isPaused())
-			contentView.setImageViewResource(R.id.notification_button_play, R.drawable.pause);
-		else
-			contentView.setImageViewResource(R.id.notification_button_play, R.drawable.play);
-
-		contentView.setImageViewResource(R.id.notification_button_skip, R.drawable.skip);
-		contentView.setTextViewText(R.id.notification_text_title, song.getTitle());
-		contentView.setTextViewText(R.id.notification_text_artist, song.getArtist());
+		notificationView.setImageViewResource(R.id.notification_button_play, R.drawable.pause);
+		notificationView.setImageViewResource(R.id.notification_button_skip, R.drawable.skip);
+		notificationView.setTextViewText(R.id.notification_text_title, song.getTitle());
+		notificationView.setTextViewText(R.id.notification_text_artist, song.getArtist());
 
 		// Actually creating the Notification
-		Notification.Builder notificationBuilder = new Notification.Builder(context);
+		notificationBuilder = new Notification.Builder(context);
 
 		notificationBuilder.setContentIntent(pendingIntent)
 		                   .setSmallIcon(R.drawable.play)
@@ -85,15 +98,31 @@ public class NotificationMusic extends NotificationSimple {
 		                   .setOngoing(true)
 		                   .setContentTitle(song.getTitle())
 		                   .setContentText(song.getArtist())
-		                   .setContent(contentView);
+		                   .setContent(notificationView);
 
 		Notification notification = notificationBuilder.build();
 
 		// Sets the notification to run on the foreground.
 		//service.startForeground(NOTIFICATION_ID, notification);
 
-		NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.notify(NOTIFICATION_ID, notification);
+		notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(NOTIFICATION_ID, notification);
+	}
+
+	/**
+	 * Updates the Notification icon if the music is paused.
+	 */
+	public void notifyPaused(boolean isPaused) {
+
+		int iconID = ((isPaused)?
+	                  R.drawable.play :
+	                  R.drawable.pause);
+
+		notificationView.setImageViewResource(R.id.notification_button_play, iconID);
+
+		notificationBuilder.setContent(notificationView);
+
+		notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
 	}
 
 	/**
@@ -102,8 +131,7 @@ public class NotificationMusic extends NotificationSimple {
 	public void cancel() {
 		service.stopForeground(true);
 
-		NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.cancel(NOTIFICATION_ID);
+		notificationManager.cancel(NOTIFICATION_ID);
 	}
 
 	/**

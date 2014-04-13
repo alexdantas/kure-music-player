@@ -470,14 +470,14 @@ public class ActivityNowPlaying extends ActivityMaster
 		musicController.setPrevNextListeners(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// Calling method defined on MainActivity
+				// Calling method defined on ActivityNowPlaying
 				playNext();
 			}
 		}, new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// Calling method defined on MainActivity
+				// Calling method defined on ActivityNowPlaying
 				playPrevious();
 			}
 		});
@@ -490,9 +490,12 @@ public class ActivityNowPlaying extends ActivityMaster
 
 	@Override
 	public void start() {
-		kMP.musicService.start();
+		kMP.musicService.unpause();
 	}
 
+	/**
+	 * Callback to when the user pressed the `pause` button.
+	 */
 	@Override
 	public void pause() {
 		kMP.musicService.pausePlayer();
@@ -561,7 +564,7 @@ public class ActivityNowPlaying extends ActivityMaster
 	 */
 	private void playNext() {
 		kMP.musicService.next();
-kMP.musicService.playSong();
+		kMP.musicService.playSong();
 
 		refreshActionBarSubtitle();
 

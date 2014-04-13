@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.kure.musicplayer.NotificationMusic;
 import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 
@@ -188,6 +189,9 @@ public class ActivityMenuMain extends ActivityMaster
 		// Need to clear all the items otherwise
 		// they'll keep adding up.
 		items.clear();
+
+		// Cancell all thrown Notifications
+		NotificationMusic.cancelAll(this);
 
 		kMP.stopMusicService(this);
 	}

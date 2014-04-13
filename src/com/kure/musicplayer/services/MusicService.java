@@ -327,6 +327,8 @@ public class MusicService extends Service
 		player.pause();
 		paused = !paused;
 
+		notification.notifyPaused(true);
+
 		scrobbleCurrentSong(false);
 	}
 
@@ -334,8 +336,10 @@ public class MusicService extends Service
 		player.seekTo(position);
 	}
 
-	public void start() {
+	public void unpause() {
 		player.start();
+
+		notification.notifyPaused(false);
 
 		scrobbleCurrentSong(true);
 	}
