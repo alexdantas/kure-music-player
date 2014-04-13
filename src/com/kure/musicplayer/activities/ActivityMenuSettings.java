@@ -192,8 +192,12 @@ public class ActivityMenuSettings extends PreferenceActivity
 		if (key.equals("themes"))
 			recreate();
 
+		// If user cancelled notification, we should
+		// kill the current one (if existing).
 		if (key.equals("show_notification")) {
-			// WE SHOULD KILL THE CURRENT NOTIFICATION, IF IT EXISTS
+			/*if (sharedPreferences.getBoolean("show_notification", false))
+				if (kMP.musicService)
+					kMP.musicService.cancelNotification();*/
 		}
 	}
 

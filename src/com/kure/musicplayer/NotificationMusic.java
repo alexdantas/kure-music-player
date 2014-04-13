@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.RemoteViews;
 
 import com.kure.musicplayer.activities.ActivityNowPlaying;
 import com.kure.musicplayer.model.Song;
@@ -51,16 +52,29 @@ public class NotificationMusic extends NotificationSimple {
 		if (this.service == null)
 			this.service = service;
 
-		// Intent to launch the "Now Playing" Activity, without
-		// needing to create it again from scratch.
+		// Intent that launches the "Now Playing" Activity
 		Intent notifyIntent = new Intent(context, ActivityNowPlaying.class);
 		notifyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+		// Letting the Intent be executed later by other application.
 		PendingIntent pendingIntent = PendingIntent.getActivity
 				(context,
 				 0,
 				 notifyIntent,
 				 PendingIntent.FLAG_UPDATE_CURRENT);
+
+		// Setting our custom appearance for the notification
+		// (buttons and text)
+		RemoteViews contentView = new RemoteViews(kMP.applicationName, R.layout.notification);
+
+		if (kMP.musicService.isPaused())
+			contentView.setImageViewResource(R.id.notification_button_play, R.drawable.pause);
+		else
+			contentView.setImageViewResource(R.id.notification_button_play, R.drawable.play);
+
+		contentView.setImageViewResource(R.id.notification_button_skip, R.drawable.skip);
+		contentView.setTextViewText(R.id.notification_text_title, song.getTitle());
+		contentView.setTextViewText(R.id.notification_text_artist, song.getArtist());
 
 		// Actually creating the Notification
 		Notification.Builder notificationBuilder = new Notification.Builder(context);
@@ -70,12 +84,16 @@ public class NotificationMusic extends NotificationSimple {
 		                   .setTicker("kMP: Playing '" + song.getTitle() + "' from '" + song.getArtist() + "'")
 		                   .setOngoing(true)
 		                   .setContentTitle(song.getTitle())
-		                   .setContentText(song.getArtist());
+		                   .setContentText(song.getArtist())
+		                   .setContent(contentView);
 
 		Notification notification = notificationBuilder.build();
 
 		// Sets the notification to run on the foreground.
-		service.startForeground(NOTIFICATION_ID, notification);
+		//service.startForeground(NOTIFICATION_ID, notification);
+
+		NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.notify(NOTIFICATION_ID, notification);
 	}
 
 	/**

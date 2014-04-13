@@ -74,6 +74,8 @@ public class MusicService extends Service
 
 	private boolean repeatMode = false;
 
+	private boolean paused = false;
+
 	/**
 	 * Spawns an on-going notification with our current
 	 * playing song.
@@ -317,9 +319,13 @@ public class MusicService extends Service
 	public boolean isPlaying() {
 		return player.isPlaying();
 	}
+	public boolean isPaused() {
+		return paused;
+	}
 
 	public void pausePlayer() {
 		player.pause();
+		paused = !paused;
 
 		scrobbleCurrentSong(false);
 	}
@@ -516,4 +522,9 @@ public class MusicService extends Service
 	public Song getSong(int position) {
 		return songs.get(position);
 	}
+
+	public void cancelNotification() {
+		notification.cancel();
+	}
+
 }
