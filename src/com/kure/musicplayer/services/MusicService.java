@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -18,9 +16,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.kure.musicplayer.R;
+import com.kure.musicplayer.NotificationMusic;
 import com.kure.musicplayer.kMP;
-import com.kure.musicplayer.activities.ActivityNowPlaying;
 import com.kure.musicplayer.model.Song;
 
 /**
@@ -66,11 +63,6 @@ public class MusicService extends Service
 	public Song currentSong = null;
 
 	/**
-	 * WHAT THE FUCK
-	 */
-	private static final int NOTIFY_ID = 1;
-
-	/**
 	 * Flag that indicates whether we're at Shuffle mode.
 	 */
 	private boolean shuffleMode = false;
@@ -81,6 +73,12 @@ public class MusicService extends Service
 	private Random randomNumberGenerator;
 
 	private boolean repeatMode = false;
+
+	/**
+	 * Spawns an on-going notification with our current
+	 * playing song.
+	 */
+	private NotificationMusic notification = new NotificationMusic();
 
 	/**
 	 * Whenever we're created, reset the MusicPlayer.
@@ -156,37 +154,19 @@ public class MusicService extends Service
 		player.prepareAsync();
 	}
 
+	/**
+	 * Called when the music is ready for playback.
+	 */
 	@Override
 	public void onPrepared(MediaPlayer mp) {
+
 		// Start playback
 		player.start();
 
-		if (kMP.settings.get("show_notification", true)) {
-			// If the user clicks on the notification, let's spawn the
-			// Now Playing screen.
-			Intent notifyIntent = new Intent(this, ActivityNowPlaying.class);
-			notifyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-			PendingIntent pendingIntent = PendingIntent.getActivity(this,
-					0,
-					notifyIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Will create a Notification
-			Notification.Builder builder = new Notification.Builder(this);
-
-			builder.setContentIntent(pendingIntent)
-			.setSmallIcon(R.drawable.play)
-			.setTicker(currentSong.getTitle())
-			.setOngoing(true)
-			.setContentTitle(currentSong.getTitle())
-			.setContentText(currentSong.getArtist());
-
-			Notification notification = builder.build();
-
-			// Sets the notification to run on the foreground.
-			startForeground(NOTIFY_ID, notification);
-		}
+		// If the user clicks on the notification, let's spawn the
+		// Now Playing screen.
+		if (kMP.settings.get("show_notification", true))
+			notification.notifySong(this, this, currentSong);
 
 		// Can only send to last.fm when prepared.
 		scrobbleCurrentSong(true);
@@ -272,8 +252,7 @@ public class MusicService extends Service
 
 	@Override
 	public void onDestroy() {
-		// Stops feeding the notification
-		stopForeground(true);
+		notification.cancel();
 		currentSong = null;
 
 		super.onDestroy();
