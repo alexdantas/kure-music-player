@@ -29,7 +29,7 @@
     <string name="menu_music_genres">Genres</string>
     <string name="menu_music_years">Years</string>
     <string name="menu_music_proceed_error">
-        Cannot proceed.\nPlease wait while we scan the device for songs.
+        Cannot proceed: I'm scanning the device for songs.
     </string>
     
     
@@ -53,7 +53,7 @@
         Repeat \"Now Playing List\"
     </string>
     <string name="menu_settings_repeat_list_subtitle">
-        When finishing the \"Now Playing List\", should we start it all over again?
+        When finishing the \"Now Playing List\", should I start it all over again?
     </string>
     
     
@@ -61,7 +61,7 @@
         Ongoing Notification
     </string>
     <string name="menu_settings_show_notification_subtitle">
-        Shows a system notification when playing a song.
+        Shows a system notification when I'm playing a song.
     </string>
   
     
@@ -69,7 +69,7 @@
         Scroll \"Now Playing List\" on Focus
     </string>
     <string name="menu_settings_scroll_on_focus_subtitle">
-        When returning to the \"Now Playing List\", should it scroll to the currently playing song?
+        When returning to the \"Now Playing List\", should I scroll it to the currently playing song?
     </string>
         
     
