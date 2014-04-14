@@ -1,19 +1,13 @@
-<!-- This default style sheet sucks -->
+<!-- This default style sheet sucks.
+     Ignore this - check out the file `values-v11/styles.xml`
+ -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- From where we base our whole app theme -->
-    <style name="AppBaseTheme" parent="android:Theme.Light">
-    
+    <style name="AppBaseTheme" parent="android:Theme.Light">    
     </style>
 
-    <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        
     </style>
-
-    
-    
-   
         
 </resources>

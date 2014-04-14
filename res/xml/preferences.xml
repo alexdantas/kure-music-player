@@ -13,7 +13,7 @@
             android:summary="@string/menu_settings_themes_subtitle"
             android:entries="@array/themes" 
             android:entryValues="@array/themes_values"
-            android:defaultValue="light"
+            android:defaultValue="default"
             />
         
     </PreferenceCategory>

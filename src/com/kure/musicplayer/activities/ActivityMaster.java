@@ -90,7 +90,8 @@ public class ActivityMaster extends Activity {
 			// Testing each possible theme name.
 			// I repeat - all valid theme names are specified
 			// at `res/strings.xml`, right at the Settings sub menu.
-			if      (theme.equals("light"))           setTheme(R.style.Theme_Light);
+			if      (theme.equals("default"))         setTheme(R.style.Theme_Default);
+			else if (theme.equals("light"))           setTheme(R.style.Theme_Light);
 			else if (theme.equals("dark"))            setTheme(R.style.Theme_Dark);
 			else if (theme.equals("solarized_dark"))  setTheme(R.style.Theme_Solarized_Dark);
 			else if (theme.equals("wallpaper"))       setTheme(R.style.Theme_Wallpaper);

@@ -1,13 +1,15 @@
 <resources>
-	<!-- The actual themes are split over several files -->
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
-        <!-- API 11 theme customizations can go here. -->
-    </style>
+	<!-- The actual themes are split over several files -->	
+    <style name="AppBaseTheme" parent="android:Theme.Holo.Light" />
+    <!-- API 11 theme customizations can go here. -->
+    <style name="AppTheme" parent="AppBaseTheme" />
     
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- wut -->
-    </style>
-
+    
+    
+    <!-- Yay, actual themes! -->
+    
+    
+    <style name="Theme.Default" parent="@android:style/Theme.DeviceDefault" />
 	
     <!-- New Android themes -->
     <style name="Theme.Dark"  parent="@android:style/Theme.Holo" />

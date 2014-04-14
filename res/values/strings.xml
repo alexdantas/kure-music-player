@@ -29,7 +29,7 @@
     <string name="menu_music_genres">Genres</string>
     <string name="menu_music_years">Years</string>
     <string name="menu_music_proceed_error">
-        Cannot proceed: I'm scanning the device for songs.
+        Cannot proceed: I\'m scanning the device for songs.
     </string>
     
     
@@ -61,7 +61,7 @@
         Ongoing Notification
     </string>
     <string name="menu_settings_show_notification_subtitle">
-        Shows a system notification when I'm playing a song.
+        Shows a system notification when I\'m playing a song.
     </string>
   
     
@@ -91,6 +91,7 @@
 	 -->
     
     <string-array name="themes">
+        <item>Device Default</item>
         <item>Light</item>
         <item>Dark</item>
         <item>Solarized Dark</item>
@@ -102,6 +103,7 @@
     </string-array>
     
     <string-array name="themes_values">
+        <item>default</item>
         <item>light</item>
         <item>dark</item>
         <item>solarized_dark</item>
