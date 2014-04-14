@@ -47,7 +47,14 @@
     <string name="menu_settings_lastfm_subtitle">
         You must have the app \"Scrobble Droid\" installed.
     </string>
-
+    
+    <string name="menu_settings_lastfm_which_title">
+        Last.fm Scrobbler
+    </string>
+    <string name="menu_settings_lastfm_which_subtitle">
+        Which application I\'ll use to scrobble to Last.fm (you have to install at least one of those).
+    </string>
+    
     
     <string name="menu_settings_repeat_list_title">
         Repeat \"Now Playing List\"
@@ -112,6 +119,17 @@
         <item>dialog_dark</item>
         <item>light_simple</item>
         <item>dark_simple</item>
+    </string-array>
+    
+    
+    <string-array name="lastfm_which">
+        <item>Scrobble Droid</item>
+        <item>Last.fm Default</item>
+    </string-array>
+    
+    <string-array name="lastfm_which_values">
+        <item>scrobbledroid</item>
+        <item>default</item>
     </string-array>
     
 </resources>

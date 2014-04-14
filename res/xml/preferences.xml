@@ -27,7 +27,18 @@
             android:title="@string/menu_settings_lastfm_title"
             android:summary="@string/menu_settings_lastfm_subtitle"
             android:defaultValue="false"
-        />
+            android:disableDependentsState="false"
+            />
+        
+        <ListPreference
+            android:key="lastfm_which"
+            android:dependency="lastfm"
+            android:title="@string/menu_settings_lastfm_which_title"
+            android:summary="@string/menu_settings_lastfm_which_subtitle"
+            android:entries="@array/lastfm_which" 
+            android:entryValues="@array/lastfm_which_values"
+            android:defaultValue="scrobbledroid"
+            />
             
     </PreferenceCategory>
     
