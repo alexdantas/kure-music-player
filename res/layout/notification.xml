@@ -6,11 +6,10 @@
      a lot brighter:
      http://stackoverflow.com/a/18414768/1094964
  -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/notification"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="10dp"
     android:gravity="center"
     android:orientation="horizontal">
 
@@ -18,8 +17,7 @@
         android:id="@+id/notification_icon"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
         android:src="@drawable/ic_launcher"
         android:contentDescription="kMP" />
     
@@ -27,39 +25,44 @@
         android:id="@+id/notification_button_play"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/notification_icon"
         android:src="@drawable/play"
+        android:layout_margin="0dp"
         android:contentDescription="Play" />
 
     <ImageButton
         android:id="@+id/notification_button_skip"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/notification_button_play"
         android:src="@drawable/skip"
         android:contentDescription="Skip" />
     
    <LinearLayout
        android:layout_width="fill_parent"
-       android:layout_height="wrap_content"
+       android:layout_height="match_parent"
        android:layout_gravity="center_vertical"
        android:gravity="right"
-       android:layout_toRightOf="@id/notification_button_play"
+       android:padding="10dp"
        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/notification_text_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:text="dsada"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:lines="1"
+            />
 
         <TextView
             android:id="@+id/notification_text_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="dsadsadsad" />
+            android:text="dsadsadsad"
+            android:lines="1"
+            android:singleLine="true"
+            />
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -200,7 +200,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 				// If we're going to scroll
 				// the list after sorting it.
 				boolean updateList = false;
-
+				
 				switch (item.getItemId()) {
 
 				// Sorting options - after changing the now playing list
