@@ -47,18 +47,12 @@ public class MusicScrobblerService extends Service {
 	@Override
 	public void onCreate() {
 
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(MusicService.BROADCAST_ACTION);
-		filter.addCategory(Intent.CATEGORY_DEFAULT);
-
 		// Registering the BroadcastReceiver to listen
 		// to the MusicService.
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
-		.registerReceiver(musicServiceBroadcastReceiver, filter);
-		// new IntentFilter(MusicService.BROADCAST_ACTION)
+		.registerReceiver(musicServiceBroadcastReceiver, new IntentFilter(MusicService.BROADCAST_ACTION));
 
-		//super.onCreate();
 		Log.w("scrobbler", "created");
 	};
 
@@ -193,9 +187,10 @@ public class MusicScrobblerService extends Service {
 			scrobble.putExtra("app-name",    kMP.applicationName);
 			scrobble.putExtra("app-package", kMP.packageName);
 
-			scrobble.putExtra("track",  song.getTitle());
-			scrobble.putExtra("artist", song.getArtist());
-			scrobble.putExtra("album",  song.getAlbum());
+			scrobble.putExtra("track",    song.getTitle());
+			scrobble.putExtra("artist",   song.getArtist());
+			scrobble.putExtra("album",    song.getAlbum());
+			scrobble.putExtra("duration", song.getDurationSeconds());
 
 			sendBroadcast(scrobble);
 			Log.w("scrobbler", "sls");

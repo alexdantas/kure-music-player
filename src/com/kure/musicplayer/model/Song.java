@@ -50,6 +50,7 @@ public class Song {
 	private int    year        = -1;
 	private String genre       = "";
 	private int    track_no    = -1;
+	private long   duration_ms = -1;
 
 
 	public String getTitle() {
@@ -97,5 +98,24 @@ public class Song {
 	}
 	public void setTrackNumber(int track_no) {
 		this.track_no = track_no;
+	}
+
+	/**
+	 * Sets the duration of the song, in miliseconds.
+	 */
+	public void setDuration(long duration_ms) {
+		this.duration_ms = duration_ms;
+	}
+	/**
+	 * Returns the duration of the song, in miliseconds.
+	 */
+	public long getDuration() {
+		return duration_ms;
+	}
+	public long getDurationSeconds() {
+		return getDuration() / 1000;
+	}
+	public long getDurationMinutes() {
+		return getDurationSeconds() / 60;
 	}
 }

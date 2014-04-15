@@ -597,19 +597,15 @@ public class MusicService extends Service
 
 	private void broadcastMessage(String message) {
 
-		Intent broadcastIntent = new Intent();
-		broadcastIntent.setAction(MusicService.BROADCAST_ACTION);
-		broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+		Intent broadcastIntent = new Intent(MusicService.BROADCAST_ACTION);
 
-//		broadcastIntent.setClass(getApplicationContext(), MusicScrobblerService.class);
-
-		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_STATE, message);
+		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_STATE,   message);
 		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_SONG_ID, currentSong.getId());
 
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
 		.sendBroadcast(broadcastIntent);
-		
+
 		Log.w("MusicService", "sentBroadcast");
 	}
 }

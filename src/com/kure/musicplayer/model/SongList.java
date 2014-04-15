@@ -174,6 +174,7 @@ public class SongList {
 		String SONG_YEAR     = android.provider.MediaStore.Audio.Media.YEAR;
 		String SONG_TRACK_NO = android.provider.MediaStore.Audio.Media.TRACK;
 		String SONG_FILEPATH = android.provider.MediaStore.Audio.Media.DATA;
+		String SONG_DURATION = android.provider.MediaStore.Audio.Media.DURATION;
 
 		// Creating the map  "Genre IDs" -> "Genre Names"
 		genreIdToGenreNameMap = new HashMap<String, String>();
@@ -230,7 +231,8 @@ public class SongList {
 				SONG_ALBUM,
 				SONG_YEAR,
 				SONG_TRACK_NO,
-				SONG_FILEPATH
+				SONG_FILEPATH,
+				SONG_DURATION
 		};
 
 		// Thing that limits results to only show music files.
@@ -259,6 +261,7 @@ public class SongList {
 				song.setAlbum      (cursor.getString(cursor.getColumnIndex(SONG_ALBUM)));
 				song.setYear       (cursor.getInt   (cursor.getColumnIndex(SONG_YEAR)));
 				song.setTrackNumber(cursor.getInt   (cursor.getColumnIndex(SONG_TRACK_NO)));
+				song.setDuration   (cursor.getInt   (cursor.getColumnIndex(SONG_DURATION)));
 
 				// Using the previously created genre maps
 				// to fill the current song genre.
