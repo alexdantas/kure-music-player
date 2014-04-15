@@ -330,7 +330,7 @@ public class MusicService extends Service
 
 	@Override
 	public void onDestroy() {
-		notification.cancel();
+		cancelNotification();
 		currentSong = null;
 
 		// Stopping the scrobbler service.
