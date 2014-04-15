@@ -25,9 +25,8 @@
         android:id="@+id/notification_button_play"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:src="@drawable/play"
-        android:layout_margin="0dp"
-        android:contentDescription="Play" />
+        android:contentDescription="Play"
+        android:src="@drawable/play" />
 
     <ImageButton
         android:id="@+id/notification_button_skip"

@@ -7,6 +7,7 @@ import java.util.Random;
 
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.kure.musicplayer.NotificationMusic;
@@ -29,6 +31,8 @@ import com.kure.musicplayer.model.Song;
  * - Abstracts controlling the native Android MediaPlayer
  * - Keep showing a system Notification with info on
  *   currently playing song.
+ * - Starts the other service, `MusicScrobblerService`
+ *   (if set on Settings).
  *
  * @note It keeps the music playing even when the
  *       device is locked.
@@ -39,6 +43,42 @@ public class MusicService extends Service
 	implements MediaPlayer.OnPreparedListener,
 	           MediaPlayer.OnErrorListener,
 	           MediaPlayer.OnCompletionListener {
+
+	/**
+	 * String that identifies all broadcasts this Service makes.
+	 *
+	 * Since this Service will send LocalBroadcasts to explain
+	 * what it does (like "playing song" or "paused song"),
+	 * other classes that might be interested on it must
+	 * register a BroadcastReceiver to this String.
+	 */
+	public static final String BROADCAST_EVENT_NAME = "kMP_music_service";
+
+	/**
+	 * String used to get the Extra on the Broadcast Intent.
+	 */
+	public static final String BROADCAST_EXTRA = "action";
+
+	// All possible messages this Service will broadcast
+	// Ignore the actual values
+
+	/** Broadcast for when some music started playing */
+	public static final String BROADCAST_EXTRA_PLAYING       = "beatles";
+
+	/** Broadcast for when some music just got paused */
+	public static final String BROADCAST_EXTRA_PAUSED        = "santana";
+
+	/** Broadcast for when a paused music got unpaused*/
+	public static final String BROADCAST_EXTRA_UNPAUSED      = "iron_maiden";
+
+	/** Broadcast for when current music got played until the end */
+	public static final String BROADCAST_EXTRA_COMPLETED     = "los_hermanos";
+
+	/** Broadcast for when the user skipped to the next song */
+	public static final String BROADCAST_EXTRA_SKIP_NEXT     = "paul_gilbert";
+
+	/** Broadcast for when the user skipped to the previous song */
+	public static final String BROADCAST_EXTRA_SKIP_PREVIOUS = "john_petrucci";
 
 	/**
 	 * Android Media Player - we control it in here.
@@ -83,7 +123,8 @@ public class MusicService extends Service
 	private NotificationMusic notification = new NotificationMusic();
 
 	/**
-	 * Whenever we're created, reset the MusicPlayer.
+	 * Whenever we're created, reset the MusicPlayer and
+	 * start the MusicScrobblerService.
 	 */
 	public void onCreate() {
 		super.onCreate();
@@ -94,6 +135,12 @@ public class MusicService extends Service
 		initMusicPlayer();
 
 		randomNumberGenerator = new Random();
+
+		// Starting the scrobbler.
+		Context context = getApplicationContext();
+
+		Intent scrobblerIntent = new Intent(context, MusicScrobblerService.class);
+		context.startService(scrobblerIntent);
 	}
 
 	/**
@@ -154,6 +201,8 @@ public class MusicService extends Service
 		// Prepare the MusicPlayer asynchronously.
 		// When finished, will call `onPrepare`
 		player.prepareAsync();
+
+		broadcastMessage(MusicService.BROADCAST_EXTRA_PLAYING);
 	}
 
 	/**
@@ -212,6 +261,8 @@ public class MusicService extends Service
 		if (player.getCurrentPosition() <= 0)
 			return;
 
+		broadcastMessage(MusicService.BROADCAST_EXTRA_COMPLETED);
+
 		scrobbleCurrentSong(false);
 
 		// Repeating current song if desired
@@ -223,7 +274,7 @@ public class MusicService extends Service
 		// Remember that by calling next(), if played
 		// the last song on the list, will reset to the
 		// first one.
-		next();
+		next(false);
 
 		// Reached the end, should we restart playing
 		// from the first song or simply stop?
@@ -257,6 +308,12 @@ public class MusicService extends Service
 		notification.cancel();
 		currentSong = null;
 
+		// Stopping the scrobbler service.
+		Context context = getApplicationContext();
+
+		Intent scrobblerIntent = new Intent(context, MusicScrobblerService.class);
+		context.stopService(scrobblerIntent);
+
 		super.onDestroy();
 	}
 
@@ -269,9 +326,12 @@ public class MusicService extends Service
 	 * @note Remember to call `playSong()` to make the MusicPlayer
 	 *       actually play the music.
 	 */
-	public void previous() {
+	public void previous(boolean userSkippedSong) {
 
 		scrobbleCurrentSong(false);
+
+		if (userSkippedSong)
+			broadcastMessage(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS);
 
 		currentSongPosition--;
 		if (currentSongPosition < 0)
@@ -284,13 +344,17 @@ public class MusicService extends Service
 	 * @note Remember to call `playSong()` to make the MusicPlayer
 	 *       actually play the music.
 	 */
-	public void next() {
+	public void next(boolean userSkippedSong) {
 
 		// TODO implement a queue of songs to prevent last songs
 		//      to be played
 		// TODO or maybe a playlist, whatever
 
+		if (userSkippedSong)
+			broadcastMessage(MusicService.BROADCAST_EXTRA_SKIP_NEXT);
+
 		scrobbleCurrentSong(false);
+
 
 		if (shuffleMode) {
 			int newSongPosition = currentSongPosition;
@@ -330,6 +394,7 @@ public class MusicService extends Service
 		notification.notifyPaused(true);
 
 		scrobbleCurrentSong(false);
+		broadcastMessage(MusicService.BROADCAST_EXTRA_PAUSED);
 	}
 
 	public void unpausePlayer() {
@@ -339,6 +404,7 @@ public class MusicService extends Service
 		notification.notifyPaused(false);
 
 		scrobbleCurrentSong(true);
+		broadcastMessage(MusicService.BROADCAST_EXTRA_UNPAUSED);
 	}
 
 	public void togglePausePlayer() {
@@ -382,7 +448,7 @@ public class MusicService extends Service
 	 * @see onPrepared()
 	 */
 	private void scrobbleCurrentSong(boolean isPlaying) {
-
+/*
 		// Only scrobbling if the user lets us
 		if (! kMP.settings.get("lastfm", false))
 			return;
@@ -393,7 +459,7 @@ public class MusicService extends Service
 		scrobble.putExtra("id", getCurrentSongId());
 
 		sendBroadcast(scrobble);
-	}
+*/	}
 
 	// THESE ARE METHODS RELATED TO CONNECTING THE SERVICE
 	// TO THE ANDROID PLATFORM
@@ -539,4 +605,13 @@ public class MusicService extends Service
 		notification.cancel();
 	}
 
+	private void broadcastMessage(String message) {
+
+		Intent broadcastIntent = new Intent(MusicService.BROADCAST_EVENT_NAME);
+		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA, message);
+
+		LocalBroadcastManager
+		.getInstance(getApplicationContext())
+		.sendBroadcast(broadcastIntent);
+	}
 }

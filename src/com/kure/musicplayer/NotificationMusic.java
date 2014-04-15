@@ -167,7 +167,7 @@ public class NotificationMusic extends NotificationSimple {
 	public static class NotificationSkipButtonHandler extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			kMP.musicService.next();
+			kMP.musicService.next(true);
 			kMP.musicService.playSong();
 		}
 	}

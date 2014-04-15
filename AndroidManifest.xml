@@ -117,6 +117,7 @@
         <!-- Services (run on the background)
          -->
         <service android:name=".services.MusicService" />
+        <service android:name=".services.MusicScrobblerService" />
         
         <!-- Allows specific classes to handle broadcasts
              (on this case, two buttons clicked on the Notification)

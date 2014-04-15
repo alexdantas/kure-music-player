@@ -200,7 +200,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 				// If we're going to scroll
 				// the list after sorting it.
 				boolean updateList = false;
-				
+
 				switch (item.getItemId()) {
 
 				// Sorting options - after changing the now playing list
@@ -649,7 +649,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 	 * Jumps to the next song and starts playing it right now.
 	 */
 	public void playNext() {
-		kMP.musicService.next();
+		kMP.musicService.next(true);
 		kMP.musicService.playSong();
 
 		refreshActionBarSubtitle();
@@ -668,7 +668,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 	 * Jumps to the previous song and starts playing it right now.
 	 */
 	public void playPrevious() {
-		kMP.musicService.previous();
+		kMP.musicService.previous(true);
 		kMP.musicService.playSong();
 
 		refreshActionBarSubtitle();
