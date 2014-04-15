@@ -48,17 +48,24 @@
         >
         
         <CheckBoxPreference 
-            android:key="repeat_list"
-            android:title="@string/menu_settings_repeat_list_title"
-            android:summary="@string/menu_settings_repeat_list_subtitle"
-            android:defaultValue="false"
-        />
-        
-        <CheckBoxPreference 
             android:key="show_notification"
             android:title="@string/menu_settings_show_notification_title"
             android:summary="@string/menu_settings_show_notification_subtitle"
             android:defaultValue="true"
+        />
+                
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="\'Now Playing List\'"
+        android:key="nowplayinglist" 
+        >
+        
+        <CheckBoxPreference 
+            android:key="repeat_list"
+            android:title="@string/menu_settings_repeat_list_title"
+            android:summary="@string/menu_settings_repeat_list_subtitle"
+            android:defaultValue="false"
         />
         
         <CheckBoxPreference 

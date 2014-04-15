@@ -83,7 +83,7 @@ public class ActivityMaster extends Activity {
 		// Getting global theme name from the Settings.
 		// Second argument is the default value, in case
 		// something went wrong.
-		String theme = kMP.settings.get("themes", "light");
+		String theme = kMP.settings.get("themes", "default");
 
 		if (currentTheme != theme)
 		{

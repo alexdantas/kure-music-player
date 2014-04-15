@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kure.musicplayer.MusicController;
@@ -25,44 +27,34 @@ import com.kure.musicplayer.R;
 import com.kure.musicplayer.kMP;
 import com.kure.musicplayer.adapters.AdapterSong;
 
-
 /**
- * It is the "Now Playing Queue".
+ * It is te "Now Playing List" - shows all songs that will be played and lets
+ * the user interact with them.
  *
  * Tasks:
  *
- * - List all currently playing songs.
- * - Has a MediaController, little widgets with
- *   buttons to play, pause, skip, etc.
- * - Lets the user append songs to it at any time.
- * - Allows the user to select any song inside it to
- *   start playing right away.
+ * - List all currently playing songs. - Has a MediaController, little widgets
+ * with buttons to play, pause, skip, etc. - Lets the user append songs to it at
+ * any time. - Allows the user to select any song inside it to start playing
+ * right away.
  *
  * Interface:
  *
- * If you want to play a set of musics, set the
- * ArrayList<Song> on `kmP.nowPlayingList` with all
- * the songs you want.
+ * If you want to play a set of musics, set the ArrayList<Song> on
+ * `kmP.nowPlayingList` with all the songs you want.
  *
- * Then, send an Extra called "song" that contains
- * the global ID of the Song you want to start
- * playing.
+ * Then, send an Extra called "song" that contains the global ID of the Song you
+ * want to start playing.
  *
- * Another thing you can do is to send an extra
- * of key "sort" with any value accepted by the
- * function `MusicService.sortBy()`.
- * Then, the list will get sorted that way before
- * it starts playing.
+ * Another thing you can do is to send an extra of key "sort" with any value
+ * accepted by the function `MusicService.sortBy()`. Then, the list will get
+ * sorted that way before it starts playing.
  *
- * - If we don't find that ID on the list, we start
- *   playing from the beginning.
- * - The Extra is optional: if you don't provide it
- *   it does nothing.
+ * - If we don't find that ID on the list, we start playing from the beginning.
+ * - The Extra is optional: if you don't provide it it does nothing.
  */
-public class ActivityNowPlaying extends ActivityMaster
-	implements MediaPlayerControl,
-	           OnItemClickListener,
-	           OnItemLongClickListener {
+public class ActivityNowPlaying extends ActivityMaster implements
+		MediaPlayerControl, OnItemClickListener, OnItemLongClickListener {
 
 	/**
 	 * List that will display all the songs.
@@ -77,12 +69,19 @@ public class ActivityNowPlaying extends ActivityMaster
 	/**
 	 * Thing that maps songs to items on the ListView.
 	 *
-	 * We're keeping track of it so we can refresh the ListView
-	 * if the user wishes to change it's order.
+	 * We're keeping track of it so we can refresh the ListView if the user
+	 * wishes to change it's order.
 	 *
 	 * Check out the leftmost menu and it's options.
 	 */
 	private AdapterSong songAdapter;
+
+	/**
+	 * Little menu that will show when the user
+	 * clicks the ActionBar.
+	 * It serves to sort the current song list.
+	 */
+	private PopupMenu popup;
 
 	/**
 	 * Gets called when the Activity is getting initialized.
@@ -93,7 +92,7 @@ public class ActivityNowPlaying extends ActivityMaster
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_now_playing);
 
-		songListView = (ListView)findViewById(R.id.activity_now_playing_song_list);
+		songListView = (ListView) findViewById(R.id.activity_now_playing_song_list);
 
 		// We'll play this pre-defined list.
 		// By default we play the first track, although an
@@ -114,12 +113,12 @@ public class ActivityNowPlaying extends ActivityMaster
 
 			// There's the other optional extra - sorting rule
 			if (bundle.containsKey("sort"))
-				kMP.musicService.sortBy((String)bundle.get("sort"));
+				kMP.musicService.sortBy((String) bundle.get("sort"));
 
 			// If we received an extra with the song position
 			// inside the now playing list, start playing it
 			if (bundle.containsKey("song")) {
-				int songToPlayIndex = (int)bundle.get("song");
+				int songToPlayIndex = (int) bundle.get("song");
 
 				// Prepare the music service to play the song.
 				// `setSong` does limit-checking
@@ -148,39 +147,37 @@ public class ActivityNowPlaying extends ActivityMaster
 		// Main Menu that returns here.
 		ActivityMenuMain.addNowPlayingItem(this);
 
-		// Customizing ActionBar
-		ActionBar actionBar = getActionBar();
-		if (actionBar != null) {
-			// Making sure the leftmost button (Home Button) is there
-			actionBar.setHomeButtonEnabled(true);
 
-			// Change it to a sweet custom icon
-			actionBar.setIcon(R.drawable.ic_menu_more);
-		}
+		// Customizing the ActionBar
+		// (menu on top)
+		createActionBar();
 	}
 
 	/**
-	 * Activates the ActionBar's leftmost drop-down menu.
+	 * Initializes and customizes the ActionBar
+	 * (menu on top).
 	 *
-	 * @note We're creating the menu EVERY TIME you call
-	 *       this function! Hope it doesn't become too
-	 *       slow on some phones.
-	 *
-	 * @note All of it's items are defined on
-	 * `res/menu/activity_now_playing_action_bar_submenu.xml`.
+	 * Instead of showing an Icon and the classic Title and Subtitle,
+	 * we'll display a single button that spawns a submenu.
 	 */
-	public void showSubmenu() {
+	private void createActionBar() {
 
-		// The menu can't possibly work if there's no ActionBar
 		ActionBar actionBar = getActionBar();
 		if (actionBar == null)
 			return;
 
-		// And now we create the drop-down menu, attaching
-		// it to the leftmost button (Home Button).
+		// Alright, this is a long one...
 		//
-		// To do so I need to get a reference to the leftmost
-		// button's View...
+		// First, we create the submenu that will appear
+		// when the user clicks on the ActionBar button.
+		//
+		// Then we create the ActionBar.
+		//
+		// Then we attach the submenu to the ActionBar.
+
+
+		// To create the dropdown menu, I need to get a
+		// reference to the leftmost button's View...
 		//
 		// (Source: http://stackoverflow.com/a/21125631)
 		Window window = getWindow();
@@ -188,17 +185,21 @@ public class ActivityNowPlaying extends ActivityMaster
 		int resID = getResources().getIdentifier("action_bar_container", "id", "android");
 
 		// ...and create the PopupMenu, populating with the options...
-		PopupMenu popup = new PopupMenu(this, view.findViewById(resID));
+		popup = new PopupMenu(this, view.findViewById(resID));
 		MenuInflater menuInflater = popup.getMenuInflater();
 
-		menuInflater.inflate(R.menu.activity_now_playing_action_bar_submenu,
-				             popup.getMenu());
+		menuInflater.inflate(R.menu.activity_now_playing_action_bar_submenu, popup.getMenu());
 
-		// ... then we tell what happens when the user selects any of it's items.
+		// ... then we tell what happens when the user
+		// selects any of it's items.
 		PopupMenu.OnMenuItemClickListener listener = new PopupMenu.OnMenuItemClickListener() {
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
+
+				// If we're going to scroll
+				// the list after sorting it.
+				boolean updateList = false;
 
 				switch (item.getItemId()) {
 
@@ -209,95 +210,106 @@ public class ActivityNowPlaying extends ActivityMaster
 				// Will sort current songs by title
 				case R.id.action_bar_submenu_title:
 					kMP.musicService.sortBy("title");
-					songAdapter.notifyDataSetChanged();
-					songListView.setSelection(kMP.musicService.currentSongPosition);
-					return false;
+					updateList = true;
+					break;
 
 				// Will sort current songs by artist
 				case R.id.action_bar_submenu_artist:
 					kMP.musicService.sortBy("artist");
-					songAdapter.notifyDataSetChanged();
-					songListView.setSelection(kMP.musicService.currentSongPosition);
-					return false;
+					updateList = true;
+					break;
 
 				// Will sort current songs by album
 				case R.id.action_bar_submenu_album:
 					kMP.musicService.sortBy("album");
-					songAdapter.notifyDataSetChanged();
-					songListView.setSelection(kMP.musicService.currentSongPosition);
-					return false;
+					updateList = true;
+					break;
 
 				// Will sort current songs by track number
 				case R.id.action_bar_submenu_track:
 					kMP.musicService.sortBy("track");
-					songAdapter.notifyDataSetChanged();
-					songListView.setSelection(kMP.musicService.currentSongPosition);
-					return false;
+					updateList = true;
+					break;
 
 				// Will sort current songs randomly
 				case R.id.action_bar_submenu_random:
 					kMP.musicService.sortBy("random");
-					songAdapter.notifyDataSetChanged();
-					songListView.setSelection(kMP.musicService.currentSongPosition);
-					return false;
+					updateList = true;
+					break;
 
-				// Will ask the user for a new Playlist name, creating
-				// it with the current songs.
-				//
-				// If there's already a playlist with that name, we'll
-				// append a silly string to the new Playlist name.
+					// Will ask the user for a new Playlist name, creating
+					// it with the current songs.
+					//
+					// If there's already a playlist with that name, we'll
+					// append a silly string to the new Playlist name.
 				case R.id.action_bar_submenu_new_playlist:
 
 					// The input box where user will type new name
 					final EditText input = new EditText(ActivityNowPlaying.this);
 
+					// Labels
+					String dialogTitle    = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_title);
+					String dialogText     = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_subtitle);
+					String buttonOK       = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_ok);
+					String buttonCancel   = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_cancel);
+
 					// Creating the dialog box that asks the user,
 					// with the question and options.
 					new AlertDialog.Builder(ActivityNowPlaying.this)
-						.setTitle(ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_title))
-						.setMessage(ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_subtitle))
-						.setView(input)
+					.setTitle(dialogTitle)
+					.setMessage(dialogText)
+					.setView(input)
 
-						// Creates the OK button, attaching the action to create
-						// the Playlist
-						.setPositiveButton(ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_ok),
-						                   new DialogInterface.OnClickListener() {
+					// Creates the OK button, attaching the action to create the Playlist
+					.setPositiveButton(buttonOK, new DialogInterface.OnClickListener() {
 
-							public void onClick(DialogInterface dialog, int whichButton) {
+						public void onClick(DialogInterface dialog, int whichButton) {
 
-								String playlistName = input.getText().toString();
+							String playlistName = input.getText().toString();
 
-								// TODO: Must somehow update the Playlist Activity if it's
-								//       on the background!
-								//       The ListView only updates when Playlist Menu gets
-								//       created from scratch.
-								kMP.songs.newPlaylist(ActivityNowPlaying.this,
-								                      "external",
-								                      playlistName,
-								                      kMP.nowPlayingList);
+							// TODO: Must somehow update the
+							// Playlist Activity if it's
+							// on the background!
+							// The ListView only updates when
+							// Playlist Menu gets
+							// created from scratch.
+							kMP.songs.newPlaylist(ActivityNowPlaying.this, "external", playlistName, kMP.nowPlayingList);
 
-								// Congratulating the user with the new Playlist name
-								Toast.makeText(ActivityNowPlaying.this,
-								               ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_success) + playlistName,
-								               Toast.LENGTH_SHORT).show();
+							String createPlaylist = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_success);
 
-							}
+							// Congratulating the user with the
+							// new Playlist name
+							Toast.makeText(ActivityNowPlaying.this,
+							               createPlaylist + playlistName,
+							               Toast.LENGTH_SHORT).show();
 
-						// Creates the CANCEL button, that doesn't do nothing
-						// (since a Playlist is only created when pressing OK).
-						}).setNegativeButton(ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_cancel),
-						                     new DialogInterface.OnClickListener() {
+						}
 
-							public void onClick(DialogInterface dialog, int whichButton) {
-								// Do nothing, yay!
-							}
+					// Creates the CANCEL button, that
+					// doesn't do nothing
+					// (since a Playlist is only created
+					// when pressing OK).
+					})
+					.setNegativeButton(buttonCancel,
+							new DialogInterface.OnClickListener() {
 
-						// Lol, this is where we actually call the Dialog.
-						// Note for newcomers: The code continues to execute.
-						//                     This is an asynchronous task.
-						}).show();
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// Do nothing, yay!
+						}
+
+					// Lol, this is where we actually call the Dialog.
+					// Note for newcomers: The code continues to execute.
+					// This is an asynchronous task.
+					}).show();
 
 					return false;
+				}
+
+				// Finally, updating the list if it
+				// just got sorted
+				if (updateList) {
+					songAdapter.notifyDataSetChanged();
+					songListView.setSelection(kMP.musicService.currentSongPosition);
 				}
 				return false;
 			}
@@ -306,18 +318,75 @@ public class ActivityNowPlaying extends ActivityMaster
 		// Phew! Activating the callbacks when someone
 		// clicks the menu and showing it.
 		popup.setOnMenuItemClickListener(listener);
+
+		// Making sure the leftmost button (Home Button) is
+		// not there
+		actionBar.setHomeButtonEnabled(false);
+
+		// Custom layout - customize it there
+		actionBar.setCustomView(R.layout.activity_now_playing_action_bar);
+
+		// The default text for the "Title"
+		TextView textTop = (TextView) actionBar
+				.getCustomView()
+				.findViewById(R.id.action_bar_title);
+
+		textTop.setText("Now Playing List");
+
+		// Our "Subtitle" will have the name of the currently
+		// playing song. For now, it's empty
+		TextView textBottom = (TextView) actionBar
+				.getCustomView()
+				.findViewById(R.id.action_bar_subtitle);
+
+		textBottom.setText("");
+
+		// From now on, every time we update our custom
+		// layout, the ActionBar will get refreshed
+		// immediately.
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+
+		// And when we click on the custom layout
+		// (our button with "Title" and "Subtitle")...
+		actionBar
+		.getCustomView()
+		.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				popup.show();
+			}
+		});
+	}
+	/**
+	 * Activates the ActionBar's leftmost drop-down menu.
+	 *
+	 * @note We're creating the menu EVERY TIME you call this function! Hope it
+	 *       doesn't become too slow on some phones.
+	 *
+	 * @note All of it's items are defined on
+	 *       `res/menu/activity_now_playing_action_bar_submenu.xml`.
+	 */
+	public void showSubmenu() {
+
+		// The menu can't possibly work if there's no ActionBar
+		ActionBar actionBar = getActionBar();
+		if (actionBar == null)
+			return;
+
 		popup.show();
+		//		popup.show();
 	}
 
 	/**
-	 * Icon that will show on the top menu showing if
-	 * `shuffle` is on/off and allowing the user to change it.
+	 * Icon that will show on the top menu showing if `shuffle` is on/off and
+	 * allowing the user to change it.
 	 */
 	private MenuItem shuffleItem;
 
 	/**
-	 * Icon that will show on the top menu showing if
-	 * `repeat` is on/off and allowing the user to change it.
+	 * Icon that will show on the top menu showing if `repeat` is on/off and
+	 * allowing the user to change it.
 	 */
 	private MenuItem repeatItem;
 
@@ -331,7 +400,7 @@ public class ActivityNowPlaying extends ActivityMaster
 		inflater.inflate(R.menu.activity_now_playing_action_bar, menu);
 
 		shuffleItem = menu.findItem(R.id.action_bar_shuffle);
-		repeatItem  = menu.findItem(R.id.action_bar_repeat);
+		repeatItem = menu.findItem(R.id.action_bar_repeat);
 
 		refreshActionBarItems();
 		refreshActionBarSubtitle();
@@ -340,48 +409,58 @@ public class ActivityNowPlaying extends ActivityMaster
 	}
 
 	/**
-	 * Refreshes the icons on the Action Bar based on the
-	 * status of `shuffle` and `repeat`.
+	 * Refreshes the icons on the Action Bar based on the status of `shuffle`
+	 * and `repeat`.
 	 *
-	 * Source:
-	 * http://stackoverflow.com/a/11006878
+	 * Source: http://stackoverflow.com/a/11006878
 	 */
 	private void refreshActionBarItems() {
 
-		shuffleItem.setIcon((kMP.musicService.isShuffle())?
-				             R.drawable.ic_menu_shuffle_on:
-		                     R.drawable.ic_menu_shuffle_off);
+		shuffleItem
+				.setIcon((kMP.musicService.isShuffle()) ? R.drawable.ic_menu_shuffle_on
+						: R.drawable.ic_menu_shuffle_off);
 
-		repeatItem.setIcon((kMP.musicService.isRepeat())?
-		                    R.drawable.ic_menu_repeat_on:
-		                    R.drawable.ic_menu_repeat_off);
+		repeatItem
+				.setIcon((kMP.musicService.isRepeat()) ? R.drawable.ic_menu_repeat_on
+						: R.drawable.ic_menu_repeat_off);
 	}
 
 	/**
-	 * Sets the Action Bar subtitle to the currently playing
-	 * song title.
+	 * Sets the Action Bar subtitle to the currently playing song title.
 	 */
 	public void refreshActionBarSubtitle() {
-		ActionBar actionBar = getActionBar();
 
-		if (actionBar != null)
-			if (kMP.musicService.currentSong != null)
-				actionBar.setSubtitle(kMP.musicService.currentSong.getTitle());
+		ActionBar actionBar = getActionBar();
+		if (actionBar == null)
+			return;
+
+		/*
+		 * actionBar.setCustomView(R.layout.menu_item_double);
+		 *
+		 * TextView textTop =
+		 * (TextView)actionBar.getCustomView().findViewById(R.
+		 * id.menu_item_title); textTop.setText("Now Playing List");
+		 */
+		if (kMP.musicService.currentSong == null)
+			return;
+
+		TextView textBottom = (TextView) actionBar.getCustomView()
+				.findViewById(R.id.action_bar_subtitle);
+		textBottom.setText(kMP.musicService.currentSong.getTitle());
+
+		/*
+		 * actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+		 */
 	}
 
 	/**
-	 * This method gets called whenever the user clicks an
-	 * item on the ActionBar.
+	 * This method gets called whenever the user clicks an item on the
+	 * ActionBar.
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-
-		// The leftmost icon, usually with the app logo
-		case android.R.id.home:
-			showSubmenu();
-			return true;
 
 		case R.id.action_bar_shuffle:
 			kMP.musicService.toggleShuffleMode();
@@ -404,15 +483,15 @@ public class ActivityNowPlaying extends ActivityMaster
 
 		// WHY CANT I SET THE MUSIC CONTROLLER HERE AND LET IT BE
 		// FOREVER?
-	//	if (!this.isFinishing()) {
-	//	    musicController.show(5000);
-	//	}
+		// if (!this.isFinishing()) {
+		// musicController.show(5000);
+		// }
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-		if(event.getAction() == KeyEvent.ACTION_DOWN)
+		if (event.getAction() == KeyEvent.ACTION_DOWN)
 			if (keyCode == KeyEvent.KEYCODE_MENU)
 				musicController.show();
 
@@ -420,8 +499,8 @@ public class ActivityNowPlaying extends ActivityMaster
 	}
 
 	/**
-	 * Another Activity is taking focus.
-	 * (either from user going to another Activity or home)
+	 * Another Activity is taking focus. (either from user going to another
+	 * Activity or home)
 	 */
 	@Override
 	protected void onPause() {
@@ -488,7 +567,8 @@ public class ActivityNowPlaying extends ActivityMaster
 
 		// Binding to our media player
 		musicController.setMediaPlayer(this);
-		musicController.setAnchorView(findViewById(R.id.activity_now_playing_song_list));
+		musicController
+				.setAnchorView(findViewById(R.id.activity_now_playing_song_list));
 		musicController.setEnabled(true);
 	}
 
@@ -507,7 +587,8 @@ public class ActivityNowPlaying extends ActivityMaster
 
 	@Override
 	public int getDuration() {
-		if (kMP.musicService != null && kMP.musicService.musicBound && kMP.musicService.isPlaying())
+		if (kMP.musicService != null && kMP.musicService.musicBound
+				&& kMP.musicService.isPlaying())
 			return kMP.musicService.getDuration();
 		else
 			return 0;
@@ -515,7 +596,8 @@ public class ActivityNowPlaying extends ActivityMaster
 
 	@Override
 	public int getCurrentPosition() {
-		if (kMP.musicService != null && kMP.musicService.musicBound && kMP.musicService.isPlaying())
+		if (kMP.musicService != null && kMP.musicService.musicBound
+				&& kMP.musicService.isPlaying())
 			return kMP.musicService.getPosition();
 		else
 			return 0;
@@ -602,11 +684,12 @@ public class ActivityNowPlaying extends ActivityMaster
 	}
 
 	/**
-	 * When the user selects a music inside the "Now Playing List",
-	 * we'll start playing it right away.
+	 * When the user selects a music inside the "Now Playing List", we'll start
+	 * playing it right away.
 	 */
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
 
 		// Prepare the music service to play the song.
 		kMP.musicService.setSong(position);
@@ -627,10 +710,11 @@ public class ActivityNowPlaying extends ActivityMaster
 	 * When the user long clicks a music inside the "Now Playing List".
 	 */
 	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+	public boolean onItemLongClick(AdapterView<?> parent, View view,
+			int position, long id) {
 
-		Toast.makeText(this, kMP.musicService.getSong(position).getGenre(), Toast.LENGTH_LONG).show();
-
+		Toast.makeText(this, kMP.musicService.getSong(position).getGenre(),
+				Toast.LENGTH_LONG).show();
 
 		// Just a catch - if we return `false`, when an user
 		// long clicks an item, the list will react as if
@@ -641,4 +725,3 @@ public class ActivityNowPlaying extends ActivityMaster
 		return true;
 	}
 }
-

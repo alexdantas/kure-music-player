@@ -55,15 +55,7 @@
         Which application I\'ll use to scrobble to Last.fm (you have to install at least one of those).
     </string>
     
-    
-    <string name="menu_settings_repeat_list_title">
-        Repeat \"Now Playing List\"
-    </string>
-    <string name="menu_settings_repeat_list_subtitle">
-        When finishing the \"Now Playing List\", should I start it all over again?
-    </string>
-    
-    
+      
     <string name="menu_settings_show_notification_title">
         Ongoing Notification
     </string>
@@ -72,8 +64,16 @@
     </string>
   
     
+    <string name="menu_settings_repeat_list_title">
+        Repeat when finished
+    </string>
+    <string name="menu_settings_repeat_list_subtitle">
+        When finishing the \"Now Playing List\", should I start it all over again?
+    </string>
+
+    
     <string name="menu_settings_scroll_on_focus_title">
-        Scroll \"Now Playing List\" on Focus
+        Scroll when returning
     </string>
     <string name="menu_settings_scroll_on_focus_subtitle">
         When returning to the \"Now Playing List\", should I scroll it to the currently playing song?
