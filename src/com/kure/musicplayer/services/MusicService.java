@@ -81,10 +81,10 @@ public class MusicService extends Service
 	 * other classes that might be interested on it must
 	 * register a BroadcastReceiver to this String.
 	 */
-	public static final String BROADCAST_EVENT_NAME = "kMP_music_service";
+	public static final String BROADCAST_ACTION = "com.kure.musicplayer.MUSIC_SERVICE";
 
-	/** String used to get the action Extra on the Broadcast Intent */
-	public static final String BROADCAST_EXTRA_ACTION  = "x_japan";
+	/** String used to get the current state Extra on the Broadcast Intent */
+	public static final String BROADCAST_EXTRA_STATE = "x_japan";
 
 	/** String used to get the song ID Extra on the Broadcast Intent */
 	public static final String BROADCAST_EXTRA_SONG_ID = "tenacious_d";
@@ -597,12 +597,19 @@ public class MusicService extends Service
 
 	private void broadcastMessage(String message) {
 
-		Intent broadcastIntent = new Intent(MusicService.BROADCAST_EVENT_NAME);
-		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_ACTION, message);
+		Intent broadcastIntent = new Intent();
+		broadcastIntent.setAction(MusicService.BROADCAST_ACTION);
+		broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+//		broadcastIntent.setClass(getApplicationContext(), MusicScrobblerService.class);
+
+		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_STATE, message);
 		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_SONG_ID, currentSong.getId());
 
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
 		.sendBroadcast(broadcastIntent);
+		
+		Log.w("MusicService", "sentBroadcast");
 	}
 }

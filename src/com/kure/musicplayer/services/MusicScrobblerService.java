@@ -7,9 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
+import android.util.Log;
 
 import com.kure.musicplayer.kMP;
+import com.kure.musicplayer.model.Song;
 
 /**
  * Asynchronous service that will communicate with the
@@ -41,6 +42,27 @@ public class MusicScrobblerService extends Service {
 	}
 
 	/**
+	 * Service just got created.
+	 */
+	@Override
+	public void onCreate() {
+
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(MusicService.BROADCAST_ACTION);
+		filter.addCategory(Intent.CATEGORY_DEFAULT);
+
+		// Registering the BroadcastReceiver to listen
+		// to the MusicService.
+		LocalBroadcastManager
+		.getInstance(getApplicationContext())
+		.registerReceiver(musicServiceBroadcastReceiver, filter);
+		// new IntentFilter(MusicService.BROADCAST_ACTION)
+
+		//super.onCreate();
+		Log.w("scrobbler", "created");
+	};
+
+	/**
 	 * Service is triggered to (re)start.
 	 *
 	 * @note Might be called several times.
@@ -50,32 +72,17 @@ public class MusicScrobblerService extends Service {
 
 		if (intent == null) {
 			// We just got restarted after Android killed us
-
 		}
 		else {
 			// This service is being explicitly started
-
 		}
+
+		Log.w("scrobbler", "start_command");
 
 		// This makes sure this service will be restarted
 		// when Android kills it.
 		// When it does, the `intent` will be `null`.
 		return Service.START_STICKY;
-	};
-
-	/**
-	 * Service just got created.
-	 */
-	@Override
-	public void onCreate() {
-
-		// Registering the BroadcastReceiver to listen
-		// to the MusicService.
-		LocalBroadcastManager
-		.getInstance(getApplicationContext())
-		.registerReceiver(musicServiceBroadcastReceiver, new IntentFilter(MusicService.BROADCAST_EVENT_NAME));
-
-		super.onCreate();
 	};
 
 	@Override
@@ -86,6 +93,7 @@ public class MusicScrobblerService extends Service {
 		.getInstance(getApplicationContext())
 		.unregisterReceiver(musicServiceBroadcastReceiver);
 
+		Log.w("scrobbler", "destroyed");
 		super.onDestroy();
 	};
 
@@ -102,61 +110,96 @@ public class MusicScrobblerService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 
-			String action  = intent.getStringExtra(MusicService.BROADCAST_EXTRA_ACTION);
+			// Getting the information sent by the MusicService
+			// (and ignoring it if invalid)
+			String action  = intent.getStringExtra(MusicService.BROADCAST_EXTRA_STATE);
 			Long   song_id = intent.getLongExtra(MusicService.BROADCAST_EXTRA_SONG_ID, -1);
 
-			if (action.equals(MusicService.BROADCAST_EXTRA_PLAYING)) {
-				Toast.makeText(getApplicationContext(), "Playing", Toast.LENGTH_SHORT).show();
-			}
-			else if (action.equals(MusicService.BROADCAST_EXTRA_PAUSED)) {
-				Toast.makeText(getApplicationContext(), "Paused", Toast.LENGTH_SHORT).show();
-			}
-			else if (action.equals(MusicService.BROADCAST_EXTRA_COMPLETED)) {
-				Toast.makeText(getApplicationContext(), "Completed", Toast.LENGTH_SHORT).show();
-			}
-			else if (action.equals(MusicService.BROADCAST_EXTRA_UNPAUSED)) {
-				Toast.makeText(getApplicationContext(), "Unpaused", Toast.LENGTH_SHORT).show();
-			}
-			else if (action.equals(MusicService.BROADCAST_EXTRA_SKIP_NEXT)) {
-				Toast.makeText(getApplicationContext(), "Next", Toast.LENGTH_SHORT).show();
-			}
-			else if (action.equals(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS)) {
-				Toast.makeText(getApplicationContext(), "Previous", Toast.LENGTH_SHORT).show();
-			}
-			else
-				return;
-
 			if (song_id != -1)
-				Toast.makeText(getApplicationContext(), kMP.songs.getSongById(song_id).getTitle(), Toast.LENGTH_SHORT).show();
+				scrobbleSong(kMP.songs.getSongById(song_id), action);
 
+			Log.w("scrobbler", "received");
 		}
 	};
 
 	/**
-	 * Last.fm support!
+	 * Sends a song information to Last.fm.
 	 *
-	 * We'll send our current song to ScrobbleDroid ONLY IF
-	 * the preference for it is enabled.
+	 * It supports several Last.fm Android scrobblers, as specified
+	 * on `res/xml/preferences.xml`.
 	 *
-	 * This needs to be called as often as possible - when pausing,
-	 * resuming, when the track is going to be changed, when the
-	 * track is changed...
-	 *
-	 * @note To avoid concurrency issues, make sure to clal
-	 *       this method only when the music player is prepared!
-	 * @see onPrepared()
+	 * @param song              Song it'll send to Last.fm
+	 * @param musicPlayerAction What is happening to the song right
+	 *                          now - as specified on `MusicService`.
 	 */
-	private void scrobbleCurrentSong(boolean isPlaying) {
-/*
-		// Only scrobbling if the user lets us
+	public void scrobbleSong(Song song, String musicPlayerAction) {
+
+		// Double-checking - won't scrobble if the user
+		// don't want us to.
 		if (! kMP.settings.get("lastfm", false))
 			return;
 
-		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
+		String scrobbler = kMP.settings.get("lastfm_which", "sls");
 
-		scrobble.putExtra("playing", isPlaying);
-		scrobble.putExtra("id", getCurrentSongId());
+		// See the ScrobbleDroid API here:
+		// http://code.google.com/p/scrobbledroid/wiki/DeveloperAPI
+		if (scrobbler.equals("scrobbledroid")) {
 
-		sendBroadcast(scrobble);
-*/	}
+			Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
+
+			boolean isPlaying = true;
+
+			// Assuming the music is playing, unless...
+			if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_PAUSED) ||
+				musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_COMPLETED) ||
+				musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_SKIP_NEXT) ||
+				musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS))
+				isPlaying = false;
+
+			scrobble.putExtra("playing", isPlaying);
+			scrobble.putExtra("id", song.getId());
+
+			sendBroadcast(scrobble);
+			Log.w("scrobbler", "scrobbledroid");
+			return;
+		}
+
+		// See the SimpleLastfmScrobbler API here:
+		// https://github.com/tgwizard/sls/wiki/Developer%27s-API
+		if (scrobbler.equals("sls")) {
+
+			Intent scrobble = new Intent("com.adam.aslfms.notify.playstatechanged");
+
+			// One of the specific states allowed from the
+			// SimpleLastfmScrobbler API
+			int state;
+
+			if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_PLAYING))
+				state = 0;
+			else if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_UNPAUSED))
+				state = 1;
+			else if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_PAUSED))
+				state = 2;
+			else if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_COMPLETED))
+				state = 3;
+
+			// Ignoring any other states - won't be necessary
+			else
+				return;
+
+			scrobble.putExtra("state", state);
+
+			// Now, to the song's details.
+			scrobble.putExtra("app-name",    kMP.applicationName);
+			scrobble.putExtra("app-package", kMP.packageName);
+
+			scrobble.putExtra("track",  song.getTitle());
+			scrobble.putExtra("artist", song.getArtist());
+			scrobble.putExtra("album",  song.getAlbum());
+
+			sendBroadcast(scrobble);
+			Log.w("scrobbler", "sls");
+			return;
+		}
+	}
 }

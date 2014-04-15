@@ -123,13 +123,13 @@
     
     
     <string-array name="lastfm_which">
-        <item>Scrobble Droid</item>
-        <item>Last.fm Default</item>
+        <item>\"Simple Last.fm Scrobbler\"</item>
+        <item>\"Scrobble Droid\"</item>
     </string-array>
     
     <string-array name="lastfm_which_values">
+        <item>sls</item>
         <item>scrobbledroid</item>
-        <item>default</item>
     </string-array>
     
 </resources>

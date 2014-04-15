@@ -97,7 +97,7 @@ public class NotificationMusic extends NotificationSimple {
 
 
 		// Setting our custom appearance for the notification
-		notificationView = new RemoteViews(kMP.applicationName, R.layout.notification);
+		notificationView = new RemoteViews(kMP.packageName, R.layout.notification);
 
 		// Manually settings the buttons and text
 		// (ignoring the defaults on the XML)
