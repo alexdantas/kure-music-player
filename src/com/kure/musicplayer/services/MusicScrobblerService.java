@@ -9,6 +9,8 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
+import com.kure.musicplayer.kMP;
+
 /**
  * Asynchronous service that will communicate with the
  * MusicService and scrobble songs to Last.fm through
@@ -100,7 +102,8 @@ public class MusicScrobblerService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 
-			String action = intent.getStringExtra(MusicService.BROADCAST_EXTRA);
+			String action  = intent.getStringExtra(MusicService.BROADCAST_EXTRA_ACTION);
+			Long   song_id = intent.getLongExtra(MusicService.BROADCAST_EXTRA_SONG_ID, -1);
 
 			if (action.equals(MusicService.BROADCAST_EXTRA_PLAYING)) {
 				Toast.makeText(getApplicationContext(), "Playing", Toast.LENGTH_SHORT).show();
@@ -120,7 +123,40 @@ public class MusicScrobblerService extends Service {
 			else if (action.equals(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS)) {
 				Toast.makeText(getApplicationContext(), "Previous", Toast.LENGTH_SHORT).show();
 			}
+			else
+				return;
+
+			if (song_id != -1)
+				Toast.makeText(getApplicationContext(), kMP.songs.getSongById(song_id).getTitle(), Toast.LENGTH_SHORT).show();
 
 		}
 	};
+
+	/**
+	 * Last.fm support!
+	 *
+	 * We'll send our current song to ScrobbleDroid ONLY IF
+	 * the preference for it is enabled.
+	 *
+	 * This needs to be called as often as possible - when pausing,
+	 * resuming, when the track is going to be changed, when the
+	 * track is changed...
+	 *
+	 * @note To avoid concurrency issues, make sure to clal
+	 *       this method only when the music player is prepared!
+	 * @see onPrepared()
+	 */
+	private void scrobbleCurrentSong(boolean isPlaying) {
+/*
+		// Only scrobbling if the user lets us
+		if (! kMP.settings.get("lastfm", false))
+			return;
+
+		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
+
+		scrobble.putExtra("playing", isPlaying);
+		scrobble.putExtra("id", getCurrentSongId());
+
+		sendBroadcast(scrobble);
+*/	}
 }

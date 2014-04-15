@@ -23,16 +23,45 @@ import com.kure.musicplayer.kMP;
 import com.kure.musicplayer.model.Song;
 
 /**
- * Service that makes the music play regardless if our
- * app is on focus.
+ * Service that makes the music play and notifies every action.
  *
  * Tasks:
  *
- * - Abstracts controlling the native Android MediaPlayer
+ * - Abstracts controlling the native Android MediaPlayer;
  * - Keep showing a system Notification with info on
- *   currently playing song.
+ *   currently playing song;
  * - Starts the other service, `MusicScrobblerService`
- *   (if set on Settings).
+ *   (if set on Settings) that scrobbles songs to Last.fm;
+ * - LocalBroadcasts every action it takes;
+ *
+ * Broadcasts:
+ *
+ * This service makes sure to broadcast every action it
+ * takes.
+ *
+ * It sends a LocalBroadcast of name `BROADCAST_EVENT_NAME`,
+ * of which you can get it's action with the following
+ * extras:
+ *
+ * - String BROADCAST_EXTRA_ACTION: Current action it's taking.
+ *
+ * - Long   BROADCAST_EXTRA_SONG_ID: ID of the Song it's taking
+ *                                   action into.
+ *
+ * For example, see the following scenarios:
+ *
+ * - Starts playing Song with ID 1.
+ *   + Send a LocalBroadcast with `BROADCAST_EXTRA_ACTION`
+ *     of `BROADCAST_EXTRA_PLAYING` and
+ *     `BROADCAST_EXTRA_SONG_ID` of 1.
+ *
+ * - User skips to a Song with ID 2:
+ *   + Send a LocalBroadcast with `BROADCAST_EXTRA_ACTION`
+ *     of `BROADCAST_EXTRA_SKIP_NEXT` and
+ *     `BROADCAST_EXTRA_SONG_ID` of 1.
+ *   + Send a LocalBriadcast with `BROADCAST_EXTRA_ACTION`
+ *     of `BROADCAST_EXTRA_PLAYING` and
+ *     `BROADCAST_EXTRA_SONG_ID` of 2.
  *
  * @note It keeps the music playing even when the
  *       device is locked.
@@ -54,28 +83,29 @@ public class MusicService extends Service
 	 */
 	public static final String BROADCAST_EVENT_NAME = "kMP_music_service";
 
-	/**
-	 * String used to get the Extra on the Broadcast Intent.
-	 */
-	public static final String BROADCAST_EXTRA = "action";
+	/** String used to get the action Extra on the Broadcast Intent */
+	public static final String BROADCAST_EXTRA_ACTION  = "x_japan";
+
+	/** String used to get the song ID Extra on the Broadcast Intent */
+	public static final String BROADCAST_EXTRA_SONG_ID = "tenacious_d";
 
 	// All possible messages this Service will broadcast
 	// Ignore the actual values
 
 	/** Broadcast for when some music started playing */
-	public static final String BROADCAST_EXTRA_PLAYING       = "beatles";
+	public static final String BROADCAST_EXTRA_PLAYING = "beatles";
 
 	/** Broadcast for when some music just got paused */
-	public static final String BROADCAST_EXTRA_PAUSED        = "santana";
+	public static final String BROADCAST_EXTRA_PAUSED = "santana";
 
 	/** Broadcast for when a paused music got unpaused*/
-	public static final String BROADCAST_EXTRA_UNPAUSED      = "iron_maiden";
+	public static final String BROADCAST_EXTRA_UNPAUSED = "iron_maiden";
 
 	/** Broadcast for when current music got played until the end */
-	public static final String BROADCAST_EXTRA_COMPLETED     = "los_hermanos";
+	public static final String BROADCAST_EXTRA_COMPLETED = "los_hermanos";
 
 	/** Broadcast for when the user skipped to the next song */
-	public static final String BROADCAST_EXTRA_SKIP_NEXT     = "paul_gilbert";
+	public static final String BROADCAST_EXTRA_SKIP_NEXT = "paul_gilbert";
 
 	/** Broadcast for when the user skipped to the previous song */
 	public static final String BROADCAST_EXTRA_SKIP_PREVIOUS = "john_petrucci";
@@ -218,9 +248,6 @@ public class MusicService extends Service
 		// Now Playing screen.
 		if (kMP.settings.get("show_notification", true))
 			notification.notifySong(this, this, currentSong);
-
-		// Can only send to last.fm when prepared.
-		scrobbleCurrentSong(true);
 	}
 
 	@Override
@@ -262,8 +289,6 @@ public class MusicService extends Service
 			return;
 
 		broadcastMessage(MusicService.BROADCAST_EXTRA_COMPLETED);
-
-		scrobbleCurrentSong(false);
 
 		// Repeating current song if desired
 		if (repeatMode) {
@@ -328,8 +353,6 @@ public class MusicService extends Service
 	 */
 	public void previous(boolean userSkippedSong) {
 
-		scrobbleCurrentSong(false);
-
 		if (userSkippedSong)
 			broadcastMessage(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS);
 
@@ -352,9 +375,6 @@ public class MusicService extends Service
 
 		if (userSkippedSong)
 			broadcastMessage(MusicService.BROADCAST_EXTRA_SKIP_NEXT);
-
-		scrobbleCurrentSong(false);
-
 
 		if (shuffleMode) {
 			int newSongPosition = currentSongPosition;
@@ -393,7 +413,6 @@ public class MusicService extends Service
 
 		notification.notifyPaused(true);
 
-		scrobbleCurrentSong(false);
 		broadcastMessage(MusicService.BROADCAST_EXTRA_PAUSED);
 	}
 
@@ -403,7 +422,6 @@ public class MusicService extends Service
 
 		notification.notifyPaused(false);
 
-		scrobbleCurrentSong(true);
 		broadcastMessage(MusicService.BROADCAST_EXTRA_UNPAUSED);
 	}
 
@@ -432,34 +450,6 @@ public class MusicService extends Service
 
 		return currentSong.getId();
 	}
-
-	/**
-	 * Last.fm support!
-	 *
-	 * We'll send our current song to ScrobbleDroid ONLY IF
-	 * the preference for it is enabled.
-	 *
-	 * This needs to be called as often as possible - when pausing,
-	 * resuming, when the track is going to be changed, when the
-	 * track is changed...
-	 *
-	 * @note To avoid concurrency issues, make sure to clal
-	 *       this method only when the music player is prepared!
-	 * @see onPrepared()
-	 */
-	private void scrobbleCurrentSong(boolean isPlaying) {
-/*
-		// Only scrobbling if the user lets us
-		if (! kMP.settings.get("lastfm", false))
-			return;
-
-		Intent scrobble = new Intent("net.jjc1138.android.scrobbler.action.MUSIC_STATUS");
-
-		scrobble.putExtra("playing", isPlaying);
-		scrobble.putExtra("id", getCurrentSongId());
-
-		sendBroadcast(scrobble);
-*/	}
 
 	// THESE ARE METHODS RELATED TO CONNECTING THE SERVICE
 	// TO THE ANDROID PLATFORM
@@ -608,7 +598,8 @@ public class MusicService extends Service
 	private void broadcastMessage(String message) {
 
 		Intent broadcastIntent = new Intent(MusicService.BROADCAST_EVENT_NAME);
-		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA, message);
+		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_ACTION, message);
+		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_SONG_ID, currentSong.getId());
 
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
