@@ -43,6 +43,8 @@ import com.kure.musicplayer.model.Song;
  * - Starts the other service, `MusicScrobblerService`
  *   (if set on Settings) that scrobbles songs to Last.fm;
  * - LocalBroadcasts every action it takes;
+ * - Keep watching for headphone/headset events with
+ *   a Broadcast - and react accordingly.
  *
  * Broadcasts:
  *
@@ -359,15 +361,20 @@ public class ServicePlayMusic extends Service
 
     		// Broadcasting orders to our MusicService
     		// locally (inside the application)
-			LocalBroadcastManager local = LocalBroadcastManager.getInstance(context);
+    		LocalBroadcastManager local = LocalBroadcastManager.getInstance(context);
 
 			String action = intent.getAction();
 
     		// Headphones disconnected
     		if (action.equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
 
+    			// Will only pause the music if the Setting
+    			// for it is enabled.
+    			if (! kMP.settings.get("pause_headphone_off", true))
+    				return;
+
     			// ADD SETTINGS HERE
-    			String text = context.getString(R.string.warning_headphones_disconnected);
+    			String text = context.getString(R.string.service_music_play_headphone_off);
     			Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 
     			// send an intent to our MusicService to telling it to pause the audio
@@ -449,26 +456,32 @@ public class ServicePlayMusic extends Service
 				boolean connectedHeadphones = (intent.getIntExtra("state", 0) == 1);
 				boolean connectedMicrophone = (intent.getIntExtra("microphone", 0) == 1) && connectedHeadphones;
 
+				// User just connected headphone and the player was paused,
+				// so we shoud restart the music.
+				if (connectedMicrophone && (serviceState == ServiceState.Paused)) {
+
+					// Will only do it if it's Setting is enabled, of course
+					if (kMP.settings.get("play_headphone_on", true)) {
+						LocalBroadcastManager local = LocalBroadcastManager.getInstance(context);
+
+						Intent broadcastIntent = new Intent(ServicePlayMusic.BROADCAST_ORDER);
+						broadcastIntent.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER, ServicePlayMusic.BROADCAST_ORDER_PLAY);
+
+						local.sendBroadcast(broadcastIntent);
+					}
+				}
+
+				// I wonder what's this for
 				String headsetName = intent.getStringExtra("name");
 
-				String text = "headphone ";
+				if (connectedHeadphones) {
+					String text = context.getString(R.string.service_music_play_headphone_on, headsetName);
 
-				if (connectedHeadphones)
-					text += "connected ";
-				else
-					text += "disconnected ";
+					Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+				}
 
-				text += " and mic ";
-
-				if (connectedMicrophone)
-					text += "connected ";
-				else
-					text += "disconnected ";
-
-				Toast.makeText(context, text + headsetName, Toast.LENGTH_SHORT).show();
-    			return;
+				return;
 			}
-
 		}
     };
 

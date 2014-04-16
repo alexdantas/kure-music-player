@@ -12,7 +12,6 @@
     <string name="songs">Songs</string>    
     <string name="end">Quit</string>
     
-    <string name="warning_headphones_disconnected">Headphones disconnected.</string>
     
     <string name="menu_main_music">Music</string>
     <string name="menu_main_settings">Settings</string>
@@ -57,6 +56,18 @@
         >Shows a system notification when I\'m playing a song.</string>
   
     
+    <string name="menu_settings_pause_headphone_off_title"
+        >Pause when Unplugged</string>
+    <string name="menu_settings_pause_headphone_off_subtitle"
+        >Should I pause the music when the headphone is disconnected?</string>
+    
+    
+    <string name="menu_settings_play_headphone_on_title"
+        >Play when Inserted</string>
+    <string name="menu_settings_play_headphone_on_subtitle"
+        >Should I resume the music when the headphone is reconnected?</string>
+    
+    
     <string name="menu_settings_repeat_list_title"
         >Repeat when finished</string>
     <string name="menu_settings_repeat_list_subtitle"
@@ -82,6 +93,9 @@
 	<string name="menu_now_playing_dialog_create_playlist_button_cancel">Cancel</string>
 	<string name="menu_now_playing_dialog_create_playlist_success">Playlist %1$s successfully created</string>
 	
+	
+	<string name="service_music_play_headphone_on">Headphone connected (%1$s)</string>
+	<string name="service_music_play_headphone_off">Headphone disconnected</string>
 	
 	<!-- Values for the Settings Activity 
 	 -->

@@ -53,6 +53,26 @@
             android:summary="@string/menu_settings_show_notification_subtitle"
             android:defaultValue="true"
         />
+        
+    </PreferenceCategory>
+        
+    <PreferenceCategory
+        android:title="Headset"
+        android:key="headset" 
+        >
+        <CheckBoxPreference 
+            android:key="pause_headphone_off"
+            android:title="@string/menu_settings_pause_headphone_off_title"
+            android:summary="@string/menu_settings_pause_headphone_off_subtitle"
+            android:defaultValue="true"
+        />
+        
+        <CheckBoxPreference 
+            android:key="play_headphone_on"
+            android:title="@string/menu_settings_play_headphone_on_title"
+            android:summary="@string/menu_settings_play_headphone_on_subtitle"
+            android:defaultValue="true"
+        />
                 
     </PreferenceCategory>
     

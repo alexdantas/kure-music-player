@@ -30,17 +30,6 @@ import com.kure.musicplayer.model.Song;
 public class ServiceScrobbleMusic extends Service {
 
 	/**
-	 * Used for Services that want to bind to a specific
-	 * Activity or such. Since this service is not bound
-	 * to anything, let's just ignore this function.
-	 */
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
 	 * Service just got created.
 	 */
 	@Override
@@ -186,5 +175,16 @@ public class ServiceScrobbleMusic extends Service {
 			sendBroadcast(scrobble);
 			return;
 		}
+	}
+
+	/**
+	 * Used for Services that want to bind to a specific
+	 * Activity or such. Since this service is not bound
+	 * to anything, let's just ignore this function.
+	 */
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
