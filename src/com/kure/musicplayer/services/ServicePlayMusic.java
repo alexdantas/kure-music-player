@@ -177,12 +177,12 @@ public class ServicePlayMusic extends Service
     public static final String BROADCAST_ORDER = "com.kure.musicplayer.MUSIC_SERVICE";
     public static final String BROADCAST_EXTRA_GET_ORDER = "com.kure.musicplayer.dasdas.MUSIC_SERVICE";
 
-    public static final String BROADCAST_ORDER_PLAY = "com.kure.musicplayer.action.PLAY";
-    public static final String BROADCAST_ORDER_PAUSE = "com.kure.musicplayer.action.PAUSE";
+    public static final String BROADCAST_ORDER_PLAY            = "com.kure.musicplayer.action.PLAY";
+    public static final String BROADCAST_ORDER_PAUSE           = "com.kure.musicplayer.action.PAUSE";
     public static final String BROADCAST_ORDER_TOGGLE_PLAYBACK = "dlsadasd";
-    public static final String BROADCAST_ORDER_STOP = "com.kure.musicplayer.action.STOP";
-    public static final String BROADCAST_ORDER_SKIP = "com.kure.musicplayer.action.SKIP";
-    public static final String BROADCAST_ORDER_REWIND = "com.kure.musicplayer.action.REWIND";
+    public static final String BROADCAST_ORDER_STOP            = "com.kure.musicplayer.action.STOP";
+    public static final String BROADCAST_ORDER_SKIP            = "com.kure.musicplayer.action.SKIP";
+    public static final String BROADCAST_ORDER_REWIND          = "com.kure.musicplayer.action.REWIND";
 
 
 
@@ -220,6 +220,8 @@ public class ServicePlayMusic extends Service
 	public void onCreate() {
 		super.onCreate();
 
+		Context context = getApplicationContext();
+
 		currentSongPosition = 0;
 
 		initMusicPlayer();
@@ -227,16 +229,12 @@ public class ServicePlayMusic extends Service
 		randomNumberGenerator = new Random();
 
 		// Starting the scrobbler service.
-		Context context = getApplicationContext();
-
 		Intent scrobblerIntent = new Intent(context, ServiceScrobbleMusic.class);
 		context.startService(scrobblerIntent);
-
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         mediaButtonEventReceiver = new ComponentName(this, ExternalBroadcastReceiver.class);
-
 
 		// Registering our BroadcastReceiver to listen to orders.
 		LocalBroadcastManager
@@ -350,56 +348,45 @@ public class ServicePlayMusic extends Service
     			if (keyEvent.getAction() != KeyEvent.ACTION_DOWN)
     				return;
 
+    			String intentValue = null;
 
     			switch (keyEvent.getKeyCode()) {
 
     			case KeyEvent.KEYCODE_HEADSETHOOK:
     			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-    				local.sendBroadcast(
-    						new Intent(
-    								ServicePlayMusic.BROADCAST_ORDER)
-    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-    								ServicePlayMusic.BROADCAST_ORDER_TOGGLE_PLAYBACK));
+    				intentValue = ServicePlayMusic.BROADCAST_ORDER_TOGGLE_PLAYBACK;
     				Log.w(TAG, "media play pause");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PLAY:
-    				local.sendBroadcast(
-    						new Intent(
-    								ServicePlayMusic.BROADCAST_ORDER)
-    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-    								ServicePlayMusic.BROADCAST_ORDER_PLAY));
+    				intentValue = ServicePlayMusic.BROADCAST_ORDER_PLAY;
     				Log.w(TAG, "media play");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PAUSE:
-    				local.sendBroadcast(
-    						new Intent(
-    								ServicePlayMusic.BROADCAST_ORDER)
-    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-    								ServicePlayMusic.BROADCAST_ORDER_PAUSE));
+    				intentValue = ServicePlayMusic.BROADCAST_ORDER_PAUSE;
     				Log.w(TAG, "media pause");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_NEXT:
-    				local.sendBroadcast(
-    						new Intent(
-    								ServicePlayMusic.BROADCAST_ORDER)
-    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-    								ServicePlayMusic.BROADCAST_ORDER_SKIP));
+    				intentValue = ServicePlayMusic.BROADCAST_ORDER_SKIP;
     				Log.w(TAG, "media next");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
     				// TODO: ensure that doing this in rapid succession actually plays the
     				// previous song
-    				local.sendBroadcast(
-    						new Intent(
-    								ServicePlayMusic.BROADCAST_ORDER)
-    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-    								ServicePlayMusic.BROADCAST_ORDER_REWIND));
+    				intentValue = ServicePlayMusic.BROADCAST_ORDER_REWIND;
     				Log.w(TAG, "media previous");
     				break;
+    			}
+
+    			// Actually sending the Intent
+    			if (intentValue != null) {
+    				Intent broadcastIntent = new Intent(ServicePlayMusic.BROADCAST_ORDER);
+    				broadcastIntent.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER, intentValue);
+
+    				local.sendBroadcast(broadcastIntent);
     			}
     		}
     	}
@@ -550,8 +537,8 @@ public class ServicePlayMusic extends Service
 			Log.w(TAG, "audiofocus loss");
 
 			// Giving up everything
-			audioManager.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
-			audioManager.abandonAudioFocus(this);
+			//audioManager.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
+			//audioManager.abandonAudioFocus(this);
 
 			//pausePlayer();
 			stopMusicPlayer();
@@ -561,7 +548,7 @@ public class ServicePlayMusic extends Service
 		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 			Log.w(TAG, "audiofocus loss transient");
 
-			if (!isPaused()) {
+			if (! isPaused()) {
 				pausePlayer();
 				pausedTemporarilyDueToAudioFocus = true;
 			}
@@ -632,8 +619,8 @@ public class ServicePlayMusic extends Service
         // All buttons the Lock-Screen Widget supports
         // (will be broadcasts)
         lockscreenController.setTransportControlFlags(
-        		RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-        		RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+        		RemoteControlClient.FLAG_KEY_MEDIA_PLAY     |
+        		RemoteControlClient.FLAG_KEY_MEDIA_PAUSE    |
         		RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
         		RemoteControlClient.FLAG_KEY_MEDIA_NEXT);
 
