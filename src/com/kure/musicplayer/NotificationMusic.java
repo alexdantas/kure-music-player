@@ -157,7 +157,7 @@ public class NotificationMusic extends NotificationSimple {
 	public static class NotificationPlayButtonHandler extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			kMP.musicService.togglePausePlayer();
+			kMP.musicService.togglePlayback();
 		}
 	}
 

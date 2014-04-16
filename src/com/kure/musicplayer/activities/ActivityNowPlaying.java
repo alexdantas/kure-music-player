@@ -463,12 +463,12 @@ public class ActivityNowPlaying extends ActivityMaster implements
 		switch (item.getItemId()) {
 
 		case R.id.action_bar_shuffle:
-			kMP.musicService.toggleShuffleMode();
+			kMP.musicService.toggleShuffle();
 			refreshActionBarItems();
 			return true;
 
 		case R.id.action_bar_repeat:
-			kMP.musicService.toggleRepeatMode();
+			kMP.musicService.toggleRepeat();
 			refreshActionBarItems();
 			return true;
 		}

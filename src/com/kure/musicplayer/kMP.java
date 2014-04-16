@@ -12,8 +12,8 @@ import android.os.IBinder;
 
 import com.kure.musicplayer.model.Song;
 import com.kure.musicplayer.model.SongList;
-import com.kure.musicplayer.services.MusicService;
-import com.kure.musicplayer.services.MusicService.MusicBinder;
+import com.kure.musicplayer.services.ServicePlayMusic;
+import com.kure.musicplayer.services.ServicePlayMusic.MusicBinder;
 
 
 /**
@@ -41,7 +41,7 @@ public class kMP {
 	 * Our custom service that allows the music to play
 	 * even when the app is not on focus.
 	 */
-	public static MusicService musicService;
+	public static ServicePlayMusic musicService;
 
 	/**
 	 * Contains the songs that are going to be shown to
@@ -167,7 +167,7 @@ public class kMP {
 
 		// Create an intent to bind our Music Connection to
 		// the MusicService.
-		musicServiceIntent = new Intent(c, MusicService.class);
+		musicServiceIntent = new Intent(c, ServicePlayMusic.class);
 		c.bindService(musicServiceIntent, musicConnection, Context.BIND_AUTO_CREATE);
 		c.startService(musicServiceIntent);
 	}

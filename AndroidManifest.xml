@@ -116,8 +116,8 @@
         
         <!-- Services (run on the background)
          -->
-        <service android:name=".services.MusicService" />
-        <service android:name=".services.MusicScrobblerService" />
+        <service android:name=".services.ServicePlayMusic" />
+        <service android:name=".services.ServiceScrobbleMusic" />
         
         <!-- Allows specific classes to handle broadcasts
           -  (on this case, two buttons clicked on the Notification)
@@ -128,7 +128,7 @@
         <!-- This static class will keep an eye when the following
           -  activities happen.
          -->
-        <receiver android:name=".services.MusicService$ExternalBroadcastReceiver" >
+        <receiver android:name=".services.ServicePlayMusic$ExternalBroadcastReceiver" >
         <intent-filter>
             <action android:name="android.media.AUDIO_BECOMING_NOISY" />
         </intent-filter>

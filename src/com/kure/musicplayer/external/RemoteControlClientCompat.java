@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kure.musicplayer;
+package com.kure.musicplayer.external;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,18 +24,47 @@ import android.graphics.Bitmap;
 import android.os.Looper;
 import android.util.Log;
 
+
+
+
+
+
+
+//NOTE (READ THIS PLEASE):
+//
+//This file was directly copied from the Android
+//sample project "Random Music Player".
+//
+//I use it to implement the Lock Screen "Widget"
+//(control the music player on the lock-screen)
+//
+//Take a look at my service that plays songs to
+//see how I use this class.
+
+
+
+
+
+
+
+
 /**
- * RemoteControlClient enables exposing information meant to be consumed by remote controls capable
- * of displaying metadata, artwork and media transport control buttons. A remote control client
- * object is associated with a media button event receiver. This event receiver must have been
- * previously registered with
- * {@link android.media.AudioManager#registerMediaButtonEventReceiver(android.content.ComponentName)}
- * before the RemoteControlClient can be registered through
- * {@link android.media.AudioManager#registerRemoteControlClient(android.media.RemoteControlClient)}.
+ * Sends info to a thing that has remote media
+ * controls (such as the Lock-Screen Widget).
+ *
+ * A remote control client object is associated with a
+ * media button event receiver.
+ *
+ * This event receiver must have been previously registered with
+ * `AudioManager#registerMediaButtonEventReceiver` before the
+ * `RemoteControlClient` can be registered through
+ * `AudioManager#registerRemoteControlClient`.
+ *
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class RemoteControlClientCompat {
 
+	// Used for debugging
 	private static final String TAG = "RemoteControlCompat";
 
 	private static Class sRemoteControlClientClass;
@@ -50,19 +79,25 @@ public class RemoteControlClientCompat {
 	static {
 		try {
 			ClassLoader classLoader = RemoteControlClientCompat.class.getClassLoader();
+
 			sRemoteControlClientClass = getActualRemoteControlClientClass(classLoader);
-			// dynamically populate the playstate and flag values in case they change
-			// in future versions.
+
+			// dynamically populate the playstate and flag values
+			// in case they change in future versions.
 			for (Field field : RemoteControlClientCompat.class.getFields()) {
 				try {
-					Field realField = sRemoteControlClientClass.getField(field.getName());
+					Field realField  = sRemoteControlClientClass.getField(field.getName());
 					Object realValue = realField.get(null);
+
 					field.set(null, realValue);
+
 				} catch (NoSuchFieldException e) {
 					Log.w(TAG, "Could not get real field: " + field.getName());
+
 				} catch (IllegalArgumentException e) {
 					Log.w(TAG, "Error trying to pull field value for: " + field.getName()
 							+ " " + e.getMessage());
+
 				} catch (IllegalAccessException e) {
 					Log.w(TAG, "Error trying to pull field value for: " + field.getName()
 							+ " " + e.getMessage());
@@ -78,6 +113,7 @@ public class RemoteControlClientCompat {
 					"setTransportControlFlags", int.class);
 
 			sHasRemoteControlAPIs = true;
+
 		} catch (ClassNotFoundException e) {
 			// Silently fail when running on an OS before ICS.
 		} catch (NoSuchMethodException e) {
@@ -91,12 +127,14 @@ public class RemoteControlClientCompat {
 
 	public static Class getActualRemoteControlClientClass(ClassLoader classLoader)
 			throws ClassNotFoundException {
+
 		return classLoader.loadClass("android.media.RemoteControlClient");
 	}
 
 	private Object mActualRemoteControlClient;
 
 	public RemoteControlClientCompat(PendingIntent pendingIntent) {
+
 		if (!sHasRemoteControlAPIs) {
 			return;
 		}
@@ -110,6 +148,7 @@ public class RemoteControlClientCompat {
 	}
 
 	public RemoteControlClientCompat(PendingIntent pendingIntent, Looper looper) {
+
 		if (!sHasRemoteControlAPIs) {
 			return;
 		}
@@ -124,11 +163,15 @@ public class RemoteControlClientCompat {
 	}
 
 	/**
-	 * Class used to modify metadata in a {@link android.media.RemoteControlClient} object. Use
-	 * {@link android.media.RemoteControlClient#editMetadata(boolean)} to create an instance of an
-	 * editor, on which you set the metadata for the RemoteControlClient instance. Once all the
-	 * information has been set, use {@link #apply()} to make it the new metadata that should be
-	 * displayed for the associated client. Once the metadata has been "applied", you cannot reuse
+	 * Class used to modify metadata in a `RemoteControlClient` object.
+	 *
+	 * Use `RemoteControlClient#editMetadata` to create an instance of an
+	 * editor, on which you set the metadata for the `RemoteControlClient` instance.
+	 *
+	 * Once all the information has been set, use `#apply()` to make it
+	 * the new metadata that should be displayed for the associated client.
+	 *
+	 * Once the metadata has been "applied", you cannot reuse
 	 * this instance of the MetadataEditor.
 	 */
 	public class MetadataEditorCompat {
@@ -157,12 +200,16 @@ public class RemoteControlClientCompat {
 				try {
 					mPutStringMethod = metadataEditorClass.getMethod("putString",
 							int.class, String.class);
+
 					mPutBitmapMethod = metadataEditorClass.getMethod("putBitmap",
 							int.class, Bitmap.class);
+
 					mPutLongMethod = metadataEditorClass.getMethod("putLong",
 							int.class, long.class);
+
 					mClearMethod = metadataEditorClass.getMethod("clear", new Class[]{});
 					mApplyMethod = metadataEditorClass.getMethod("apply", new Class[]{});
+
 				} catch (Exception e) {
 					throw new RuntimeException(e.getMessage(), e);
 				}
@@ -172,8 +219,10 @@ public class RemoteControlClientCompat {
 
 		/**
 		 * Adds textual information to be displayed.
-		 * Note that none of the information added after {@link #apply()} has been called,
-		 * will be displayed.
+		 *
+		 * Note that none of the information added after {@code apply()}
+		 * has been called, will be displayed.
+		 *
 		 * @param key The identifier of a the metadata field to set. Valid values are
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUM},
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUMARTIST},
@@ -186,10 +235,12 @@ public class RemoteControlClientCompat {
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_GENRE},
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_WRITER}.
-		 * @param value The text for the given key, or {@code null} to signify there is no valid
-		 *      information for the field.
-		 * @return Returns a reference to the same MetadataEditor object, so you can chain put
-		 *      calls together.
+		 *
+		 * @param value The text for the given key, or {@code null} to signify
+		 *        there is no valid information for the field.
+		 *
+		 * @return Returns a reference to the same MetadataEditor object,
+		 *         so you can chain put calls together.
 		 */
 		public MetadataEditorCompat putString(int key, String value) {
 			if (sHasRemoteControlAPIs) {
@@ -204,18 +255,23 @@ public class RemoteControlClientCompat {
 
 		/**
 		 * Sets the album / artwork picture to be displayed on the remote control.
-		 * @param key the identifier of the bitmap to set. The only valid value is
-		 *      {@link #METADATA_KEY_ARTWORK}
+		 *
+		 * @param key    The identifier of the bitmap to set.
+		 *               The only valid value is {@link #METADATA_KEY_ARTWORK}
 		 * @param bitmap The bitmap for the artwork, or null if there isn't any.
-		 * @return Returns a reference to the same MetadataEditor object, so you can chain put
-		 *      calls together.
+		 *
+		 * @return Returns a reference to the same MetadataEditor object,
+		 *         so you can chain put calls together.
+		 *
 		 * @throws IllegalArgumentException
+		 *
 		 * @see android.graphics.Bitmap
 		 */
 		public MetadataEditorCompat putBitmap(int key, Bitmap bitmap) {
 			if (sHasRemoteControlAPIs) {
 				try {
 					mPutBitmapMethod.invoke(mActualMetadataEditor, key, bitmap);
+
 				} catch (Exception e) {
 					throw new RuntimeException(e.getMessage(), e);
 				}
@@ -225,14 +281,16 @@ public class RemoteControlClientCompat {
 
 		/**
 		 * Adds numerical information to be displayed.
+		 *
 		 * Note that none of the information added after {@link #apply()} has been called,
 		 * will be displayed.
+		 *
 		 * @param key the identifier of a the metadata field to set. Valid values are
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_CD_TRACK_NUMBER},
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DISC_NUMBER},
 		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DURATION} (with a value
-		 *      expressed in milliseconds),
-		 *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_YEAR}.
+		 *      expressed in milliseconds).
+		 *
 		 * @param value The long value for the given key
 		 * @return Returns a reference to the same MetadataEditor object, so you can chain put
 		 *      calls together.

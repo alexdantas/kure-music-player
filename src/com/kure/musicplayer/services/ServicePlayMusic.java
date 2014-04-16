@@ -27,9 +27,9 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.kure.musicplayer.NotificationMusic;
-import com.kure.musicplayer.RemoteControlClientCompat;
-import com.kure.musicplayer.RemoteControlHelper;
 import com.kure.musicplayer.kMP;
+import com.kure.musicplayer.external.RemoteControlClientCompat;
+import com.kure.musicplayer.external.RemoteControlHelper;
 import com.kure.musicplayer.model.Song;
 
 /**
@@ -78,7 +78,7 @@ import com.kure.musicplayer.model.Song;
  *       For that, we must add a special permission
  *       on the AndroidManifest.
  */
-public class MusicService extends Service
+public class ServicePlayMusic extends Service
 	implements MediaPlayer.OnPreparedListener,
 	           MediaPlayer.OnErrorListener,
 	           MediaPlayer.OnCompletionListener {
@@ -180,6 +180,34 @@ public class MusicService extends Service
     public static final String BROADCAST_ORDER_REWIND = "com.kure.musicplayer.action.REWIND";
 
 
+
+
+    /**
+     * Controller that communicates with the lock screen,
+     * providing that fancy widget.
+     */
+    RemoteControlClientCompat lockscreenController = null;
+
+    /**
+     * We use this to get the media buttons' Broadcasts and
+     * to control the lock screen widget.
+     *
+     * Component name of the MusicIntentReceiver.
+     */
+    ComponentName mediaButtonReceiver;
+
+    /**
+     * Use this to get audio focus:
+     *
+     * 1. Making sure other music apps don't play
+     *    at the same time;
+     * 2. Guaranteeing the lock screen widget will
+     *    be controlled by us;
+     */
+    AudioManager audioManager;
+
+
+
 	/**
 	 * Whenever we're created, reset the MusicPlayer and
 	 * start the MusicScrobblerService.
@@ -194,31 +222,22 @@ public class MusicService extends Service
 
 		randomNumberGenerator = new Random();
 
-		// Starting the scrobbler.
+		// Starting the scrobbler service.
 		Context context = getApplicationContext();
 
-		Intent scrobblerIntent = new Intent(context, MusicScrobblerService.class);
+		Intent scrobblerIntent = new Intent(context, ServiceScrobbleMusic.class);
 		context.startService(scrobblerIntent);
 
 
-
-
-
-
-
-
-
-
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        mMediaButtonReceiverComponent = new ComponentName(this, ExternalBroadcastReceiver.class);
+
+        mediaButtonReceiver = new ComponentName(this, ExternalBroadcastReceiver.class);
 
 
-		// Registering the BroadcastReceiver to listen
-		// to the MusicService.
+		// Registering our BroadcastReceiver to listen to orders.
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
-		.registerReceiver(localBroadcastReceiver, new IntentFilter(MusicService.BROADCAST_ORDER));
-
+		.registerReceiver(localBroadcastReceiver, new IntentFilter(ServicePlayMusic.BROADCAST_ORDER));
 	}
 
 	/**
@@ -251,24 +270,6 @@ public class MusicService extends Service
 	public void add(Song song) {
 		songs.add(song);
 	}
-
-
-
-
-
-
-
-    // our RemoteControlClient object, which will use remote control APIs available in
-    // SDK level >= 14, if they're available.
-    RemoteControlClientCompat mRemoteControlClientCompat = null;
-
-
-    // The component name of MusicIntentReceiver, for use with media button and remote control
-    // APIs
-    ComponentName mMediaButtonReceiverComponent;
-
-
-    AudioManager audioManager;
 
 
     /**
@@ -304,7 +305,7 @@ public class MusicService extends Service
     			Toast.makeText(context, "Headphones disconnected.", Toast.LENGTH_SHORT).show();
 
     			// send an intent to our MusicService to telling it to pause the audio
-    			local.sendBroadcast(new Intent(MusicService.BROADCAST_ORDER_PAUSE));
+    			local.sendBroadcast(new Intent(ServicePlayMusic.BROADCAST_ORDER_PAUSE));
     			return;
     		}
 
@@ -324,43 +325,43 @@ public class MusicService extends Service
     			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
     				local.sendBroadcast(
     						new Intent(
-    								MusicService.BROADCAST_ORDER)
-    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
-    								MusicService.BROADCAST_ORDER_TOGGLE_PLAYBACK));
+    								ServicePlayMusic.BROADCAST_ORDER)
+    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+    								ServicePlayMusic.BROADCAST_ORDER_TOGGLE_PLAYBACK));
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PLAY:
     				local.sendBroadcast(
     						new Intent(
-    								MusicService.BROADCAST_ORDER)
-    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
-    								MusicService.BROADCAST_ORDER_PLAY));
+    								ServicePlayMusic.BROADCAST_ORDER)
+    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+    								ServicePlayMusic.BROADCAST_ORDER_PLAY));
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PAUSE:
     				local.sendBroadcast(
     						new Intent(
-    								MusicService.BROADCAST_ORDER)
-    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
-    								MusicService.BROADCAST_ORDER_PAUSE));
+    								ServicePlayMusic.BROADCAST_ORDER)
+    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+    								ServicePlayMusic.BROADCAST_ORDER_PAUSE));
 
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_STOP:
     				local.sendBroadcast(
     						new Intent(
-    								MusicService.BROADCAST_ORDER)
-    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
-    								MusicService.BROADCAST_ORDER_STOP));
+    								ServicePlayMusic.BROADCAST_ORDER)
+    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+    								ServicePlayMusic.BROADCAST_ORDER_STOP));
 
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_NEXT:
     				local.sendBroadcast(
     						new Intent(
-    								MusicService.BROADCAST_ORDER)
-    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
-    								MusicService.BROADCAST_ORDER_SKIP));
+    								ServicePlayMusic.BROADCAST_ORDER)
+    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+    								ServicePlayMusic.BROADCAST_ORDER_SKIP));
 
     				break;
 
@@ -369,9 +370,9 @@ public class MusicService extends Service
     				// previous song
     				local.sendBroadcast(
     						new Intent(
-    								MusicService.BROADCAST_ORDER)
-    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
-    								MusicService.BROADCAST_ORDER_REWIND));
+    								ServicePlayMusic.BROADCAST_ORDER)
+    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+    								ServicePlayMusic.BROADCAST_ORDER_REWIND));
 
     				break;
     			}
@@ -395,26 +396,26 @@ public class MusicService extends Service
 
 			// Getting the information sent by the MusicService
 			// (and ignoring it if invalid)
-			String order = intent.getStringExtra(MusicService.BROADCAST_EXTRA_GET_ORDER);
+			String order = intent.getStringExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER);
 
 			// What?
 			if (order == null)
 				return;
 
-			if (order.equals(MusicService.BROADCAST_ORDER_PAUSE)) {
+			if (order.equals(ServicePlayMusic.BROADCAST_ORDER_PAUSE)) {
 				pausePlayer();
 			}
-			else if (order.equals(MusicService.BROADCAST_ORDER_PLAY)) {
+			else if (order.equals(ServicePlayMusic.BROADCAST_ORDER_PLAY)) {
 				unpausePlayer();
 			}
-			else if (order.equals(MusicService.BROADCAST_ORDER_TOGGLE_PLAYBACK)) {
-				togglePausePlayer();
+			else if (order.equals(ServicePlayMusic.BROADCAST_ORDER_TOGGLE_PLAYBACK)) {
+				togglePlayback();
 			}
-			else if (order.equals(MusicService.BROADCAST_ORDER_SKIP)) {
+			else if (order.equals(ServicePlayMusic.BROADCAST_ORDER_SKIP)) {
 				next(true);
 				playSong();
 			}
-			else if (order.equals(MusicService.BROADCAST_ORDER_REWIND)) {
+			else if (order.equals(ServicePlayMusic.BROADCAST_ORDER_REWIND)) {
 				previous(true);
 				playSong();
 			}
@@ -425,20 +426,7 @@ public class MusicService extends Service
 
 
 
-    OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
-        public void onAudioFocusChange(int focusChange) {
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                pausePlayer();
-            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                unpausePlayer();
-            } /*else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
-                am.abandonAudioFocus(afChangeListener);
-                // Stop playback
-            }*/
-            Log.w("service", "on audio focus change listener");
-        }
-    };
+
 
 
 
@@ -473,19 +461,69 @@ public class MusicService extends Service
 		// When finished, will call `onPrepare`
 		player.prepareAsync();
 
-		broadcastMessage(MusicService.BROADCAST_EXTRA_PLAYING);
+		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_PLAYING);
 
+		updateLockScreenWidget();
+	}
 
-
-
-
+	/**
+	 * Asks the AudioManager for our application to
+	 * have the audio focus.
+	 *
+	 * @return If we have it.
+	 */
+	private boolean requestAudioFocus() {
 		//Request audio focus for playback
-		int result = audioManager.requestAudioFocus(afChangeListener,
-		                                            AudioManager.STREAM_MUSIC,
-		                                            AudioManager.AUDIOFOCUS_GAIN);
+		int result = audioManager.requestAudioFocus(
+				audioFocusChangeListener,
+				AudioManager.STREAM_MUSIC,
+				AudioManager.AUDIOFOCUS_GAIN);
 
 		//Check if audio focus was granted. If not, stop the service.
-		if (result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+		return (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+	}
+
+	/**
+	 * Does something when the audio focus state changed
+	 *
+	 * @note Meaning it runs when we get and when we don't get
+	 *       the audio focus from `#requestAudioFocus()`.
+	 */
+    OnAudioFocusChangeListener audioFocusChangeListener = new OnAudioFocusChangeListener() {
+        public void onAudioFocusChange(int focusChange) {
+
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                pausePlayer();
+            }
+            else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                unpausePlayer();
+            }
+            else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+
+            	// Giving up everything and stopping playback
+                audioManager.unregisterMediaButtonEventReceiver(mediaButtonReceiver);
+                audioManager.abandonAudioFocus(audioFocusChangeListener);
+
+                Intent stopPlayback = new Intent(ServicePlayMusic.BROADCAST_ORDER);
+
+                stopPlayback.putExtra(
+                		ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
+                		ServicePlayMusic.BROADCAST_ORDER_PAUSE);
+
+        		// Broadcasting orders to our MusicService
+        		// locally (inside the application)
+    			LocalBroadcastManager local = LocalBroadcastManager.getInstance(getApplicationContext());
+
+				local.sendBroadcast(stopPlayback);
+            }
+
+            Log.w("service", "on audio focus change listener");
+        }
+    };
+
+	private void updateLockScreenWidget() {
+
+		if (!requestAudioFocus()) {
 		    //Stop the service.
 		    stopSelf();
 		    Toast.makeText(getApplicationContext(), "FUCK", Toast.LENGTH_LONG).show();
@@ -494,51 +532,55 @@ public class MusicService extends Service
 
 		Log.w("service", "audio_focus_granted");
 
-        if (mRemoteControlClientCompat == null) {
-            Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            intent.setComponent(mMediaButtonReceiverComponent);
+		// The Lock-Screen widget was not created
+		// up until now.
+        if (lockscreenController == null) {
+            Intent audioButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            audioButtonIntent.setComponent(mediaButtonReceiver);
 
-            mRemoteControlClientCompat = new RemoteControlClientCompat(
-                    PendingIntent.getBroadcast(this /*context*/,
-                            0 /*requestCode, ignored*/, intent /*intent*/, 0 /*flags*/));
-            RemoteControlHelper.registerRemoteControlClient(audioManager,
-                    mRemoteControlClientCompat);
-            audioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+            PendingIntent pending = PendingIntent.getBroadcast(this, 0, audioButtonIntent, 0);
+
+            lockscreenController = new RemoteControlClientCompat(pending);
+
+            RemoteControlHelper.registerRemoteControlClient(audioManager, lockscreenController);
+            audioManager.registerMediaButtonEventReceiver(mediaButtonReceiver);
 
             Log.w("service", "created control compat");
         }
 
-        mRemoteControlClientCompat.setPlaybackState(
-                RemoteControlClient.PLAYSTATE_PLAYING);
+        // Current state of the Lock-Screen Widget
+        lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
-        mRemoteControlClientCompat.setTransportControlFlags(
-                RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-                RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
-                RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
-                RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-                RemoteControlClient.FLAG_KEY_MEDIA_STOP);
+        // All buttons the Lock-Screen Widget supports
+        // (will be broadcasts)
+        lockscreenController.setTransportControlFlags(
+        		RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
+        		RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+        		RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
+        		RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+        		RemoteControlClient.FLAG_KEY_MEDIA_STOP);
 
-        // Update the remote controls
-        mRemoteControlClientCompat.editMetadata(true)
-                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST, currentSong.getArtist())
-                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM, currentSong.getAlbum())
-                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE,  currentSong.getTitle())
-                .putLong(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION, currentSong.getDuration())
+        // Update the current song metadata
+        // on the Lock-Screen Widget
+        lockscreenController
+        		// Starts editing (before #apply())
+        		.editMetadata(true)
+
+        		// Sending all metadata of the current song
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST,   currentSong.getArtist())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM,    currentSong.getAlbum())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE,    currentSong.getTitle())
+                .putLong  (android.media.MediaMetadataRetriever.METADATA_KEY_DURATION, currentSong.getDuration())
 
                 // TODO: fetch real item artwork
                 //.putBitmap(
                 //        RemoteControlClientCompat.MetadataEditorCompat.METADATA_KEY_ARTWORK,
                 //        mDummyAlbumArt)
 
+                // Saves (after #editMetadata())
                 .apply();
 
-
-
-
         Log.w("service", "remote control client applied");
-
-
-
 	}
 
 	/**
@@ -581,7 +623,7 @@ public class MusicService extends Service
 		if (player.getCurrentPosition() <= 0)
 			return;
 
-		broadcastMessage(MusicService.BROADCAST_EXTRA_COMPLETED);
+		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_COMPLETED);
 
 		// Repeating current song if desired
 		if (repeatMode) {
@@ -629,14 +671,14 @@ public class MusicService extends Service
 		// Stopping the scrobbler service.
 		Context context = getApplicationContext();
 
-		Intent scrobblerIntent = new Intent(context, MusicScrobblerService.class);
+		Intent scrobblerIntent = new Intent(context, ServiceScrobbleMusic.class);
 		context.stopService(scrobblerIntent);
 
 
 
 
 
-		audioManager.abandonAudioFocus(afChangeListener);
+		audioManager.abandonAudioFocus(audioFocusChangeListener);
 
 
 
@@ -657,7 +699,11 @@ public class MusicService extends Service
 	public void previous(boolean userSkippedSong) {
 
 		if (userSkippedSong)
-			broadcastMessage(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS);
+			broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_SKIP_PREVIOUS);
+
+		// Updates Lock-Screen Widget
+		if (lockscreenController != null)
+			lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_SKIPPING_BACKWARDS);
 
 		currentSongPosition--;
 		if (currentSongPosition < 0)
@@ -677,7 +723,11 @@ public class MusicService extends Service
 		// TODO or maybe a playlist, whatever
 
 		if (userSkippedSong)
-			broadcastMessage(MusicService.BROADCAST_EXTRA_SKIP_NEXT);
+			broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_SKIP_NEXT);
+
+		// Updates Lock-Screen Widget
+		if (lockscreenController != null)
+			lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_SKIPPING_FORWARDS);
 
 		if (shuffleMode) {
 			int newSongPosition = currentSongPosition;
@@ -716,7 +766,11 @@ public class MusicService extends Service
 
 		notification.notifyPaused(true);
 
-		broadcastMessage(MusicService.BROADCAST_EXTRA_PAUSED);
+        // Updates Lock-Screen Widget
+		if (lockscreenController != null)
+			lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+
+		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_PAUSED);
 	}
 
 	public void unpausePlayer() {
@@ -725,10 +779,20 @@ public class MusicService extends Service
 
 		notification.notifyPaused(false);
 
-		broadcastMessage(MusicService.BROADCAST_EXTRA_UNPAUSED);
+		// Updates Lock-Screen Widget
+		if (lockscreenController != null)
+			lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+
+		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_UNPAUSED);
 	}
 
-	public void togglePausePlayer() {
+	/**
+	 * Toggles between Pause and Unpause.
+	 *
+	 * @see pausePlayer()
+	 * @see unpausePlayer()
+	 */
+	public void togglePlayback() {
 		if (paused)
 			unpausePlayer();
 		else
@@ -739,19 +803,37 @@ public class MusicService extends Service
 		player.seekTo(position);
 	}
 
-	public void toggleShuffleMode() {
+	/**
+	 * Toggles the Shuffle mode
+	 * (if will play songs in random order).
+	 */
+	public void toggleShuffle() {
 		shuffleMode = !shuffleMode;
 	}
 
-	public void toggleRepeatMode() {
+	/**
+	 * Shuffle mode state.
+	 * @return If Shuffle mode is on/off.
+	 */
+	public boolean isShuffle() {
+		return shuffleMode;
+	}
+
+	/**
+	 * Toggles the Repeat mode
+	 * (if the current song will play again
+	 *  when completed).
+	 */
+	public void toggleRepeat() {
 		repeatMode = ! repeatMode;
 	}
 
-
-	public long getCurrentSongId() {
-		Song currentSong = songs.get(currentSongPosition);
-
-		return currentSong.getId();
+	/**
+	 * Repeat mode state.
+	 * @return If Repeat mode is on/off.
+	 */
+	public boolean isRepeat() {
+		return repeatMode;
 	}
 
 	// THESE ARE METHODS RELATED TO CONNECTING THE SERVICE
@@ -767,8 +849,8 @@ public class MusicService extends Service
 	 * Defines the interaction between an Activity and this Service.
 	 */
 	public class MusicBinder extends Binder {
-		public MusicService getService() {
-			return MusicService.this;
+		public ServicePlayMusic getService() {
+			return ServicePlayMusic.this;
 		}
 	}
 
@@ -794,14 +876,6 @@ public class MusicService extends Service
 		player.stop();
 		player.release();
 		return false;
-	}
-
-	public boolean isShuffle() {
-		return shuffleMode;
-	}
-
-	public boolean isRepeat() {
-		return repeatMode;
 	}
 
 	/**
@@ -898,12 +972,21 @@ public class MusicService extends Service
 		notification.cancel();
 	}
 
-	private void broadcastMessage(String message) {
+	/**
+	 * Shouts the current state of the Music Service.
+	 *
+	 * @note This broadcast is visible only inside this application.
+	 *
+	 * @note Will get received by listeners of `ServicePlayMusic.BROADCAST_ACTION`
+	 *
+	 * @param state Current state of the Music Service.
+	 */
+	private void broadcastCurrentState(String state) {
 
-		Intent broadcastIntent = new Intent(MusicService.BROADCAST_ACTION);
+		Intent broadcastIntent = new Intent(ServicePlayMusic.BROADCAST_ACTION);
 
-		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_STATE,   message);
-		broadcastIntent.putExtra(MusicService.BROADCAST_EXTRA_SONG_ID, currentSong.getId());
+		broadcastIntent.putExtra(ServicePlayMusic.BROADCAST_EXTRA_STATE,   state);
+		broadcastIntent.putExtra(ServicePlayMusic.BROADCAST_EXTRA_SONG_ID, currentSong.getId());
 
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())

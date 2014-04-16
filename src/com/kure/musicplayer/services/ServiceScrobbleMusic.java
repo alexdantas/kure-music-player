@@ -28,7 +28,7 @@ import com.kure.musicplayer.model.Song;
  *   http://www.vogella.com/tutorials/AndroidServices/article.html
  *
  */
-public class MusicScrobblerService extends Service {
+public class ServiceScrobbleMusic extends Service {
 
 	/**
 	 * Used for Services that want to bind to a specific
@@ -51,7 +51,7 @@ public class MusicScrobblerService extends Service {
 		// to the MusicService.
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
-		.registerReceiver(musicServiceBroadcastReceiver, new IntentFilter(MusicService.BROADCAST_ACTION));
+		.registerReceiver(musicServiceBroadcastReceiver, new IntentFilter(ServicePlayMusic.BROADCAST_ACTION));
 
 		Log.w("scrobbler", "created");
 	};
@@ -106,8 +106,8 @@ public class MusicScrobblerService extends Service {
 
 			// Getting the information sent by the MusicService
 			// (and ignoring it if invalid)
-			String action  = intent.getStringExtra(MusicService.BROADCAST_EXTRA_STATE);
-			Long   song_id = intent.getLongExtra(MusicService.BROADCAST_EXTRA_SONG_ID, -1);
+			String action  = intent.getStringExtra(ServicePlayMusic.BROADCAST_EXTRA_STATE);
+			Long   song_id = intent.getLongExtra(ServicePlayMusic.BROADCAST_EXTRA_SONG_ID, -1);
 
 			if (song_id != -1)
 				scrobbleSong(kMP.songs.getSongById(song_id), action);
@@ -144,10 +144,10 @@ public class MusicScrobblerService extends Service {
 			boolean isPlaying = true;
 
 			// Assuming the music is playing, unless...
-			if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_PAUSED) ||
-				musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_COMPLETED) ||
-				musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_SKIP_NEXT) ||
-				musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_SKIP_PREVIOUS))
+			if (musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_PAUSED) ||
+				musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_COMPLETED) ||
+				musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_SKIP_NEXT) ||
+				musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_SKIP_PREVIOUS))
 				isPlaying = false;
 
 			scrobble.putExtra("playing", isPlaying);
@@ -168,13 +168,13 @@ public class MusicScrobblerService extends Service {
 			// SimpleLastfmScrobbler API
 			int state;
 
-			if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_PLAYING))
+			if (musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_PLAYING))
 				state = 0;
-			else if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_UNPAUSED))
+			else if (musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_UNPAUSED))
 				state = 1;
-			else if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_PAUSED))
+			else if (musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_PAUSED))
 				state = 2;
-			else if (musicPlayerAction.equals(MusicService.BROADCAST_EXTRA_COMPLETED))
+			else if (musicPlayerAction.equals(ServicePlayMusic.BROADCAST_EXTRA_COMPLETED))
 				state = 3;
 
 			// Ignoring any other states - won't be necessary
