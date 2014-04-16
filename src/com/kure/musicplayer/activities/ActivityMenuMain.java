@@ -119,7 +119,7 @@ public class ActivityMenuMain extends ActivityMaster
 		if ((forceScan) || (! kMP.songs.isInitialized())) {
 
 			Toast.makeText(ActivityMenuMain.this,
-					"Scanning songs on the device...",
+					getString(R.string.menu_main_scanning),
 					Toast.LENGTH_LONG).show();
 
 			new ScanSongs().execute();

@@ -41,19 +41,19 @@ public class NotificationMusic extends NotificationSimple {
 	/**
 	 * Used to create and update the same notification.
 	 */
-	Notification.Builder notificationBuilder;
+	Notification.Builder notificationBuilder = null;
 
 	/**
 	 * Custom appearance of the notification, also updated.
 	 */
-	RemoteViews notificationView;
+	RemoteViews notificationView = null;
 
 	/**
 	 * Used to actually broadcast the notification.
 	 * Depends on the Activity that originally called
 	 * the nofitication.
 	 */
-	NotificationManager notificationManager;
+	NotificationManager notificationManager = null;
 
 	/**
 	 * Sends a system notification with a song's information.
@@ -176,6 +176,8 @@ public class NotificationMusic extends NotificationSimple {
 	 * Updates the Notification icon if the music is paused.
 	 */
 	public void notifyPaused(boolean isPaused) {
+		if ((notificationView == null) || (notificationBuilder == null))
+			return;
 
 		int iconID = ((isPaused)?
 	                  R.drawable.play :

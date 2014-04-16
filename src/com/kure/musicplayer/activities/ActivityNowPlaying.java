@@ -243,65 +243,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 					// If there's already a playlist with that name, we'll
 					// append a silly string to the new Playlist name.
 				case R.id.action_bar_submenu_new_playlist:
-
-					// The input box where user will type new name
-					final EditText input = new EditText(ActivityNowPlaying.this);
-
-					// Labels
-					String dialogTitle    = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_title);
-					String dialogText     = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_subtitle);
-					String buttonOK       = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_ok);
-					String buttonCancel   = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_cancel);
-
-					// Creating the dialog box that asks the user,
-					// with the question and options.
-					new AlertDialog.Builder(ActivityNowPlaying.this)
-					.setTitle(dialogTitle)
-					.setMessage(dialogText)
-					.setView(input)
-
-					// Creates the OK button, attaching the action to create the Playlist
-					.setPositiveButton(buttonOK, new DialogInterface.OnClickListener() {
-
-						public void onClick(DialogInterface dialog, int whichButton) {
-
-							String playlistName = input.getText().toString();
-
-							// TODO: Must somehow update the
-							// Playlist Activity if it's
-							// on the background!
-							// The ListView only updates when
-							// Playlist Menu gets
-							// created from scratch.
-							kMP.songs.newPlaylist(ActivityNowPlaying.this, "external", playlistName, kMP.nowPlayingList);
-
-							String createPlaylist = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_success);
-
-							// Congratulating the user with the
-							// new Playlist name
-							Toast.makeText(ActivityNowPlaying.this,
-							               createPlaylist + playlistName,
-							               Toast.LENGTH_SHORT).show();
-
-						}
-
-					// Creates the CANCEL button, that
-					// doesn't do nothing
-					// (since a Playlist is only created
-					// when pressing OK).
-					})
-					.setNegativeButton(buttonCancel,
-							new DialogInterface.OnClickListener() {
-
-						public void onClick(DialogInterface dialog, int whichButton) {
-							// Do nothing, yay!
-						}
-
-					// Lol, this is where we actually call the Dialog.
-					// Note for newcomers: The code continues to execute.
-					// This is an asynchronous task.
-					}).show();
-
+					newPlaylist();
 					return false;
 				}
 
@@ -331,7 +273,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 				.getCustomView()
 				.findViewById(R.id.action_bar_title);
 
-		textTop.setText("Now Playing List");
+		textTop.setText(getString(R.string.now_playing));
 
 		// Our "Subtitle" will have the name of the currently
 		// playing song. For now, it's empty
@@ -378,6 +320,68 @@ public class ActivityNowPlaying extends ActivityMaster implements
 		//		popup.show();
 	}
 
+	/**
+	 * Shows a Dialog asking the user for a new Playlist name,
+	 * creating it if so possible.
+	 */
+	private void newPlaylist() {
+
+		// The input box where user will type new name
+		final EditText input = new EditText(ActivityNowPlaying.this);
+
+		// Labels
+		String dialogTitle  = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_title);
+		String dialogText   = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_subtitle);
+		String buttonOK     = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_ok);
+		String buttonCancel = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_button_cancel);
+
+		// Creating the dialog box that asks the user,
+		// with the question and options.
+		new AlertDialog.Builder(ActivityNowPlaying.this)
+			.setTitle(dialogTitle)
+			.setMessage(dialogText)
+			.setView(input)
+
+		// Creates the OK button, attaching the action to create the Playlist
+		.setPositiveButton(buttonOK, new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int whichButton) {
+
+				String playlistName = input.getText().toString();
+
+				// TODO: Must somehow update the Playlist Activity if it's
+				//       on the background!
+				//       The ListView only updates when Playlist Menu gets
+				//       created from scratch.
+				kMP.songs.newPlaylist(ActivityNowPlaying.this, "external", playlistName, kMP.nowPlayingList);
+
+				String createPlaylistText = ActivityNowPlaying.this.getString(R.string.menu_now_playing_dialog_create_playlist_success, playlistName);
+
+				// Congratulating the user with the
+				// new Playlist name
+				Toast.makeText(ActivityNowPlaying.this,
+				               createPlaylistText,
+				               Toast.LENGTH_SHORT).show();
+
+			}
+
+		// Creates the CANCEL button, that
+		// doesn't do nothing
+		// (since a Playlist is only created
+		// when pressing OK).
+		})
+		.setNegativeButton(buttonCancel,
+				new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int whichButton) {
+				// Do nothing, yay!
+			}
+
+		// Lol, this is where we actually call the Dialog.
+		// Note for newcomers: The code continues to execute.
+		// This is an asynchronous task.
+		}).show();
+	}
 	/**
 	 * Icon that will show on the top menu showing if `shuffle` is on/off and
 	 * allowing the user to change it.
