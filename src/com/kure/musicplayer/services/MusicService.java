@@ -5,20 +5,30 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
+import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.kure.musicplayer.NotificationMusic;
+import com.kure.musicplayer.RemoteControlClientCompat;
+import com.kure.musicplayer.RemoteControlHelper;
 import com.kure.musicplayer.kMP;
 import com.kure.musicplayer.model.Song;
 
@@ -152,6 +162,24 @@ public class MusicService extends Service
 	 */
 	private NotificationMusic notification = new NotificationMusic();
 
+    // The tag we put on debug messages
+    final static String TAG = "MusicService";
+
+    // These are the Intent actions that we are prepared to handle. Notice that the fact these
+    // constants exist in our class is a mere convenience: what really defines the actions our
+    // service can handle are the <action> tags in the <intent-filters> tag for our service in
+    // AndroidManifest.xml.
+    public static final String BROADCAST_ORDER = "com.kure.musicplayer.MUSIC_SERVICE";
+    public static final String BROADCAST_EXTRA_GET_ORDER = "com.kure.musicplayer.dasdas.MUSIC_SERVICE";
+
+    public static final String BROADCAST_ORDER_PLAY = "com.kure.musicplayer.action.PLAY";
+    public static final String BROADCAST_ORDER_PAUSE = "com.kure.musicplayer.action.PAUSE";
+    public static final String BROADCAST_ORDER_TOGGLE_PLAYBACK = "dlsadasd";
+    public static final String BROADCAST_ORDER_STOP = "com.kure.musicplayer.action.STOP";
+    public static final String BROADCAST_ORDER_SKIP = "com.kure.musicplayer.action.SKIP";
+    public static final String BROADCAST_ORDER_REWIND = "com.kure.musicplayer.action.REWIND";
+
+
 	/**
 	 * Whenever we're created, reset the MusicPlayer and
 	 * start the MusicScrobblerService.
@@ -171,6 +199,26 @@ public class MusicService extends Service
 
 		Intent scrobblerIntent = new Intent(context, MusicScrobblerService.class);
 		context.startService(scrobblerIntent);
+
+
+
+
+
+
+
+
+
+
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        mMediaButtonReceiverComponent = new ComponentName(this, ExternalBroadcastReceiver.class);
+
+
+		// Registering the BroadcastReceiver to listen
+		// to the MusicService.
+		LocalBroadcastManager
+		.getInstance(getApplicationContext())
+		.registerReceiver(localBroadcastReceiver, new IntentFilter(MusicService.BROADCAST_ORDER));
+
 	}
 
 	/**
@@ -204,6 +252,199 @@ public class MusicService extends Service
 		songs.add(song);
 	}
 
+
+
+
+
+
+
+    // our RemoteControlClient object, which will use remote control APIs available in
+    // SDK level >= 14, if they're available.
+    RemoteControlClientCompat mRemoteControlClientCompat = null;
+
+
+    // The component name of MusicIntentReceiver, for use with media button and remote control
+    // APIs
+    ComponentName mMediaButtonReceiverComponent;
+
+
+    AudioManager audioManager;
+
+
+    /**
+     * Receives external Broadcasts and gives our MusicService
+     * orders based on them.
+     *
+     * It is the bridge between our application and the external
+     * world. It receives Broadcasts and launches Internal Broadcasts.
+     *
+     * It acts on music events (such as disconnecting headphone)
+     * and music controls (the lockscreen widget).
+     *
+	 * @note This class works because we are declaring it in a
+	 *       `receiver` tag in `AndroidManifest.xml`.
+	 *
+	 * @note It is static so we can look out for external broadcasts
+	 *       even when the service is offline.
+	 */
+    public static class ExternalBroadcastReceiver extends BroadcastReceiver {
+
+    	@Override
+    	public void onReceive(Context context, Intent intent) {
+
+    		Log.w("service", "received audio controls");
+
+    		// Broadcasting orders to our MusicService
+    		// locally (inside the application)
+			LocalBroadcastManager local = LocalBroadcastManager.getInstance(context);
+
+    		// Headphones disconnected
+    		if (intent.getAction().equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+
+    			Toast.makeText(context, "Headphones disconnected.", Toast.LENGTH_SHORT).show();
+
+    			// send an intent to our MusicService to telling it to pause the audio
+    			local.sendBroadcast(new Intent(MusicService.BROADCAST_ORDER_PAUSE));
+    			return;
+    		}
+
+    		if (intent.getAction().equals(Intent.ACTION_MEDIA_BUTTON)) {
+
+    			// Which media key was pressed
+    			KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
+
+    			// Not interested on anything other than pressed keys.
+    			if (keyEvent.getAction() != KeyEvent.ACTION_DOWN)
+    				return;
+
+
+    			switch (keyEvent.getKeyCode()) {
+
+    			case KeyEvent.KEYCODE_HEADSETHOOK:
+    			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+    				local.sendBroadcast(
+    						new Intent(
+    								MusicService.BROADCAST_ORDER)
+    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
+    								MusicService.BROADCAST_ORDER_TOGGLE_PLAYBACK));
+    				break;
+
+    			case KeyEvent.KEYCODE_MEDIA_PLAY:
+    				local.sendBroadcast(
+    						new Intent(
+    								MusicService.BROADCAST_ORDER)
+    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
+    								MusicService.BROADCAST_ORDER_PLAY));
+    				break;
+
+    			case KeyEvent.KEYCODE_MEDIA_PAUSE:
+    				local.sendBroadcast(
+    						new Intent(
+    								MusicService.BROADCAST_ORDER)
+    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
+    								MusicService.BROADCAST_ORDER_PAUSE));
+
+    				break;
+
+    			case KeyEvent.KEYCODE_MEDIA_STOP:
+    				local.sendBroadcast(
+    						new Intent(
+    								MusicService.BROADCAST_ORDER)
+    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
+    								MusicService.BROADCAST_ORDER_STOP));
+
+    				break;
+
+    			case KeyEvent.KEYCODE_MEDIA_NEXT:
+    				local.sendBroadcast(
+    						new Intent(
+    								MusicService.BROADCAST_ORDER)
+    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
+    								MusicService.BROADCAST_ORDER_SKIP));
+
+    				break;
+
+    			case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+    				// TODO: ensure that doing this in rapid succession actually plays the
+    				// previous song
+    				local.sendBroadcast(
+    						new Intent(
+    								MusicService.BROADCAST_ORDER)
+    						.putExtra(MusicService.BROADCAST_EXTRA_GET_ORDER,
+    								MusicService.BROADCAST_ORDER_REWIND));
+
+    				break;
+    			}
+    		}
+    	}
+    };
+
+
+	/**
+	 * The thing that will keep an eye on LocalBroadcasts
+	 * for the MusicService.
+	 */
+	BroadcastReceiver localBroadcastReceiver = new BroadcastReceiver() {
+
+		/**
+		 * What it'll do when receiving a message from the
+		 * MusicService?
+		 */
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			// Getting the information sent by the MusicService
+			// (and ignoring it if invalid)
+			String order = intent.getStringExtra(MusicService.BROADCAST_EXTRA_GET_ORDER);
+
+			// What?
+			if (order == null)
+				return;
+
+			if (order.equals(MusicService.BROADCAST_ORDER_PAUSE)) {
+				pausePlayer();
+			}
+			else if (order.equals(MusicService.BROADCAST_ORDER_PLAY)) {
+				unpausePlayer();
+			}
+			else if (order.equals(MusicService.BROADCAST_ORDER_TOGGLE_PLAYBACK)) {
+				togglePausePlayer();
+			}
+			else if (order.equals(MusicService.BROADCAST_ORDER_SKIP)) {
+				next(true);
+				playSong();
+			}
+			else if (order.equals(MusicService.BROADCAST_ORDER_REWIND)) {
+				previous(true);
+				playSong();
+			}
+
+			Log.w(TAG, "local broadcast received");
+		}
+	};
+
+
+
+    OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                pausePlayer();
+            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                unpausePlayer();
+            } /*else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
+                am.abandonAudioFocus(afChangeListener);
+                // Stop playback
+            }*/
+            Log.w("service", "on audio focus change listener");
+        }
+    };
+
+
+
+
+
+
 	/**
 	 * Actually plays the song set by `currentSongPosition`.
 	 */
@@ -233,6 +474,71 @@ public class MusicService extends Service
 		player.prepareAsync();
 
 		broadcastMessage(MusicService.BROADCAST_EXTRA_PLAYING);
+
+
+
+
+
+		//Request audio focus for playback
+		int result = audioManager.requestAudioFocus(afChangeListener,
+		                                            AudioManager.STREAM_MUSIC,
+		                                            AudioManager.AUDIOFOCUS_GAIN);
+
+		//Check if audio focus was granted. If not, stop the service.
+		if (result!=AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+		    //Stop the service.
+		    stopSelf();
+		    Toast.makeText(getApplicationContext(), "FUCK", Toast.LENGTH_LONG).show();
+		    return;
+		}
+
+		Log.w("service", "audio_focus_granted");
+
+        if (mRemoteControlClientCompat == null) {
+            Intent intent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            intent.setComponent(mMediaButtonReceiverComponent);
+
+            mRemoteControlClientCompat = new RemoteControlClientCompat(
+                    PendingIntent.getBroadcast(this /*context*/,
+                            0 /*requestCode, ignored*/, intent /*intent*/, 0 /*flags*/));
+            RemoteControlHelper.registerRemoteControlClient(audioManager,
+                    mRemoteControlClientCompat);
+            audioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+
+            Log.w("service", "created control compat");
+        }
+
+        mRemoteControlClientCompat.setPlaybackState(
+                RemoteControlClient.PLAYSTATE_PLAYING);
+
+        mRemoteControlClientCompat.setTransportControlFlags(
+                RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
+                RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+                RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
+                RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+                RemoteControlClient.FLAG_KEY_MEDIA_STOP);
+
+        // Update the remote controls
+        mRemoteControlClientCompat.editMetadata(true)
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST, currentSong.getArtist())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM, currentSong.getAlbum())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE,  currentSong.getTitle())
+                .putLong(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION, currentSong.getDuration())
+
+                // TODO: fetch real item artwork
+                //.putBitmap(
+                //        RemoteControlClientCompat.MetadataEditorCompat.METADATA_KEY_ARTWORK,
+                //        mDummyAlbumArt)
+
+                .apply();
+
+
+
+
+        Log.w("service", "remote control client applied");
+
+
+
 	}
 
 	/**
@@ -248,19 +554,6 @@ public class MusicService extends Service
 		// Now Playing screen.
 		if (kMP.settings.get("show_notification", true))
 			notification.notifySong(this, this, currentSong);
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-
-		// Service is not restarted.
-		// Used for services which are periodically triggered anyway.
-		// The service is only restarted if the runtime has pending
-		// `startService()` calls since the service termination.
-		//
-		// Source:
-		// http://www.vogella.com/tutorials/AndroidServices/article.html#service_starting
-		return Service.START_NOT_STICKY;
 	}
 
 	/**
@@ -338,6 +631,16 @@ public class MusicService extends Service
 
 		Intent scrobblerIntent = new Intent(context, MusicScrobblerService.class);
 		context.stopService(scrobblerIntent);
+
+
+
+
+
+		audioManager.abandonAudioFocus(afChangeListener);
+
+
+
+
 
 		super.onDestroy();
 	}
@@ -606,6 +909,6 @@ public class MusicService extends Service
 		.getInstance(getApplicationContext())
 		.sendBroadcast(broadcastIntent);
 
-		Log.w("MusicService", "sentBroadcast");
+		Log.w(TAG, "sentBroadcast");
 	}
 }

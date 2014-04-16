@@ -120,11 +120,23 @@
         <service android:name=".services.MusicScrobblerService" />
         
         <!-- Allows specific classes to handle broadcasts
-             (on this case, two buttons clicked on the Notification)
+          -  (on this case, two buttons clicked on the Notification)
          -->
         <receiver android:name="NotificationMusic$NotificationPlayButtonHandler" />
         <receiver android:name="NotificationMusic$NotificationSkipButtonHandler" />
-		
-    </application>
+        
+        <!-- This static class will keep an eye when the following
+          -  activities happen.
+         -->
+        <receiver android:name=".services.MusicService$ExternalBroadcastReceiver" >
+        <intent-filter>
+            <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+        </intent-filter>
+        <intent-filter>
+            <action android:name="android.intent.action.MEDIA_BUTTON" />
+        </intent-filter>
+        </receiver>
+        
+</application>
 
 </manifest>
