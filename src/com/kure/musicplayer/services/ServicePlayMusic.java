@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.RemoteControlClient;
 import android.net.Uri;
@@ -77,11 +76,17 @@ import com.kure.musicplayer.model.Song;
  *       device is locked.
  *       For that, we must add a special permission
  *       on the AndroidManifest.
+ *
+ * Thanks:
+ * - Google's MediaPlayer guide - has info on AudioFocus,
+ *   Services and lotsa stuff
+ *   http://developer.android.com/guide/topics/media/mediaplayer.html
  */
 public class ServicePlayMusic extends Service
 	implements MediaPlayer.OnPreparedListener,
 	           MediaPlayer.OnErrorListener,
-	           MediaPlayer.OnCompletionListener {
+	           MediaPlayer.OnCompletionListener,
+	           AudioManager.OnAudioFocusChangeListener {
 
 	/**
 	 * String that identifies all broadcasts this Service makes.
@@ -194,7 +199,7 @@ public class ServicePlayMusic extends Service
      *
      * Component name of the MusicIntentReceiver.
      */
-    ComponentName mediaButtonReceiver;
+    ComponentName mediaButtonEventReceiver;
 
     /**
      * Use this to get audio focus:
@@ -216,7 +221,6 @@ public class ServicePlayMusic extends Service
 		super.onCreate();
 
 		currentSongPosition = 0;
-		player = new MediaPlayer();
 
 		initMusicPlayer();
 
@@ -231,7 +235,7 @@ public class ServicePlayMusic extends Service
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
-        mediaButtonReceiver = new ComponentName(this, ExternalBroadcastReceiver.class);
+        mediaButtonEventReceiver = new ComponentName(this, ExternalBroadcastReceiver.class);
 
 
 		// Registering our BroadcastReceiver to listen to orders.
@@ -241,14 +245,17 @@ public class ServicePlayMusic extends Service
 	}
 
 	/**
-	 * Initializes the internal Music Player.
+	 * Initializes the Android's internal MediaPlayer.
+	 *
+	 * @note We might call this function several times without
+	 *       necessarily calling {@link #stopMusicPlayer()}.
 	 */
 	public void initMusicPlayer() {
 		if (player == null)
-			return;
+			player = new MediaPlayer();
 
-		// This Wake Lock allows playback to continue
-		// even when the device becomes idle.
+		// Assures the CPU continues running this service
+		// even when the device is sleeping.
 		player.setWakeMode(getApplicationContext(),
 				PowerManager.PARTIAL_WAKE_LOCK);
 
@@ -258,6 +265,26 @@ public class ServicePlayMusic extends Service
 		player.setOnPreparedListener(this); // player initialized
 		player.setOnCompletionListener(this); // song completed
 		player.setOnErrorListener(this);
+
+		Log.w(TAG, "initMusicPlayer");
+	}
+	/**
+	 * Cleans resources from Android's native MediaPlayer.
+	 *
+	 * @note According to the MediaPlayer guide, you should release
+	 *       the MediaPlayer as often as possible.
+	 *       For example, when losing Audio Focus for an extended
+	 *       period of time.
+	 */
+	public void stopMusicPlayer() {
+		if (player == null)
+			return;
+
+		player.stop();
+		player.release();
+		player = null;
+
+		Log.w(TAG, "stopMusicPlayer");
 	}
 
 	public void setList(ArrayList<Song> theSongs) {
@@ -293,23 +320,28 @@ public class ServicePlayMusic extends Service
     	@Override
     	public void onReceive(Context context, Intent intent) {
 
-    		Log.w("service", "received audio controls");
+    		Log.w(TAG, "external broadcast");
 
     		// Broadcasting orders to our MusicService
     		// locally (inside the application)
 			LocalBroadcastManager local = LocalBroadcastManager.getInstance(context);
 
+			String action = intent.getAction();
+
     		// Headphones disconnected
-    		if (intent.getAction().equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+    		if (action.equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+
+    			// ADD SETTINGS HERE
 
     			Toast.makeText(context, "Headphones disconnected.", Toast.LENGTH_SHORT).show();
 
     			// send an intent to our MusicService to telling it to pause the audio
     			local.sendBroadcast(new Intent(ServicePlayMusic.BROADCAST_ORDER_PAUSE));
+    			Log.w(TAG, "becoming noisy");
     			return;
     		}
 
-    		if (intent.getAction().equals(Intent.ACTION_MEDIA_BUTTON)) {
+    		if (action.equals(Intent.ACTION_MEDIA_BUTTON)) {
 
     			// Which media key was pressed
     			KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
@@ -328,6 +360,7 @@ public class ServicePlayMusic extends Service
     								ServicePlayMusic.BROADCAST_ORDER)
     						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
     								ServicePlayMusic.BROADCAST_ORDER_TOGGLE_PLAYBACK));
+    				Log.w(TAG, "media play pause");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -336,6 +369,7 @@ public class ServicePlayMusic extends Service
     								ServicePlayMusic.BROADCAST_ORDER)
     						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
     								ServicePlayMusic.BROADCAST_ORDER_PLAY));
+    				Log.w(TAG, "media play");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PAUSE:
@@ -344,16 +378,7 @@ public class ServicePlayMusic extends Service
     								ServicePlayMusic.BROADCAST_ORDER)
     						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
     								ServicePlayMusic.BROADCAST_ORDER_PAUSE));
-
-    				break;
-
-    			case KeyEvent.KEYCODE_MEDIA_STOP:
-    				local.sendBroadcast(
-    						new Intent(
-    								ServicePlayMusic.BROADCAST_ORDER)
-    						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-    								ServicePlayMusic.BROADCAST_ORDER_STOP));
-
+    				Log.w(TAG, "media pause");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_NEXT:
@@ -362,7 +387,7 @@ public class ServicePlayMusic extends Service
     								ServicePlayMusic.BROADCAST_ORDER)
     						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
     								ServicePlayMusic.BROADCAST_ORDER_SKIP));
-
+    				Log.w(TAG, "media next");
     				break;
 
     			case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
@@ -373,7 +398,7 @@ public class ServicePlayMusic extends Service
     								ServicePlayMusic.BROADCAST_ORDER)
     						.putExtra(ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
     								ServicePlayMusic.BROADCAST_ORDER_REWIND));
-
+    				Log.w(TAG, "media previous");
     				break;
     			}
     		}
@@ -463,7 +488,8 @@ public class ServicePlayMusic extends Service
 
 		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_PLAYING);
 
-		updateLockScreenWidget();
+		updateLockScreenWidget(currentSong, RemoteControlClient.PLAYSTATE_PLAYING);
+		Log.w(TAG, "play song");
 	}
 
 	/**
@@ -475,7 +501,7 @@ public class ServicePlayMusic extends Service
 	private boolean requestAudioFocus() {
 		//Request audio focus for playback
 		int result = audioManager.requestAudioFocus(
-				audioFocusChangeListener,
+				this,
 				AudioManager.STREAM_MUSIC,
 				AudioManager.AUDIOFOCUS_GAIN);
 
@@ -488,40 +514,92 @@ public class ServicePlayMusic extends Service
 	 *
 	 * @note Meaning it runs when we get and when we don't get
 	 *       the audio focus from `#requestAudioFocus()`.
+	 *
+	 * For example, when we receive a message, we lose the focus
+	 * and when the ringer stops playing, we get the focus again.
+	 *
+	 * So we must avoid the bug that occurs when the user pauses
+	 * the player but receives a message - and since after that
+	 * we get the focus, the player will unpause.
 	 */
-    OnAudioFocusChangeListener audioFocusChangeListener = new OnAudioFocusChangeListener() {
-        public void onAudioFocusChange(int focusChange) {
+	public void onAudioFocusChange(int focusChange) {
 
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                pausePlayer();
-            }
-            else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                unpausePlayer();
-            }
-            else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+		switch (focusChange) {
 
-            	// Giving up everything and stopping playback
-                audioManager.unregisterMediaButtonEventReceiver(mediaButtonReceiver);
-                audioManager.abandonAudioFocus(audioFocusChangeListener);
+		// Yay, gained audio focus! Either from losing it for
+		// a long or short periods of time.
+		case AudioManager.AUDIOFOCUS_GAIN:
+			Log.w(TAG, "audiofocus gain");
 
-                Intent stopPlayback = new Intent(ServicePlayMusic.BROADCAST_ORDER);
+			if (player == null)
+				initMusicPlayer();
 
-                stopPlayback.putExtra(
-                		ServicePlayMusic.BROADCAST_EXTRA_GET_ORDER,
-                		ServicePlayMusic.BROADCAST_ORDER_PAUSE);
+			if (pausedTemporarilyDueToAudioFocus) {
+				pausedTemporarilyDueToAudioFocus = false;
+				unpausePlayer();
+			}
 
-        		// Broadcasting orders to our MusicService
-        		// locally (inside the application)
-    			LocalBroadcastManager local = LocalBroadcastManager.getInstance(getApplicationContext());
+			if (loweredVolumeDueToAudioFocus) {
+				loweredVolumeDueToAudioFocus = false;
+				player.setVolume(1.0f, 1.0f);
+			}
+			break;
 
-				local.sendBroadcast(stopPlayback);
-            }
+		// Damn, lost the audio focus for a (presumable) long time
+		case AudioManager.AUDIOFOCUS_LOSS:
+			Log.w(TAG, "audiofocus loss");
 
-            Log.w("service", "on audio focus change listener");
-        }
-    };
+			// Giving up everything
+			audioManager.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
+			audioManager.abandonAudioFocus(this);
 
-	private void updateLockScreenWidget() {
+			//pausePlayer();
+			stopMusicPlayer();
+			break;
+
+		// Just lost audio focus but will get it back shortly
+		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+			Log.w(TAG, "audiofocus loss transient");
+
+			if (!isPaused()) {
+				pausePlayer();
+				pausedTemporarilyDueToAudioFocus = true;
+			}
+			break;
+
+		// Temporarily lost audio focus but I can keep it playing
+		// at a low volume instead of stopping completely
+		case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+			Log.w(TAG, "audiofocus loss transient can duck");
+
+			player.setVolume(0.1f, 0.1f);
+			loweredVolumeDueToAudioFocus = true;
+			break;
+		}
+	}
+	// Internal flags for the function above {{
+	private boolean pausedTemporarilyDueToAudioFocus = false;
+	private boolean loweredVolumeDueToAudioFocus     = false;
+	// }}
+
+    /**
+     * Updates the lock-screen widget (creating if non-existing).
+     *
+     * @param song  Where it will take metadata to display.
+     *
+     * @param state Which state is it into.
+     *              Can be one of the following:
+     *              {@link RemoteControlClient.PLAYSTATE_PLAYING }
+     *              {@link RemoteControlClient.PLAYSTATE_PAUSED }
+     *              {@link RemoteControlClient.PLAYSTATE_BUFFERING }
+     *              {@link RemoteControlClient.PLAYSTATE_ERROR }
+     *              {@link RemoteControlClient.PLAYSTATE_FAST_FORWARDING }
+     *              {@link RemoteControlClient.PLAYSTATE_REWINDING }
+     *              {@link RemoteControlClient.PLAYSTATE_SKIPPING_BACKWARDS }
+     *              {@link RemoteControlClient.PLAYSTATE_SKIPPING_FORWARDS }
+     *              {@link RemoteControlClient.PLAYSTATE_STOPPED }
+     */
+	private void updateLockScreenWidget(Song song, int state) {
 
 		if (!requestAudioFocus()) {
 		    //Stop the service.
@@ -536,20 +614,20 @@ public class ServicePlayMusic extends Service
 		// up until now.
         if (lockscreenController == null) {
             Intent audioButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            audioButtonIntent.setComponent(mediaButtonReceiver);
+            audioButtonIntent.setComponent(mediaButtonEventReceiver);
 
             PendingIntent pending = PendingIntent.getBroadcast(this, 0, audioButtonIntent, 0);
 
             lockscreenController = new RemoteControlClientCompat(pending);
 
             RemoteControlHelper.registerRemoteControlClient(audioManager, lockscreenController);
-            audioManager.registerMediaButtonEventReceiver(mediaButtonReceiver);
+            audioManager.registerMediaButtonEventReceiver(mediaButtonEventReceiver);
 
             Log.w("service", "created control compat");
         }
 
         // Current state of the Lock-Screen Widget
-        lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+        lockscreenController.setPlaybackState(state);
 
         // All buttons the Lock-Screen Widget supports
         // (will be broadcasts)
@@ -557,8 +635,7 @@ public class ServicePlayMusic extends Service
         		RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
         		RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
         		RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
-        		RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-        		RemoteControlClient.FLAG_KEY_MEDIA_STOP);
+        		RemoteControlClient.FLAG_KEY_MEDIA_NEXT);
 
         // Update the current song metadata
         // on the Lock-Screen Widget
@@ -567,10 +644,10 @@ public class ServicePlayMusic extends Service
         		.editMetadata(true)
 
         		// Sending all metadata of the current song
-                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST,   currentSong.getArtist())
-                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM,    currentSong.getAlbum())
-                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE,    currentSong.getTitle())
-                .putLong  (android.media.MediaMetadataRetriever.METADATA_KEY_DURATION, currentSong.getDuration())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ARTIST,   song.getArtist())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_ALBUM,    song.getAlbum())
+                .putString(android.media.MediaMetadataRetriever.METADATA_KEY_TITLE,    song.getTitle())
+                .putLong  (android.media.MediaMetadataRetriever.METADATA_KEY_DURATION, song.getDuration())
 
                 // TODO: fetch real item artwork
                 //.putBitmap(
@@ -665,24 +742,20 @@ public class ServicePlayMusic extends Service
 
 	@Override
 	public void onDestroy() {
+		Context context = getApplicationContext();
+
 		cancelNotification();
+
 		currentSong = null;
 
 		// Stopping the scrobbler service.
-		Context context = getApplicationContext();
-
 		Intent scrobblerIntent = new Intent(context, ServiceScrobbleMusic.class);
 		context.stopService(scrobblerIntent);
 
+		if (audioManager != null)
+			audioManager.abandonAudioFocus(this);
 
-
-
-
-		audioManager.abandonAudioFocus(audioFocusChangeListener);
-
-
-
-
+		stopMusicPlayer();
 
 		super.onDestroy();
 	}
@@ -762,9 +835,9 @@ public class ServicePlayMusic extends Service
 
 	public void pausePlayer() {
 		player.pause();
-		paused = !paused;
+		paused = true;
 
-		notification.notifyPaused(true);
+		notification.notifyPaused(paused);
 
         // Updates Lock-Screen Widget
 		if (lockscreenController != null)
@@ -775,9 +848,9 @@ public class ServicePlayMusic extends Service
 
 	public void unpausePlayer() {
 		player.start();
-		paused = !paused;
+		paused = false;
 
-		notification.notifyPaused(false);
+		notification.notifyPaused(paused);
 
 		// Updates Lock-Screen Widget
 		if (lockscreenController != null)
@@ -873,8 +946,7 @@ public class ServicePlayMusic extends Service
 	 */
 	@Override
 	public boolean onUnbind(Intent intent) {
-		player.stop();
-		player.release();
+
 		return false;
 	}
 

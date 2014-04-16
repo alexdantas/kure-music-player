@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.kure.musicplayer.kMP;
 import com.kure.musicplayer.model.Song;
@@ -52,8 +51,6 @@ public class ServiceScrobbleMusic extends Service {
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
 		.registerReceiver(musicServiceBroadcastReceiver, new IntentFilter(ServicePlayMusic.BROADCAST_ACTION));
-
-		Log.w("scrobbler", "created");
 	};
 
 	/**
@@ -71,8 +68,6 @@ public class ServiceScrobbleMusic extends Service {
 			// This service is being explicitly started
 		}
 
-		Log.w("scrobbler", "start_command");
-
 		// This makes sure this service will be restarted
 		// when Android kills it.
 		// When it does, the `intent` will be `null`.
@@ -87,7 +82,6 @@ public class ServiceScrobbleMusic extends Service {
 		.getInstance(getApplicationContext())
 		.unregisterReceiver(musicServiceBroadcastReceiver);
 
-		Log.w("scrobbler", "destroyed");
 		super.onDestroy();
 	};
 
@@ -111,8 +105,6 @@ public class ServiceScrobbleMusic extends Service {
 
 			if (song_id != -1)
 				scrobbleSong(kMP.songs.getSongById(song_id), action);
-
-			Log.w("scrobbler", "received");
 		}
 	};
 
@@ -154,7 +146,6 @@ public class ServiceScrobbleMusic extends Service {
 			scrobble.putExtra("id", song.getId());
 
 			sendBroadcast(scrobble);
-			Log.w("scrobbler", "scrobbledroid");
 			return;
 		}
 
@@ -193,7 +184,6 @@ public class ServiceScrobbleMusic extends Service {
 			scrobble.putExtra("duration", song.getDurationSeconds());
 
 			sendBroadcast(scrobble);
-			Log.w("scrobbler", "sls");
 			return;
 		}
 	}
