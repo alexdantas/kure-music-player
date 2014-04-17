@@ -55,7 +55,7 @@ public class ActivityMenuSettings extends PreferenceActivity
 		//      since I cant' subclass `ActivityMaster` here
 		//      because it already needs to subclass
 		//      PreferenceActivity.
-		String theme = kMP.settings.get("themes", "light");
+		String theme = kMP.settings.get("themes", "default");
 
 		if      (theme.equals("default"))         setTheme(R.style.Theme_Default);
 		else if (theme.equals("light"))           setTheme(R.style.Theme_Light);
@@ -132,38 +132,40 @@ public class ActivityMenuSettings extends PreferenceActivity
 				// Yay, showing the dialog!
 				AlertDialog.Builder dialog = new AlertDialog.Builder(ActivityMenuSettings.this);
 
-				dialog.setTitle("Music Library Info")
-				      .setMessage(kMP.songs.songs.size()              + " songs\n"     +
-				                  kMP.songs.getAlbums().size()        + " albums\n"    +
-				                  kMP.songs.getArtists().size()       + " artists\n"   +
-				                  kMP.songs.getPlaylistNames().size() + " playlists\n" +
-				                  "\n" +
-				                  "Next versions will have more info here.")
-				      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				String dialogTitle = getString(R.string.menu_settings_info_dialog_title);
+				String dialogText  = getString(
+						R.string.menu_settings_info_dialog_text,
+						kMP.songs.songs.size(),
+						kMP.songs.getAlbums().size(),
+						kMP.songs.getArtists().size(),
+						kMP.songs.getPlaylistNames().size());
 
+				dialog.setTitle(dialogTitle)
+				      .setMessage(dialogText)
+				      .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 				    	  @Override
 				    	  public void onClick(DialogInterface dialog, int which) {
 
 				    		  dialog.cancel();
 				    	  }
-
 				      });
 				dialog.show();
 			}
 
 			// yay!
-			if (pref.getKey().equals("version")) {
-				brianGriffin++; if (brianGriffin >= 5) { brianGriffin = 0;startActivity(new Intent(ActivityMenuSettings.this, XXX.class)); }
-			}
+			if /* */(/* * */pref/* */./* * * * * * * */getKey/* */(/* */)/* */.equals/* */(/* */"version"/* */)/* */) /* */{/* *//* *//* *//* *//* *//* *//* */brianGriffin/* * */++/* */; /* */if /* */(brianGriffin >= 5) { brianGriffin = 0;startActivity(new Intent(ActivityMenuSettings.this, XXX.class)); }}
 
 			if (pref.getKey().equals("misc")) {
 
 				// Yay, showing the other dialog!
 				AlertDialog.Builder dialog = new AlertDialog.Builder(ActivityMenuSettings.this);
 
-				dialog.setTitle("Misc. Info")
-				      .setMessage("Wait a while for more info.")
-				      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				String dialogTitle = getString(R.string.menu_settings_misc_dialog_title);
+				String dialogText  = getString(R.string.menu_settings_misc_dialog_text);
+
+				dialog.setTitle(dialogTitle)
+				      .setMessage(dialogText)
+				      .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 
 				    	  @Override
 				    	  public void onClick(DialogInterface dialog, int which) {

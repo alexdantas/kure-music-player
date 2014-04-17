@@ -106,15 +106,15 @@
         >
         <Preference
              android:key="version"
-             android:title="kMP Version"
+             android:title="@string/menu_settings_version_title"
          />
         <Preference
              android:key="info"
-             android:title="Music Library Info"
+             android:title="@string/menu_settings_info_title"
          />
         <Preference
              android:key="misc"
-             android:title="Misc. Info"
+             android:title="@string/menu_settings_misc_title"
          />
         
     </PreferenceCategory>

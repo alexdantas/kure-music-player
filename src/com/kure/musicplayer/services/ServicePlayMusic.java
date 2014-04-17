@@ -729,7 +729,8 @@ public class ServicePlayMusic extends Service
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 
-		serviceState = ServiceState.Stopped;
+		// Keep this state!
+		serviceState = ServiceState.Playing;
 
 		// TODO: Why do I need this?
 		if (player.getCurrentPosition() <= 0)
@@ -753,15 +754,13 @@ public class ServicePlayMusic extends Service
 		if (kMP.musicService.currentSongPosition == 0) {
 			if (kMP.settings.get("repeat_list", false))
 				playSong();
-			else
-			{
+
+			else {
 				stopSelf();
 				currentSong = null;
 			}
-
 			return;
 		}
-
 		// Common case - skipped a track or anything
 		playSong();
 	}

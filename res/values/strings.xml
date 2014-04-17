@@ -4,6 +4,9 @@
     <string name="app_name">kure Music Player</string>
     <string name="app_name_short">kMP</string>
     
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    
     <string name="now_playing">Now Playing List</string>
     <string name="all_songs">All Songs</string>
     <string name="settings">Settings</string>
@@ -78,7 +81,25 @@
         >Scroll when returning</string>
     <string name="menu_settings_scroll_on_focus_subtitle"
         >When returning to the \"Now Playing List\", should I scroll it to the currently playing song?</string>
-        
+    
+    
+    <string name="menu_settings_info_dialog_title"
+        >Music Library Info</string>
+    <string name="menu_settings_info_dialog_text"
+        >%1$d songs\n%2$d albums\n%3$s artists\n%4$d playlists\n\nNext versions will have more stuff here.</string>
+    
+    
+    <string name="menu_settings_misc_dialog_title"
+        >Misc. Info</string>
+    <string name="menu_settings_misc_dialog_text"
+        >For now there\'s nothing here.\nPerhaps on a next version&#8230;</string>
+    
+    
+    
+    <string name="menu_settings_version_title">kMP Version</string>
+    <string name="menu_settings_info_title">Music Library Info</string>
+    <string name="menu_settings_misc_title">Misc. Info</string>
+    
     
     <string name="menu_now_playing_action_bar_sort_title">Sort by Title</string>
     <string name="menu_now_playing_action_bar_sort_artist">Sort by Artist</string> 
