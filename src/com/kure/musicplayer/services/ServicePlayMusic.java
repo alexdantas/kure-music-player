@@ -245,21 +245,19 @@ public class ServicePlayMusic extends Service
 	public void onCreate() {
 		super.onCreate();
 
-		Context context = getApplicationContext();
-
 		currentSongPosition = 0;
-
-		initMusicPlayer();
 
 		randomNumberGenerator = new Random();
 
-		// Starting the scrobbler service.
-		Intent scrobblerIntent = new Intent(context, ServiceScrobbleMusic.class);
-		context.startService(scrobblerIntent);
-
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
-        mediaButtonEventReceiver = new ComponentName(this, ExternalBroadcastReceiver.class);
+		initMusicPlayer();
+
+		Context context = getApplicationContext();
+
+        // Starting the scrobbler service.
+        Intent scrobblerIntent = new Intent(context, ServiceScrobbleMusic.class);
+        context.startService(scrobblerIntent);
 
 		// Registering our BroadcastReceiver to listen to orders
         // from inside our own application.
@@ -630,7 +628,14 @@ public class ServicePlayMusic extends Service
      *              {@link RemoteControlClient.PLAYSTATE_SKIPPING_FORWARDS }
      *              {@link RemoteControlClient.PLAYSTATE_STOPPED }
      */
-	private void updateLockScreenWidget(Song song, int state) {
+	public void updateLockScreenWidget(Song song, int state) {
+
+		// Only showing if the Setting is... well... set
+		if (! kMP.settings.get("show_lock_widget", true))
+			return;
+
+		if (song == null)
+			return;
 
 		if (!requestAudioFocus()) {
 		    //Stop the service.
@@ -641,8 +646,11 @@ public class ServicePlayMusic extends Service
 
 		Log.w("service", "audio_focus_granted");
 
-		// The Lock-Screen widget was not created
-		// up until now.
+		// The Lock-Screen widget was not created up until now.
+		// (both of the null-checks below)
+		if (mediaButtonEventReceiver == null)
+			mediaButtonEventReceiver = new ComponentName(this, ExternalBroadcastReceiver.class);
+
         if (lockscreenController == null) {
             Intent audioButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
             audioButtonIntent.setComponent(mediaButtonEventReceiver);
@@ -689,6 +697,18 @@ public class ServicePlayMusic extends Service
                 .apply();
 
         Log.w("service", "remote control client applied");
+	}
+
+	public void destroyLockScreenWidget() {
+		if ((audioManager != null) && (lockscreenController != null)) {
+			//RemoteControlHelper.unregisterRemoteControlClient(audioManager, lockscreenController);
+			lockscreenController = null;
+		}
+
+		if ((audioManager != null) && (mediaButtonEventReceiver != null)) {
+			audioManager.unregisterMediaButtonEventReceiver(mediaButtonEventReceiver);
+			mediaButtonEventReceiver = null;
+		}
 	}
 
 	/**
@@ -790,6 +810,7 @@ public class ServicePlayMusic extends Service
 
 		stopMusicPlayer();
 
+		destroyLockScreenWidget();
 		super.onDestroy();
 	}
 

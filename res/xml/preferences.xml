@@ -15,6 +15,20 @@
             android:entryValues="@array/themes_values"
             android:defaultValue="default"
             />
+    
+        <CheckBoxPreference 
+            android:key="show_notification"
+            android:title="@string/menu_settings_show_notification_title"
+            android:summary="@string/menu_settings_show_notification_subtitle"
+            android:defaultValue="true"
+        />
+        
+        <CheckBoxPreference 
+            android:key="show_lock_widget"
+            android:title="@string/menu_settings_lock_widget_title"
+            android:summary="@string/menu_settings_lock_widget_subtitle"
+            android:defaultValue="true"
+        />
         
     </PreferenceCategory>
         
@@ -41,21 +55,7 @@
             />
             
     </PreferenceCategory>
-    
-    <PreferenceCategory
-        android:title="Behavior"
-        android:key="behavior" 
-        >
-        
-        <CheckBoxPreference 
-            android:key="show_notification"
-            android:title="@string/menu_settings_show_notification_title"
-            android:summary="@string/menu_settings_show_notification_subtitle"
-            android:defaultValue="true"
-        />
-        
-    </PreferenceCategory>
-        
+            
     <PreferenceCategory
         android:title="Headset"
         android:key="headset" 

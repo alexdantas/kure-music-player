@@ -193,8 +193,10 @@ public class ActivityMenuSettings extends PreferenceActivity
 		// immediately.
 		//
 		// This key's at `res/xml/preferences.xml`
-		if (key.equals("themes"))
+		if (key.equals("themes")) {
 			recreate();
+			return;
+		}
 
 		// If user changed the notification setting
 		if (key.equals("show_notification")) {
@@ -211,6 +213,33 @@ public class ActivityMenuSettings extends PreferenceActivity
 				if (kMP.musicService != null)
 					kMP.musicService.doNotification();
 			}
+			return;
+		}
+
+		// If user changed lock screen widget setting
+		if (key.equals("show_lock_widget")) {
+
+			// User just cancelled widget, let's kill it
+			if (! sharedPreferences.getBoolean("show_lock_widget", false)) {
+				if (kMP.musicService != null)
+					kMP.musicService.destroyLockScreenWidget();
+			}
+			// User just activated notification.
+			else {
+/*				if (kMP.musicService != null) {
+
+					// MusicService's current state needs to be
+					// used to correctly set the lock screen widget
+					// (I know it's ugly, damn)
+					int state =
+							kMP.musicService.isPlaying() ?
+							RemoteControlClient.PLAYSTATE_PLAYING :
+							RemoteControlClient.PLAYSTATE_PAUSED;
+
+					kMP.musicService.updateLockScreenWidget(kMP.musicService.currentSong, state);
+				}*/
+			}
+			return;
 		}
 	}
 

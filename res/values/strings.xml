@@ -57,7 +57,13 @@
         >Ongoing Notification</string>
     <string name="menu_settings_show_notification_subtitle"
         >Shows a system notification when I\'m playing a song. You can control the music player from there.</string>
-  
+    
+    
+    <string name="menu_settings_lock_widget_title"
+        >Lockscreen Widget</string>
+    <string name="menu_settings_lock_widget_subtitle"
+        >Displays music controls on the locked screen.\nNote: Restart application to apply changes.</string>
+    
     
     <string name="menu_settings_pause_headphone_off_title"
         >Pause when Unplugged</string>
