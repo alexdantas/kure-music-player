@@ -132,7 +132,7 @@ public class NotificationMusic extends NotificationSimple {
 		notificationBuilder = new Notification.Builder(context);
 
 		notificationBuilder.setContentIntent(pendingIntent)
-		                   .setSmallIcon(R.drawable.play)
+		                   .setSmallIcon(R.drawable.ic_launcher_white)
 		                   .setTicker("kMP: Playing '" + song.getTitle() + "' from '" + song.getArtist() + "'")
 		                   .setOngoing(true)
 		                   .setContentTitle(song.getTitle())

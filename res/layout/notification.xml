@@ -13,14 +13,15 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-    <ImageView
+<!--     <ImageView
         android:id="@+id/notification_icon"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_marginRight="5dp"
-        android:src="@drawable/ic_launcher"
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/end"
         android:contentDescription="@string/app_name_short" />
-    
+ -->    
     <ImageButton
         android:id="@+id/notification_button_play"
         android:layout_width="wrap_content"
