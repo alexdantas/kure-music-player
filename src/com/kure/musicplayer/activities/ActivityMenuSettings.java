@@ -3,6 +3,7 @@ package com.kure.musicplayer.activities;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -151,9 +152,9 @@ public class ActivityMenuSettings extends PreferenceActivity
 			}
 
 			// yay!
-			if (pref.getKey().equals("version")) { brianGriffin++; if (brianGriffin >= 5) { brianGriffin = 0;
-			// insert easter-egg here
-			}}
+			if (pref.getKey().equals("version")) {
+				brianGriffin++; if (brianGriffin >= 5) { brianGriffin = 0;startActivity(new Intent(ActivityMenuSettings.this, XXX.class)); }
+			}
 
 			if (pref.getKey().equals("misc")) {
 

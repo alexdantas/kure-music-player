@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+      <ListView
+          android:id="@+id/activity_now_playing_song_list"
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:fastScrollEnabled="true" />
+      
+      <LinearLayout 
+          android:id="@+id/activity_now_playing_bottom_bar"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical">
+          
+          <SeekBar
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"/>
+          
+          <LinearLayout 
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:gravity="center">
+              
+              <ImageButton
+                  android:id="@+id/activity_now_playing_skip_previous"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:src="@drawable/skip" />
+              
+              <ImageButton
+                  android:id="@+id/activity_now_playing_play"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:src="@drawable/play" />
+              
+              <ImageButton
+                  android:id="@+id/activity_now_playing_skip_next"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:src="@drawable/skip" />
+              
+          </LinearLayout>
+          
+      </LinearLayout>
+          
+</LinearLayout>
