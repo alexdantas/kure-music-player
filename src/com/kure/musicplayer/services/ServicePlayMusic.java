@@ -704,8 +704,7 @@ public class ServicePlayMusic extends Service
 
 		// If the user clicks on the notification, let's spawn the
 		// Now Playing screen.
-		if (kMP.settings.get("show_notification", true))
-			notification.notifySong(this, this, currentSong);
+		doNotification();
 	}
 
 	/**
@@ -1131,8 +1130,14 @@ public class ServicePlayMusic extends Service
 		return songs.get(position);
 	}
 
+	public void doNotification() {
+		if (kMP.settings.get("show_notification", true))
+			notification.notifySong(this, this, currentSong);
+	}
+
 	public void cancelNotification() {
-		notification.cancel();
+		if (notification != null)
+			notification.cancel();
 	}
 
 	/**
