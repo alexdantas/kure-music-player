@@ -58,24 +58,21 @@ public class ActivityListAlbums extends ActivityMaster
 
 		// Connects the song list to an adapter
 		// (thing that creates several Layouts from the song list)
-		if ((kMP.musicList != null) && (! kMP.musicList.isEmpty())) {
+		items = kMP.songs.getAlbumsByArtist(currentArtist);
 
-			items = kMP.songs.getAlbumsByArtist(currentArtist);
+		// Let's prepend all the albums with this label.
+		// Then, when selecting the item, we'll need to
+		// subtract one.
+		items.add(0, getString(R.string.all_songs));
 
-			// Let's prepend all the albums with this label.
-			// Then, when selecting the item, we'll need to
-			// subtract one.
-			items.add(0, getString(R.string.all_songs));
+		// Adapter that will convert from Strings to List Items
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>
+		(this, android.R.layout.simple_list_item_1, items);
 
-			// Adapter that will convert from Strings to List Items
-			final ArrayAdapter<String> adapter = new ArrayAdapter<String>
-					(this, android.R.layout.simple_list_item_1, items);
+		// Filling teh list with all the items
+		songListView.setAdapter(adapter);
 
-			// Filling teh list with all the items
-			songListView.setAdapter(adapter);
-
-			songListView.setOnItemClickListener(this);
-		}
+		songListView.setOnItemClickListener(this);
 
 		// This enables the "Up" button on the top Action Bar
 		// Note that it returns to the parent Activity, specified
