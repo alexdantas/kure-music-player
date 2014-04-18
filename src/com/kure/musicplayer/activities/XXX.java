@@ -1,5 +1,6 @@
 package com.kure.musicplayer.activities;import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.kure.musicplayer.R;
@@ -76,18 +77,7 @@ void
 
 
 
-		   (
-
-
-
-				   R
-				   																		.
-
-
-				   								layout
-				.
-	xxx
-
+		   (R.layout.xxx
 
 
 
@@ -95,42 +85,121 @@ void
 
 				   										)
 				   										     	 	;
-  Toast
-
-  .
-                        makeText							(
-this
-
-										,
-                                 "kMP-chan, by BDNachi"
-
-
-
-				,
-          Toast
-          .
+activateIt
 
 
 
 
 
-
-
-          							LENGTH_LONG
-
-
-
-                        		)
+(
+/*
 
 
 
-                        									.
-         show
+			}
 
 
 
-         		(
-                 )
-                  ;
-	               }
-                    }
+			                            ()
+			                            {                ;
+
+
+			                       /
+			                        *
+			                        *
+			   \/
+
+							*/null
+
+
+
+
+
+												)
+
+
+;
+
+	               }public
+
+
+
+
+
+
+
+
+
+
+
+	 	 	 	 	 	 	 	 	  	  	/* lel */
+
+
+void
+
+
+
+
+
+
+
+
+
+
+
+			 	 	 		 	 	activateIt
+
+
+			 	 	 (final
+
+
+
+			 	 			 View
+
+
+
+
+
+			 	 			 								v)
+
+	{
+		  Toast
+
+		  .
+		                        makeText							(
+		this
+
+												,
+		                                 "kMP-chan, by BDNachi"
+
+
+
+						,
+		          Toast
+		          .
+
+
+
+
+
+
+
+		          							LENGTH_SHORT
+
+
+
+		                        		)
+
+
+
+		                        									.
+		         show
+
+
+
+		         		(
+		                 )
+		                  ;
+	                       }
+	                        }
+
