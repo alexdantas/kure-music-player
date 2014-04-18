@@ -165,10 +165,11 @@ public class ActivityMenuMain extends ActivityMaster
 
 			kMP.nowPlayingList = kMP.songs.getSongs();
 
-			Intent intent = new Intent(this, ActivityNowPlaying.class);
-			intent.putExtra("sort", "random");
+			Intent nowPlayingIntent = new Intent(this, ActivityNowPlaying.class);
+			nowPlayingIntent.putExtra("sort", "random");
+			nowPlayingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-			startActivity(intent);
+			startActivity(nowPlayingIntent);
 		}
 		else if (currentItem.equals(getString(R.string.menu_main_now_playing))) {
 			// Jump to Now Playing screen

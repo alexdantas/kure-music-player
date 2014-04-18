@@ -147,7 +147,6 @@ public class ActivityNowPlaying extends ActivityMaster implements
 		// Main Menu that returns here.
 		ActivityMenuMain.addNowPlayingItem(this);
 
-
 		// Customizing the ActionBar
 		// (menu on top)
 		createActionBar();

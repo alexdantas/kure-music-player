@@ -149,7 +149,10 @@ public class ActivityMaster extends Activity {
 			break;
 
 		case R.id.context_menu_now_playing:
-			startActivity(new Intent(this, ActivityNowPlaying.class));
+			Intent nowPlayingIntent = new Intent(this, ActivityNowPlaying.class);
+			nowPlayingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+			startActivity(nowPlayingIntent);
 			break;
 		}
 
