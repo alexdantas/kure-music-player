@@ -752,9 +752,9 @@ public class ServicePlayMusic extends Service
 		serviceState = ServiceState.Playing;
 
 		// TODO: Why do I need this?
-		if (player.getCurrentPosition() <= 0)
+/*		if (player.getCurrentPosition() <= 0)
 			return;
-
+*/
 		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_COMPLETED);
 
 		// Repeating current song if desired
@@ -774,10 +774,9 @@ public class ServicePlayMusic extends Service
 			if (kMP.settings.get("repeat_list", false))
 				playSong();
 
-			else {
-				stopSelf();
-				currentSong = null;
-			}
+			else
+				destroySelf();
+
 			return;
 		}
 		// Common case - skipped a track or anything
@@ -812,6 +811,17 @@ public class ServicePlayMusic extends Service
 
 		destroyLockScreenWidget();
 		super.onDestroy();
+	}
+
+	/**
+	 * Kills the service.
+	 *
+	 * @note Explicitly call this when the service is completed
+	 *       or whatnot.
+	 */
+	private void destroySelf() {
+		stopSelf();
+		currentSong = null;
 	}
 
 	// These methods are to be called by the Activity

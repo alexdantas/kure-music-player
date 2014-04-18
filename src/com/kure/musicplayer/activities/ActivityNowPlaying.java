@@ -692,8 +692,7 @@ public class ActivityNowPlaying extends ActivityMaster implements
 	 * playing it right away.
 	 */
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 		// Prepare the music service to play the song.
 		kMP.musicService.setSong(position);
