@@ -211,7 +211,7 @@ public class ActivityMenuSettings extends PreferenceActivity
 			// let's create it
 			else {
 				if (kMP.musicService != null)
-					kMP.musicService.doNotification();
+					kMP.musicService.notifyCurrentSong();
 			}
 			return;
 		}

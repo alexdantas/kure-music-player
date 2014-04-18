@@ -1,5 +1,6 @@
 package com.kure.musicplayer.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -166,7 +167,7 @@ public class ServicePlayMusic extends Service
 	 * Spawns an on-going notification with our current
 	 * playing song.
 	 */
-	private NotificationMusic notification = new NotificationMusic();
+	private NotificationMusic notification = null;
 
     // The tag we put on debug messages
     final static String TAG = "MusicService";
@@ -269,6 +270,8 @@ public class ServicePlayMusic extends Service
 		// to user plugging the headset.
 		IntentFilter headsetFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 		registerReceiver(headsetBroadcastReceiver, headsetFilter);
+
+		Log.w(TAG, "onCreate");
 	}
 
 	/**
@@ -724,7 +727,7 @@ public class ServicePlayMusic extends Service
 
 		// If the user clicks on the notification, let's spawn the
 		// Now Playing screen.
-		doNotification();
+		notifyCurrentSong();
 	}
 
 	/**
@@ -736,8 +739,8 @@ public class ServicePlayMusic extends Service
 
 		if (songIndex < 0 || songIndex >= songs.size())
 			currentSongPosition = 0;
-
-		currentSongPosition = songIndex;
+		else
+			currentSongPosition = songIndex;
 	}
 
 	/**
@@ -755,7 +758,7 @@ public class ServicePlayMusic extends Service
 /*		if (player.getCurrentPosition() <= 0)
 			return;
 */
-		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_COMPLETED);
+		broadcastState(ServicePlayMusic.BROADCAST_EXTRA_COMPLETED);
 
 		// Repeating current song if desired
 		if (repeatMode) {
@@ -770,7 +773,7 @@ public class ServicePlayMusic extends Service
 
 		// Reached the end, should we restart playing
 		// from the first song or simply stop?
-		if (kMP.musicService.currentSongPosition == 0) {
+		if (currentSongPosition == 0) {
 			if (kMP.settings.get("repeat_list", false))
 				playSong();
 
@@ -789,6 +792,7 @@ public class ServicePlayMusic extends Service
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
 		mp.reset();
+		Log.w(TAG, "onError");
 		return false;
 	}
 
@@ -810,6 +814,8 @@ public class ServicePlayMusic extends Service
 		stopMusicPlayer();
 
 		destroyLockScreenWidget();
+
+		Log.w(TAG, "onDestroy");
 		super.onDestroy();
 	}
 
@@ -838,7 +844,7 @@ public class ServicePlayMusic extends Service
 			return;
 
 		if (userSkippedSong)
-			broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_SKIP_PREVIOUS);
+			broadcastState(ServicePlayMusic.BROADCAST_EXTRA_SKIP_PREVIOUS);
 
 		// Updates Lock-Screen Widget
 		if (lockscreenController != null)
@@ -864,7 +870,7 @@ public class ServicePlayMusic extends Service
 		// TODO or maybe a playlist, whatever
 
 		if (userSkippedSong)
-			broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_SKIP_NEXT);
+			broadcastState(ServicePlayMusic.BROADCAST_EXTRA_SKIP_NEXT);
 
 		// Updates Lock-Screen Widget
 		if (lockscreenController != null)
@@ -933,8 +939,13 @@ public class ServicePlayMusic extends Service
 		try {
 			player.setDataSource(getApplicationContext(), songToPlayURI);
 		}
+		catch(IOException io) {
+			Log.e(TAG, "IOException: couldn't change the song", io);
+			destroySelf();
+		}
 		catch(Exception e) {
-			Log.e("MUSIC SERVICE", "Error when changing the song", e);
+			Log.e(TAG, "Error when changing the song", e);
+			destroySelf();
 		}
 
 		// Prepare the MusicPlayer asynchronously.
@@ -942,7 +953,7 @@ public class ServicePlayMusic extends Service
 		player.prepareAsync();
 		serviceState = ServiceState.Preparing;
 
-		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_PLAYING);
+		broadcastState(ServicePlayMusic.BROADCAST_EXTRA_PLAYING);
 
 		updateLockScreenWidget(currentSong, RemoteControlClient.PLAYSTATE_PLAYING);
 		Log.w(TAG, "play song");
@@ -961,7 +972,7 @@ public class ServicePlayMusic extends Service
 		if (lockscreenController != null)
 			lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
 
-		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_PAUSED);
+		broadcastState(ServicePlayMusic.BROADCAST_EXTRA_PAUSED);
 	}
 
 	public void unpausePlayer() {
@@ -977,7 +988,7 @@ public class ServicePlayMusic extends Service
 		if (lockscreenController != null)
 			lockscreenController.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
-		broadcastCurrentState(ServicePlayMusic.BROADCAST_EXTRA_UNPAUSED);
+		broadcastState(ServicePlayMusic.BROADCAST_EXTRA_UNPAUSED);
 	}
 
 	/**
@@ -1161,18 +1172,38 @@ public class ServicePlayMusic extends Service
 		return songs.get(position);
 	}
 
-	public void doNotification() {
-		if (kMP.settings.get("show_notification", true))
-			notification.notifySong(this, this, currentSong);
-	}
+	/**
+	 * Displays a notification on the status bar with the
+	 * current song and some nice buttons.
+	 */
+	public void notifyCurrentSong() {
+		if (! kMP.settings.get("show_notification", true))
+			return;
+		if (currentSong == null)
+			return;
 
-	public void cancelNotification() {
-		if (notification != null)
-			notification.cancel();
+		if (notification == null)
+			notification = new NotificationMusic();
+
+		notification.notifySong(this, this, currentSong);
 	}
 
 	/**
-	 * Shouts the current state of the Music Service.
+	 * Disables the hability to notify things on the
+	 * status bar.
+	 *
+	 * @see #notifyCurrentSong()
+	 */
+	public void cancelNotification() {
+		if (notification == null)
+			return;
+
+		notification.cancel();
+		notification = null;
+	}
+
+	/**
+	 * Shouts the state of the Music Service.
 	 *
 	 * @note This broadcast is visible only inside this application.
 	 *
@@ -1180,7 +1211,7 @@ public class ServicePlayMusic extends Service
 	 *
 	 * @param state Current state of the Music Service.
 	 */
-	private void broadcastCurrentState(String state) {
+	private void broadcastState(String state) {
 		if (currentSong == null)
 			return;
 

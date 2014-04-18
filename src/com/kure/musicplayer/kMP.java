@@ -41,7 +41,7 @@ public class kMP {
 	 * Our custom service that allows the music to play
 	 * even when the app is not on focus.
 	 */
-	public static ServicePlayMusic musicService;
+	public static ServicePlayMusic musicService = null;
 
 	/**
 	 * Contains the songs that are going to be shown to
