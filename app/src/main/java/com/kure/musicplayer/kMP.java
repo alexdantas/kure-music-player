@@ -10,7 +10,6 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.kure.musicplayer.activities.ActivityQuit;
 import com.kure.musicplayer.model.Song;
@@ -76,13 +75,6 @@ public class kMP {
 	 */
 	public static boolean mainMenuHasNowPlayingItem = false;
 
-	/**
-	 * Holds reference to the current Toast being
-	 * displayed.
-	 * Its useful to keep this so we can call `cancel()`x
-	 */
-	public static Toast currentToast = null;
-
 	// GENERAL PROGRAM INFO
 	public static String applicationName = "kure Music Player";
 	public static String packageName = "<unknown>";
@@ -146,7 +138,7 @@ public class kMP {
 			musicService = binder.getService();
 			musicService.setList(kMP.songs.songs);
 			musicService.musicBound = true;
-		};
+		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
@@ -198,7 +190,6 @@ public class kMP {
 
 	/**
 	 * Forces the whole application to quit.
-	 * I know this is not a nice way to do it.
 	 *
 	 * Please read more info on this StackOverflow answer:
 	 * http://stackoverflow.com/a/4737595

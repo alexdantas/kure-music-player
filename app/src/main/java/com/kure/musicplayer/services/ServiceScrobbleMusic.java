@@ -40,7 +40,7 @@ public class ServiceScrobbleMusic extends Service {
 		LocalBroadcastManager
 		.getInstance(getApplicationContext())
 		.registerReceiver(musicServiceBroadcastReceiver, new IntentFilter(ServicePlayMusic.BROADCAST_ACTION));
-	};
+	}
 
 	/**
 	 * Service is triggered to (re)start.
@@ -61,7 +61,7 @@ public class ServiceScrobbleMusic extends Service {
 		// when Android kills it.
 		// When it does, the `intent` will be `null`.
 		return Service.START_STICKY;
-	};
+	}
 
 	@Override
 	public void onDestroy() {
@@ -72,7 +72,7 @@ public class ServiceScrobbleMusic extends Service {
 		.unregisterReceiver(musicServiceBroadcastReceiver);
 
 		super.onDestroy();
-	};
+	}
 
 	/**
 	 * The thing that will keep an eye on LocalBroadcasts

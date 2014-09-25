@@ -10,6 +10,7 @@ import android.os.Bundle;
  * application (either by pressing "Quit" on the context
  * menu or by pressing back twice on the main menu).
  *
+ * Do _not_ use it directly!
  * This Activity is only created when calling kMP.forceExit();
  * Go see it there.
  *

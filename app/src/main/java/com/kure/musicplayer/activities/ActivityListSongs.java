@@ -91,7 +91,7 @@ public class ActivityListSongs extends ActivityMaster
 		kMP.nowPlayingList = kMP.musicList;
 
 		// Sending the song index inside the now playing list.
-		// See the documentation of `ActivityNowPLayig` class.
+		// See the documentation of `ActivityNowPLaying` class.
 		Intent intent = new Intent(this, ActivityNowPlaying.class);
 
 		intent.putExtra("song", position);

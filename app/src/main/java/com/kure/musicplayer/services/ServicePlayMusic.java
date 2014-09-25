@@ -205,7 +205,7 @@ public class ServicePlayMusic extends Service
     	// So that we know we have to resume playback once we get focus back)
     	// playback paused (media player ready!)
     	Paused
-    };
+    }
 
     /**
      * Current state of the Service.
@@ -438,7 +438,7 @@ public class ServicePlayMusic extends Service
     			}
     		}
     	}
-    };
+    }
 
     /**
      * Will keep an eye on global broadcasts related to
@@ -480,8 +480,6 @@ public class ServicePlayMusic extends Service
 
 					Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 				}
-
-				return;
 			}
 		}
     };

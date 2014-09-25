@@ -480,18 +480,6 @@ public class ActivityNowPlaying extends ActivityMaster implements
 	}
 
 	@Override
-	protected void onStart() {
-
-		super.onStart();
-
-		// WHY CANT I SET THE MUSIC CONTROLLER HERE AND LET IT BE
-		// FOREVER?
-		// if (!this.isFinishing()) {
-		// musicController.show(5000);
-		// }
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
 		if (event.getAction() == KeyEvent.ACTION_DOWN)

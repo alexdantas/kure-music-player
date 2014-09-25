@@ -1,5 +1,6 @@
 package com.kure.musicplayer.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.kure.musicplayer.kMP;
  * - http://stackoverflow.com/a/4673209
  * - http://stackoverflow.com/a/11875930
  */
+@SuppressLint("Registered") // No need to register this class on AndroidManifest
 public class ActivityMaster extends Activity {
 
 	/**

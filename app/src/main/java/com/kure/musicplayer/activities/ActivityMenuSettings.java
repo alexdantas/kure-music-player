@@ -239,7 +239,6 @@ public class ActivityMenuSettings extends PreferenceActivity
 					kMP.musicService.updateLockScreenWidget(kMP.musicService.currentSong, state);
 				}*/
 			}
-			return;
 		}
 	}
 
