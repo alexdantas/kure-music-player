@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.kure.musicplayer.NotificationMusic;
 import com.kure.musicplayer.R;
+import com.kure.musicplayer.helpers.SingleToast;
 import com.kure.musicplayer.kMP;
 
 /**
@@ -137,9 +138,9 @@ public class ActivityMenuMain extends ActivityMaster
 		// See the implementation right at the end of this class.
 		if ((forceScan) || (! kMP.songs.isInitialized())) {
 
-			Toast.makeText(ActivityMenuMain.this,
+			SingleToast.show(ActivityMenuMain.this,
 					getString(R.string.menu_main_scanning),
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_LONG);
 
 			new ScanSongs().execute();
 		}
@@ -174,9 +175,9 @@ public class ActivityMenuMain extends ActivityMaster
 			// Can only jump to shuffle all songs if we've
 			// scanned all the songs from the device.
 			if (! kMP.songs.isInitialized()) {
-				Toast.makeText(this,
+				SingleToast.show(this,
 			               getString(R.string.menu_music_proceed_error),
-			               Toast.LENGTH_LONG).show();
+			               Toast.LENGTH_LONG);
 				return;
 			}
 
@@ -240,7 +241,7 @@ public class ActivityMenuMain extends ActivityMaster
         }
 
         this.backPressedOnce = true;
-        Toast.makeText(this, "lel", Toast.LENGTH_SHORT).show();
+		SingleToast.show(this, "lel", Toast.LENGTH_SHORT);
 
 		backPressedHandler.postDelayed(backPressedTimeoutAction, BACK_PRESSED_DELAY);
 	}
@@ -296,9 +297,9 @@ public class ActivityMenuMain extends ActivityMaster
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 
-			Toast.makeText(ActivityMenuMain.this,
+			SingleToast.show(ActivityMenuMain.this,
 			               result,
-			               Toast.LENGTH_LONG).show();
+			               Toast.LENGTH_LONG);
 		}
 	}
 

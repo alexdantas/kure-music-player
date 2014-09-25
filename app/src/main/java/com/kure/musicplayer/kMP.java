@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import com.kure.musicplayer.activities.ActivityQuit;
 import com.kure.musicplayer.model.Song;
@@ -75,6 +76,12 @@ public class kMP {
 	 */
 	public static boolean mainMenuHasNowPlayingItem = false;
 
+	/**
+	 * Holds reference to the current Toast being
+	 * displayed.
+	 * Its useful to keep this so we can call `cancel()`
+	 */
+	public static Toast currentToast = null;
 
 	// GENERAL PROGRAM INFO
 	public static String applicationName = "kure Music Player";
