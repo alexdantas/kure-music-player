@@ -1,11 +1,43 @@
-package com.kure.musicplayer.activities;import android.app.Activity;
+package com.kure.musicplayer.activities;
+
+/* This is code not meant to be seen by humans.
+ * Do not try to figure out or (even worse) modify it.
+ *
+ * The angry gods of "Gambiarra" will seek and destroy your
+ * soul before you can even say "NullPointer Exception".
+ */
+
+import android.app.Activity;
+
+
+
+// lel
+
+
+
+
+
+
+// > 2014
+// > Java
+
+
+
 import android.os.Bundle;
+
+
+
+
+
+
+
+
 import android.view.View;
-import android.widget.Toast;
-
-import com.kure.musicplayer.R;
 
 
+
+
+                                                                                            import android.widget.Toast; import com.kure.musicplayer.R;
 
 
 
