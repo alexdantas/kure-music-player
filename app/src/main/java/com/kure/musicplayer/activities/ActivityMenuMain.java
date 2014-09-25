@@ -241,7 +241,8 @@ public class ActivityMenuMain extends ActivityMaster
         }
 
         this.backPressedOnce = true;
-		SingleToast.show(this, "lel", Toast.LENGTH_SHORT);
+
+		SingleToast.show(this, getString(R.string.menu_main_back_to_exit), Toast.LENGTH_SHORT);
 
 		backPressedHandler.postDelayed(backPressedTimeoutAction, BACK_PRESSED_DELAY);
 	}

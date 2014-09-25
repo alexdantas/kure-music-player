@@ -79,7 +79,7 @@ public class kMP {
 	/**
 	 * Holds reference to the current Toast being
 	 * displayed.
-	 * Its useful to keep this so we can call `cancel()`
+	 * Its useful to keep this so we can call `cancel()`x
 	 */
 	public static Toast currentToast = null;
 
