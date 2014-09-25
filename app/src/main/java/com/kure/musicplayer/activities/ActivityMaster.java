@@ -134,14 +134,10 @@ public class ActivityMaster extends Activity {
 
 		switch (item.getItemId()) {
 
+		// I know it's bad to force quiting the program,
+		// but I just love when applications have this option
 		case R.id.context_menu_end:
-
-			// This forces the system to kill the process, although
-			// it's not a nice way to do it.
-			//
-			// Later implement FinActivity:
-			// http://stackoverflow.com/a/4737595
-			System.exit(0);
+			kMP.forceExit(this);
 			break;
 
 		case R.id.context_menu_settings:

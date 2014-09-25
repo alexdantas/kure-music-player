@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -55,6 +56,24 @@ public class ActivityMenuMain extends ActivityMaster
 	 * @see onActivityResult()
 	 */
 	static final int USER_CHANGED_THEME = 1;
+
+	// These variables are used to allow allow user to
+	// press twice to exit the program
+	// (showing a message when pressing the first time).
+
+	private boolean backPressedOnce = false;
+	private Handler backPressedHandler = new Handler();
+
+	/** How long to wait to disable double-pressing to quit */
+	private static final int BACK_PRESSED_DELAY = 2000;
+
+	/** Action that actually disables double-pressing to quit */
+	private final Runnable backPressedTimeoutAction = new Runnable() {
+		@Override
+		public void run() {
+			backPressedOnce = false;
+		}
+	};
 
 	/**
 	 * Called when the activity is created for the first time.
@@ -187,6 +206,9 @@ public class ActivityMenuMain extends ActivityMaster
 	protected void onDestroy() {
 		super.onDestroy();
 
+		if (backPressedHandler != null)
+			backPressedHandler.removeCallbacks(backPressedTimeoutAction);
+
 		// Need to clear all the items otherwise
 		// they'll keep adding up.
 		items.clear();
@@ -201,15 +223,26 @@ public class ActivityMenuMain extends ActivityMaster
 	 * We're overriding the default behavior for when the
 	 * user presses the back button.
 	 *
-	 * This way, it'll not react at all.
-	 *
-	 * TODO Improve on this - make it so that when doing this
-	 *      will just keep the app running on the background.
+	 * This way, it will show "Please click BACK again to exit"
+     * and if the user presses again it will quit.
+     *
+     * Thanks, guys at StackOverflow:
+     * http://stackoverflow.com/a/13578600
 	 */
 	@Override
 	public void onBackPressed() {
-		// default behavior:
-		//finish();
+
+        if (this.backPressedOnce) {
+            // Default behavior, quit it
+            super.onBackPressed();
+			kMP.forceExit(this);
+            return;
+        }
+
+        this.backPressedOnce = true;
+        Toast.makeText(this, "lel", Toast.LENGTH_SHORT).show();
+
+		backPressedHandler.postDelayed(backPressedTimeoutAction, BACK_PRESSED_DELAY);
 	}
 
 	/**

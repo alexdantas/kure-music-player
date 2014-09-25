@@ -2,6 +2,7 @@ package com.kure.musicplayer;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 
+import com.kure.musicplayer.activities.ActivityQuit;
 import com.kure.musicplayer.model.Song;
 import com.kure.musicplayer.model.SongList;
 import com.kure.musicplayer.services.ServicePlayMusic;
@@ -185,5 +187,30 @@ public class kMP {
 		musicServiceIntent = null;
 
 		kMP.musicService = null;
+	}
+
+	/**
+	 * Forces the whole application to quit.
+	 * I know this is not a nice way to do it.
+	 *
+	 * Please read more info on this StackOverflow answer:
+	 * http://stackoverflow.com/a/4737595
+	 *
+	 * @note This is dangerous, make sure to cleanup
+	 *       everything before calling this.
+	 */
+	public static void forceExit(Activity c) {
+
+		// Instead of just calling `System.exit(0)` we use
+		// a temporary Activity do to the dirty job for us
+		// (clearing all other Activities and finishing() itself).
+		Intent intent = new Intent(c, ActivityQuit.class);
+
+		// Clear all other Activities
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		c.startActivity(intent);
+
+		// Clear the Activity calling this function
+		c.finish();
 	}
 }
